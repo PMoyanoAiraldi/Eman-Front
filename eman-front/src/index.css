@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap');
+
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --font-serif: 'Cormorant Garamond', serif;   /* títulos elegantes */
+  --font-sans: 'Montserrat', sans-serif;        /* navegación, botones, cuerpo */
+
+  --color-gold: #C9A84C;                    /* dorado del círculo y hojas */
+  --color-black: #1A1A1A;                   /* negro del texto EMAN */
+  --color-white: #FFFFFF;                   /* fondo */
+  --color-bg: #F9F6F1;                      /* blanco cálido para fondos de sección */
+}
