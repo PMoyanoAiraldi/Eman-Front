@@ -21,6 +21,7 @@ const Hero = () => {
         <section className={styles.hero}>
         <div className={styles.content}>
             <span className={styles.tag}>Nueva Colección</span>
+            <p className={styles.subtitle}>Moda que te define</p> 
             <h1 className={styles.title}>
             Tu mejor <br />
             <em>version.</em>
