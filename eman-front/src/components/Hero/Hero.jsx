@@ -1,7 +1,22 @@
-// components/Hero/Hero.jsx
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 import styles from './Hero.module.css'
 
 const Hero = () => {
+    const [heroImage, setHeroImage] = useState(null)
+
+        useEffect(() => {
+            axios.get('http://localhost:3010/media_content/by-type', { 
+                params: { type: 'hero' } 
+            })
+                .then(res => {
+                    if (res.data && res.data.length > 0) {
+                        setHeroImage(res.data[0])  // ← guardamos la primera imagen hero
+                    }
+                })
+                .catch(err => console.error('Error al cargar imagen hero:', err))
+            }, [])
+
     return (
         <section className={styles.hero}>
         <div className={styles.content}>
@@ -13,8 +28,12 @@ const Hero = () => {
             <button className={styles.btn}>Explorar</button>
         </div>
         <div className={styles.imageWrapper}>
-            <img src="../../assets/Hero.jpg" alt="Nueva colección Eman" />
-        </div>
+                {heroImage ? (
+                    <img src={heroImage.url} alt={heroImage.altText || 'Nueva colección Eman'} />
+                ) : (
+                    <img src="/assets/Hero.jpg" alt="Nueva colección Eman" /> // fallback
+                )}
+            </div>
         </section>
     )
 }

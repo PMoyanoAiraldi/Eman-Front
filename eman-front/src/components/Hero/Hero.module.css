@@ -1,10 +1,10 @@
-/* components/Hero/Hero.module.css */
 .hero {
     display: flex;
     align-items: center;
-    min-height: 90vh;
+    min-height: 70vh;
     padding: 0 5%;
     background-color: var(--color-white);
+    gap: 2rem;
 }
 
 .content {
@@ -56,11 +56,15 @@
 
 .imageWrapper {
     flex: 1;
-    height: 90vh;
+    max-height: 65vh;    
+    overflow: hidden;
+    border-radius: 4px;
 }
 
 .imageWrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center top; /* enfoca la parte superior de la imagen */
+    display: block;
 }
