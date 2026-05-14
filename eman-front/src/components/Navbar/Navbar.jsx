@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, ShoppingBag, User } from 'lucide-react'
+import { ShoppingBag, User } from 'lucide-react'
 import styles from './Navbar.module.css'
 import emanLogo from '../../assets/eman-logo.png'
 
@@ -30,9 +30,6 @@ const Navbar = () => {
             <div className={styles.icons}>
                 <button className={styles.iconBtn} aria-label="Mi cuenta">
                     <User size={18} strokeWidth={1.5} />
-                </button>
-                <button className={styles.iconBtn} aria-label="Favoritos">
-                    <Heart size={18} strokeWidth={1.5} />
                 </button>
                 <button className={styles.iconBtn} aria-label="Carrito">
                     <ShoppingBag size={18} strokeWidth={1.5} />
