@@ -43,7 +43,7 @@ const Hero = () => {
         <div className={styles.track} style={{ transform: `translateX(-${current * 100}%)` }}>
             {slides.map((slide) => (
             <div className={styles.slide} key={slide.id}>
-            <div className={styles.content}>
+             <div className={styles.content} key={current}>{/* key: current -  para que se remonte el estilo del texto */}
                 <span className={styles.tag}>{slide.tag}</span>
                 <p className={styles.subtitle}>{slide.subtitle}</p> 
                 <h1 className={styles.title}>{slide.title}</h1>

@@ -1,0 +1,21 @@
+.strip {
+    background-color: var(--color-black);
+    padding: 14px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+}
+
+.strip span {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #d8cfc4;
+}
+
+.dot {
+    color: var(--color-gold) !important;
+    font-size: 0.5rem !important;
+}
