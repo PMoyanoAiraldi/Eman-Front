@@ -9,6 +9,8 @@ const Footer = () => {
         <footer className={styles.footer}>
         <div className={styles.main}>
 
+        <div /> {/* ← spacer vacío para balancear */}
+
             <nav className={styles.links}>
                 <Link to="/nosotros">Nosotros</Link>
                 <Link to="/contacto">Contacto</Link>
@@ -26,10 +28,10 @@ const Footer = () => {
             </div>
 
         <div className={styles.bottom}>
-            <span>© {currentYear} eman. todos los derechos reservados.</span>
+            <span>© {currentYear} Eman. Todos los derechos reservados.</span>
             <div className={styles.legal}>
-                <Link to="/privacidad">privacidad</Link>
-                <Link to="/terminos">términos</Link>
+                <Link to="/privacidad">Privacidad</Link>
+                <Link to="/terminos">Términos</Link>
             </div>
         </div>
         </footer>

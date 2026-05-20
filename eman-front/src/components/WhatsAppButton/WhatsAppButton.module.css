@@ -1,8 +1,7 @@
 .btn {
     position: fixed;
-    bottom: 80px;
-    
-    left: 24px;
+    bottom: 120px;
+    right: 50px;
     z-index: 9999;
     width: 60px;
     height: 60px;
