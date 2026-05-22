@@ -3,6 +3,7 @@ import userReducer from "./userReducer";
 import productsReducer from "./productsReducer";   
 import adminProductsReducer from "../redux/admin/adminProductsReducer"
 import cartReducer from "./cartReducer"
+import subCategoriesReducer from "./subCategoriesReducer"
 
 
 const store = configureStore({
@@ -10,7 +11,8 @@ const store = configureStore({
         user: userReducer,         
         products: productsReducer, 
         cart: cartReducer,
-        adminProducts:  adminProductsReducer
+        adminProducts:  adminProductsReducer,
+        subCategories: subCategoriesReducer,
     }
 })
 

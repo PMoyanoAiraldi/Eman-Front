@@ -1,0 +1,90 @@
+.page {
+    padding: 4rem 8%;
+    background: var(--color-white);
+    min-height: 60vh;
+}
+
+.header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1.5rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 400;
+    color: var(--color-black);
+    text-transform: capitalize;
+}
+
+.count {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+}
+
+.filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+}
+
+.filterBtn {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #999;
+    border: 0.5px solid #ddd;
+    background: transparent;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filterBtn:hover {
+    border-color: var(--color-black);
+    color: var(--color-black);
+}
+
+.filterBtn.active {
+    background: var(--color-black);
+    color: var(--color-white);
+    border-color: var(--color-black);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 4rem;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #999;
+}
+
+.empty {
+    text-align: center;
+    padding: 4rem;
+    font-family: var(--font-serif);
+    font-size: 1.2rem;
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .page { padding: 3rem 5%; }
+    .grid { grid-template-columns: repeat(2, 1fr); }
+}
