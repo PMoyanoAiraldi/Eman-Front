@@ -1,5 +1,5 @@
 .page {
-    padding: 4rem 8%;
+    padding: 1.5rem 8%;
     background: var(--color-white);
     min-height: 60vh;
 }
@@ -8,7 +8,7 @@
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     border-bottom: 1px solid #eee;
     padding-bottom: 1.5rem;
 }
@@ -33,7 +33,7 @@
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .filterBtn {
