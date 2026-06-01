@@ -13,7 +13,7 @@ const cartSlice = createSlice({
     addItem: (state, action) => {
         const { product, size } = action.payload
         const exists = state.items.find(
-            i => i.id === product.id && i.size === size
+            i => i.id === product.id && i.size === size && i.color?.name === product.color?.name
         )
         if (exists) {
             exists.quantity += 1  // si ya está, suma cantidad
@@ -25,19 +25,19 @@ const cartSlice = createSlice({
     removeItem: (state, action) => {
         const { id, size } = action.payload
         state.items = state.items.filter(
-            i => !(i.id === id && i.size === size)
+            i => !(i.id === id && i.size === size && i.color?.name === action.payload.color?.name)
         )
     },
 
     increaseQuantity: (state, action) => {
         const { id, size } = action.payload
-        const item = state.items.find(i => i.id === id && i.size === size)
+        const item = state.items.find(i => i.id === id && i.size === size && i.color?.name === action.payload.color?.name)
         if (item) item.quantity += 1
     },
 
     decreaseQuantity: (state, action) => {
         const { id, size } = action.payload
-        const item = state.items.find(i => i.id === id && i.size === size)
+        const item = state.items.find(i => i.id === id && i.size === size && i.color?.name === action.payload.color?.name)
         if (item) {
             if (item.quantity === 1) {
             // si llega a 0 lo elimina directamente
