@@ -1,0 +1,332 @@
+.wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* ── Estado ── */
+.status {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #888;
+    font-size: 0.95rem;
+}
+.error {
+    color: #c0392b;
+}
+
+/* ── Galería ── */
+.gallery {
+    display: flex;
+    gap: 12px;
+}
+
+.thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thumb {
+    width: 68px;
+    height: 82px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: #f4f4f2;
+    cursor: pointer;
+    padding: 0;
+    transition: border-color 0.15s;
+    flex-shrink: 0;
+}
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.thumbActive {
+    border-color: #2c2c2a;
+}
+.thumb:hover:not(.thumbActive) {
+    border-color: #bbb;
+}
+
+.mainImageWrap {
+    flex: 1;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f4f4f2;
+    aspect-ratio: 3 / 4;
+}
+.mainImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.2s;
+}
+.badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background: #2c2c2a;
+    color: #f1efe8;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+/* ── Info ── */
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.brand {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #888;
+    margin: 0;
+}
+.name {
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin: 4px 0 0;
+    color: #1a1a18;
+}
+
+.priceRow {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.price {
+    font-size: 24px;
+    font-weight: 300;
+    color: #1a1a18;
+}
+.priceOld {
+    font-size: 15px;
+    color: #aaa;
+    text-decoration: line-through;
+}
+.discountBadge {
+    font-size: 12px;
+    font-weight: 500;
+    background: #eaf3de;
+    color: #27500a;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.divider {
+    border: none;
+    border-top: 0.5px solid #e0e0dc;
+    margin: 0;
+}
+
+/* ── Secciones ── */
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.sectionLabel {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    margin: 0;
+}
+.sectionValue {
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #555;
+}
+
+/* ── Colores ── */
+.colors {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.colorBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    cursor: pointer;
+    transition: outline-color 0.15s;
+    padding: 0;
+}
+.colorActive {
+    outline-color: #2c2c2a;
+}
+.colorBtn:hover:not(.colorActive) {
+    outline-color: #bbb;
+}
+
+/* ── Talles ── */
+.sizes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.sizeBtn {
+    min-width: 46px;
+    height: 40px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 0.5px solid #ccc;
+    background: #fff;
+    font-size: 13px;
+    color: #1a1a18;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.sizeBtn:hover:not(.sizeBtnActive):not(.sizeBtnOut) {
+    background: #f4f4f2;
+}
+.sizeBtnActive {
+    background: #2c2c2a;
+    color: #f1efe8;
+    border-color: #2c2c2a;
+}
+.sizeBtnOut {
+    color: #bbb;
+    border-style: dashed;
+    cursor: default;
+    text-decoration: line-through;
+}
+
+/* ── Stock ── */
+.stock {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+.stockDot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.stockHigh .stockDot { background: #639922; }
+.stockHigh            { color: #3b6d11; }
+.stockLow  .stockDot  { background: #ba7517; }
+.stockLow             { color: #854f0b; }
+.stockOut  .stockDot  { background: #e24b4a; }
+.stockOut             { color: #a32d2d; }
+.stockNeutral .stockDot { background: #bbb; }
+.stockNeutral           { color: #888; }
+
+/* ── Cantidad ── */
+.qtyRow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.qty {
+    display: flex;
+    align-items: center;
+    border: 0.5px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.qty button {
+    width: 36px;
+    height: 38px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #1a1a18;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+}
+.qty button:hover {
+    background: #f4f4f2;
+}
+.qty span {
+    min-width: 34px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ── Botón agregar ── */
+.addBtn {
+    width: 100%;
+    height: 50px;
+    background: #2c2c2a;
+    color: #f1efe8;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, transform 0.1s;
+}
+.addBtn:hover:not(:disabled) {
+    background: #444441;
+}
+.addBtn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+.addBtnAdded {
+    background: #3b6d11;
+}
+.addBtn:disabled {
+    background: #ccc;
+    color: #888;
+    cursor: default;
+}
+
+/* ── Descripción ── */
+.description {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #666;
+    margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 680px) {
+    .wrapper {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .gallery {
+        flex-direction: column-reverse;
+    }
+    .thumbs {
+        flex-direction: row;
+    }
+    .thumb {
+        width: 56px;
+        height: 70px;
+    }
+}
