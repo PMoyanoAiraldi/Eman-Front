@@ -234,7 +234,7 @@
 .stockHigh .stockDot { background: #639922; }
 .stockHigh            { color: #3b6d11; }
 .stockLow  .stockDot  { background: #ba7517; }
-.stockLow             { color: #854f0b; }
+.stockLow             {  color: var(--color-gold) }
 .stockOut  .stockDot  { background: #e24b4a; }
 .stockOut             { color: #a32d2d; }
 .stockNeutral .stockDot { background: #bbb; }

@@ -85,7 +85,7 @@ console.log("activeColor", activeColor)
             id:    product.id,
             name:  product.name,
             price: product.price,
-            image: product.images?.[0] ?? null,
+            image: product.images?.[0]?.url ?? null,
             color: activeColor,
             },
             size:     selectedSize.name,
@@ -96,7 +96,6 @@ console.log("activeColor", activeColor)
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
 };
-
     const { text: stockText, cls: stockCls } = stockLabel();
 
 return (
@@ -111,7 +110,7 @@ return (
                 onClick={() => setActiveImageIndex(i)}
                 aria-label={`Ver imagen ${i + 1}`}
                 >
-                <img src={img} alt={`${product.name} vista ${i + 1}`} />
+                <img src={img.url} alt={`${product.name} vista ${i + 1}`} />
                 </button>
             ))}
             </div>
@@ -120,7 +119,7 @@ return (
             {discount && <span className={styles.badge}>−{discount}%</span>}
             <img
                 className={styles.mainImage}
-                src={product.images?.[activeImageIndex]}
+                src={product.images?.[activeImageIndex]?.url}
                 alt={product.name}
             />
             </div>
@@ -128,7 +127,7 @@ return (
 
         {/* ── Info ── */}
         <div className={styles.info}>
-        {product.brand && <p className={styles.brand}>{product.brand}</p>}
+        {product.brand && <p className={styles.brand}>{product.brand?.name ?? product.brand}</p>}
         <h1 className={styles.name}>{product.name}</h1>
 
 
@@ -189,7 +188,7 @@ return (
                         } ${isOut ? styles.sizeBtnOut : ""}`}
                         onClick={() => !isOut && setSelectedSize(size)}
                         disabled={isOut}
-                        aria-label={`Talle ${size}${isOut ? " sin stock" : ""}`}
+                        aria-label={`Talle ${size.name}${isOut ? " sin stock" : ""}`}
                     >
                         {size.name}
                     </button>
