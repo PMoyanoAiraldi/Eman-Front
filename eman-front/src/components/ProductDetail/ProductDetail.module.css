@@ -3,6 +3,10 @@
     grid-template-columns: 1fr 1fr;
     gap: 48px;
     align-items: start;
+}
+
+
+.page {
     max-width: 1000px;
     margin: 0 auto;
     padding: 2rem 1rem;

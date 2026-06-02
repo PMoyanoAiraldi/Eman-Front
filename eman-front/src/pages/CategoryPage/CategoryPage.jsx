@@ -1,22 +1,30 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchProductsByCategory } from '../../redux/productsReducer'
 import { fetchSubCategories } from '../../redux/subCategoriesReducer'
 import ProductCard from '../../components/ProductCard/ProductCard'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import styles from './CategoryPage.module.css'
 import axios from "axios"
 
 const CategoryPage = () => {
     const { categoria } = useParams()
+    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const dispatch = useDispatch()
+    const subParam = searchParams.get('sub')
 
     const { products, loading } = useSelector(state => state.products)
     const { subCategories } = useSelector(state => state.subCategories)
 
     const [categoryId, setCategoryId] = useState(null)
-    const [activeSubCategory, setActiveSubCategory] = useState(null)
 
+    // const [activeSubCategory, setActiveSubCategory] = useState(searchParams.get('sub') ?? null)
+    // const activeSubName = subCategories.find(sc => sc.id === activeSubCategory)?.name
+
+    const activeSubCategory = subParam ?? null
+    const activeSubName = subCategories.find(sc => sc.id === activeSubCategory)?.name
 
   // Traer categorías del back para matchear con la URL
 useEffect(() => {
@@ -27,7 +35,6 @@ useEffect(() => {
         const match = res.data.find(c => c.name?.toLowerCase() === categoria.toLowerCase())
         if (match) {
         setCategoryId(match.id)
-        setActiveSubCategory(null)
         }
         } catch (err) {
         console.error('Error al cargar categorías:', err)
@@ -35,11 +42,6 @@ useEffect(() => {
     }
         fetchCategoryId()
     }, [categoria])
-
-    // Reset del filtro cuando cambia la categoría en la URL
-    // useEffect(() => {
-    //     setActiveSubCategory(null)
-    // }, [categoria]) // ← depende de categoria, no de categoryId
 
 
   // Cuando tenemos el categoryId traemos los productos
@@ -62,6 +64,12 @@ useEffect(() => {
         return (
             <section className={styles.page}>
 
+            <Breadcrumb items={[
+                { label: 'Inicio', path: '/' },
+                { label: categoria, path: `/${categoria.toLowerCase()}` },
+                ...(activeSubName ? [{ label: activeSubName }] : []),
+            ]} />
+
             <div className={styles.header}>
                 <h1 className={styles.title}>{categoria}</h1>
                 <span className={styles.count}>
@@ -73,7 +81,7 @@ useEffect(() => {
                 <div className={styles.filters}>
                 <button
                     className={`${styles.filterBtn} ${activeSubCategory === null ? styles.active : ''}`}
-                    onClick={() => setActiveSubCategory(null)}
+                    onClick={() => navigate(`/${categoria.toLowerCase()}`)}
                 >
                     Todos
                 </button>
@@ -81,7 +89,7 @@ useEffect(() => {
                     <button
                     key={sc.id}
                     className={`${styles.filterBtn} ${activeSubCategory === sc.id ? styles.active : ''}`}
-                    onClick={() => setActiveSubCategory(sc.id)}
+                    onClick={() => navigate(`/${categoria.toLowerCase()}?sub=${sc.id}`)}
                     >
                     {sc.name}
                     </button>

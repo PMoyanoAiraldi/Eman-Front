@@ -1,0 +1,34 @@
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 2rem;
+    padding-top: 0.5rem;
+}
+
+.separator {
+    margin: 0 0.6rem;
+    color: #ddd;
+    font-size: 0.6rem;
+}
+
+.link {
+    color: #bbb;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    font-weight: 400;
+}
+
+.link:hover {
+    color: var(--color-gold);
+}
+
+.active {
+    color: var(--color-gold);
+    font-weight: 400;
+    letter-spacing: 0.15em;
+}

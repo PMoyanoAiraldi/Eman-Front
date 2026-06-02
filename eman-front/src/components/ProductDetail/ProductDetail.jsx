@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById, clearSelectedProduct } from "../../redux/productsReducer";
 import { addItem, openCart } from "../../redux/cartReducer";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import styles from "./ProductDetail.module.css";
 
 
@@ -99,6 +100,14 @@ console.log("activeColor", activeColor)
     const { text: stockText, cls: stockCls } = stockLabel();
 
 return (
+    <div className={styles.page}>
+
+    <Breadcrumb items={[
+            { label: 'Inicio', path: '/' },
+            { label: product.category?.name, path: `/${product.category?.name?.toLowerCase()}` },
+            { label: product.subcategory?.name, path: `/${product.category?.name?.toLowerCase()}?sub=${product.subcategory?.id}` },
+            { label: product.name }, // sin path = último, no clickeable
+        ]} />
     <div className={styles.wrapper}>
       {/* ── Galería ── */}
         <div className={styles.gallery}>
@@ -245,6 +254,8 @@ return (
             </div>
             )}
         </div>
+        </div>
+
         </div>
     );
 }
