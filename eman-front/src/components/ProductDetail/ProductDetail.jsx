@@ -88,6 +88,7 @@ console.log("activeColor", activeColor)
             price: product.price,
             image: product.images?.[0]?.url ?? null,
             color: activeColor,
+            stock: selectedStock,
             },
             size:     selectedSize.name,
             quantity,
