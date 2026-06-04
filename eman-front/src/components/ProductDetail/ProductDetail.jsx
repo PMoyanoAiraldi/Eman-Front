@@ -240,6 +240,7 @@ return (
                 onClick={() =>
                     setQuantity((q) => Math.min(stockDisponible, q + 1))
                 }
+                disabled={quantity >= stockDisponible}
                 aria-label="Sumar cantidad"
                 >
                 +
