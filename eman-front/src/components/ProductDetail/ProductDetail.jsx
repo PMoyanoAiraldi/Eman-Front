@@ -20,6 +20,7 @@ export default function ProductDetail() {
     const [selectedSize, setSelectedSize]   = useState(null);
     const [quantity, setQuantity]           = useState(1);
     const [added, setAdded]                 = useState(false);
+    const { items } = useSelector(state => state.cart)
     
     useEffect(() => {
         dispatch(fetchProductById(id));
@@ -63,12 +64,12 @@ console.log("activeColor", activeColor)
     };
 
     const selectedStock = selectedSize ? getStock(selectedSize) : null;
-
+    
     const stockLabel = () => {
         if (!selectedSize) return { text: "Seleccioná un talle", cls: styles.stockNeutral };
-        if (selectedStock === 0)  return { text: "Sin stock",                cls: styles.stockOut  };
-        if (selectedStock <= 3)   return { text: `Últimas ${selectedStock} unidades`, cls: styles.stockLow  };
-        return { text: `${selectedStock} disponibles`, cls: styles.stockHigh };
+        if (stockDisponible === 0)  return { text: "Sin stock", cls: styles.stockOut  };
+        if (stockDisponible <= 3)   return { text: `Últimas ${selectedStock} unidades`, cls: styles.stockLow  };
+        return { text: `${stockDisponible} disponibles`, cls: styles.stockHigh };
     };
     
     const handleColorSelect = (color) => {
@@ -76,6 +77,13 @@ console.log("activeColor", activeColor)
         setSelectedSize(null); // resetea talle al cambiar color
     };
 
+    const enCarrito = items.find(
+    i => i.id === product.id && 
+    i.size === selectedSize?.name && 
+    i.color?.id === activeColor?.id
+    )?.quantity ?? 0
+
+const stockDisponible = (selectedStock ?? 0) - enCarrito
 
     const handleAddToCart = () => {
     if (!selectedSize) return;
@@ -88,17 +96,20 @@ console.log("activeColor", activeColor)
             price: product.price,
             image: product.images?.[0]?.url ?? null,
             color: activeColor,
-            stock: selectedStock,
+            stock: stockDisponible,
             },
             size:     selectedSize.name,
             quantity,
         })
     );
     dispatch(openCart());
+    setQuantity(1) // ← resetear a 1 después de agregar
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
 };
     const { text: stockText, cls: stockCls } = stockLabel();
+
+
 
 return (
     <div className={styles.page}>
@@ -227,7 +238,7 @@ return (
                 <span>{quantity}</span>
                 <button
                 onClick={() =>
-                    setQuantity((q) => Math.min(selectedStock ?? 10, q + 1))
+                    setQuantity((q) => Math.min(stockDisponible, q + 1))
                 }
                 aria-label="Sumar cantidad"
                 >
@@ -240,7 +251,7 @@ return (
         <button
             className={`${styles.addBtn} ${added ? styles.addBtnAdded : ""}`}
             onClick={handleAddToCart}
-            disabled={!selectedSize || selectedStock === 0}
+            disabled={!selectedSize || stockDisponible === 0}
             >
             {added ? "✓ Agregado al carrito" : "Agregar al carrito"}
             </button>

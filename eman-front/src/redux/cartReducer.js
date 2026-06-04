@@ -16,9 +16,9 @@ const cartSlice = createSlice({
             i => i.id === product.id && i.size === size && i.color?.name === product.color?.name
         )
         if (exists) {
-            exists.quantity += 1  // si ya está, suma cantidad
+            exists.quantity = Math.min(exists.quantity + action.payload.quantity, exists.stock)
         } else {
-            state.items.push({ ...product, size, quantity: 1 })
+            state.items.push({ ...product, size, quantity: action.payload.quantity })
         }
     },
 

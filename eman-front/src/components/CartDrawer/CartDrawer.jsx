@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal } from '../../redux/cartReducer'
 import styles from './CartDrawer.module.css'
+import { Trash2 } from 'lucide-react'
 
 export default function CartDrawer() {
     const dispatch = useDispatch()
@@ -13,6 +14,7 @@ export default function CartDrawer() {
         dispatch(closeCart())
         navigate('/checkout')
     }
+
 
     return (
         <>
@@ -64,7 +66,7 @@ export default function CartDrawer() {
                                 onClick={() => dispatch(removeItem({ id: item.id, size: item.size, color: item.color }))}
                                 aria-label="Eliminar producto"
                             >
-                                🗑
+                                <Trash2 size={15} />
                             </button>
                         </div>
                     ))}
