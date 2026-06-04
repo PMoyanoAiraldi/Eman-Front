@@ -50,6 +50,7 @@
 
 .iconBtn {
     background: none;
+    position: relative;
     border: none;
     cursor: pointer;
     color: var(--color-black);
@@ -61,4 +62,21 @@
 
 .iconBtn:hover {
     color: var(--color-gold);
+}
+
+.cartBadge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: var(--color-gold);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
 }

@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { openCart, selectCartCount } from '../../redux/cartReducer'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, User } from 'lucide-react'
 import styles from './Navbar.module.css'
 import emanLogo from '../../assets/eman-logo.png'
 
 const Navbar = () => {
+    const dispatch = useDispatch()
+    const cartCount = useSelector(selectCartCount)
     const [scrolled, setScrolled] = useState(false)
-
+    
     useEffect(() => {
         const handleScroll = () => {
             setScrolled(window.scrollY > 20)
@@ -31,8 +35,11 @@ const Navbar = () => {
                 <button className={styles.iconBtn} aria-label="Mi cuenta">
                     <User size={18} strokeWidth={1.5} />
                 </button>
-                <button className={styles.iconBtn} aria-label="Carrito">
+                <button className={styles.iconBtn} aria-label="Carrito" onClick={() => dispatch(openCart())}>
                     <ShoppingBag size={18} strokeWidth={1.5} />
+                    {cartCount > 0 && (
+                        <span className={styles.cartBadge}>{cartCount}</span>
+                    )}
                 </button>
             </div>
         </nav>
