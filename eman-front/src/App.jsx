@@ -4,7 +4,7 @@ import Layout from './components/Layout/Layout'
 import Nosotros from './pages/Nosotros/Nosotros'
 import ProductDetail from './components/ProductDetail/ProductDetail'
 import CategoryPage from './pages/CategoryPage/CategoryPage'
-import Checkout from './components/Checkout/Checkout'
+import CheckoutPage from './pages/CheckoutPage/CheckoutPage'
 
 function App() {
   
@@ -17,7 +17,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/producto/:id" element={<ProductDetail />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/:categoria" element={<CategoryPage />} />
         
       </Routes>
