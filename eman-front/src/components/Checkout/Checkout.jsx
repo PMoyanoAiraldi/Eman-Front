@@ -135,49 +135,8 @@ const Checkout = () => {
 
     const shippingCost = form.shippingType === 'coordinado' ? 0 : 0 // TODO: API Correo Argentino, reemplaza con credenciales
 
-    const handleSubmit = async () => {
-        setLoading(true)
-        try {
-            const body = {
-                guestName:    form.guestName,
-                guestEmail:   form.guestEmail,
-                guestPhone:   form.guestPhone,
-                address:      form.address,
-                city:         form.city,
-                zipCode:      form.zipCode,
-                shippingType: form.shippingType,
-                shippingCost,
-                items: items.map(item => ({
-                    productId:   item.id,
-                    variantId:   item.variantId,
-                    productName: item.name,
-                    quantity:    item.quantity,
-                    unitPrice:   Number(item.price),
-                }))
-            }
 
-    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/order`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(body),
-    })
-
-    if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.message || 'Error al crear la orden')
-    }
-
-    dispatch(clearCart())
-    navigate('/orden-confirmada')
-
-    } catch (err) {
-        setErrors({ submit: err.message })
-    } finally {
-        setLoading(false)
-    }
-}
-
-    if (items.length === 0 && step !== 3) {
+    if (items.length === 0 && step < 3) {
             return (
                 <div className={styles.empty}>
                     <p>Tu carrito está vacío</p>
@@ -399,6 +358,13 @@ const Checkout = () => {
             </div>
         )}
 
+        <div className={styles.btnRow}>
+                <button className={styles.backBtn} onClick={handleBack}>Volver</button>
+                <button className={styles.nextBtn} onClick={handleNext}>Continuar</button>
+            </div>
+            </div>
+        )}
+
         {/* ── Paso 3: Pago ── */}
             {step === 3 && (
                 <div className={styles.form}>
@@ -419,11 +385,12 @@ const Checkout = () => {
                                     mercadoPago:     'all',
                                 },
                             }}
-                            onSubmit={async ({ selectedPaymentMethod, formData }) => {
+                            onSubmit={async () => {
                                 dispatch(clearCart())
                                 navigate(`/orden-confirmada?orderId=${orderId}`)
                             }}
                             onError={(error) => {
+                                console.error('MP Error:', error)
                                 setErrors({ submit: 'Error en el pago. Intentá de nuevo.' })
                             }}
                         />
@@ -435,15 +402,10 @@ const Checkout = () => {
                 </div>
             )}
 
-        <div className={styles.btnRow}>
-                <button className={styles.backBtn} onClick={handleBack}>Volver</button>
-                <button className={styles.nextBtn} onClick={handleNext}>Continuar</button>
-            </div>
-            </div>
-        )}
+        
 
-        {/* ── Paso 3: Resumen ── */}
-        {step === 3 && (
+        {/* ── Paso 4: Resumen ── */}
+        {step === 4 && (
             <div className={styles.form}>
             <h2 className={styles.stepTitle}>Resumen del pedido</h2>
 
@@ -486,7 +448,7 @@ const Checkout = () => {
             <button className={styles.backBtn} onClick={handleBack}>Volver</button>
                 <button
                     className={styles.confirmBtn}
-                    onClick={handleSubmit}
+                    onClick={handleNext}
                     disabled={loading}
                 >
                 {loading ? 'Procesando...' : 'Confirmar pedido'}
