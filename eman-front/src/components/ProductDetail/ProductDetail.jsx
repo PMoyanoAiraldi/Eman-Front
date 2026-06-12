@@ -88,10 +88,15 @@ const stockDisponible = (selectedStock ?? 0) - enCarrito
     const handleAddToCart = () => {
     if (!selectedSize) return;
 
+    const selectedVariant = product.variants?.find(
+        v => v.color.id === activeColor?.id && v.size.id === selectedSize?.id
+    )
+
     dispatch(
         addItem({
             product: {
             id:    product.id,
+            variantId: selectedVariant?.id ?? null,
             name:  product.name,
             price: product.price,
             image: product.images?.[0]?.url ?? null,

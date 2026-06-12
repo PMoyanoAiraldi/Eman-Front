@@ -5,6 +5,10 @@ import { Provider } from 'react-redux'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import { initMercadoPago } from '@mercadopago/sdk-react'
+
+initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY)
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
