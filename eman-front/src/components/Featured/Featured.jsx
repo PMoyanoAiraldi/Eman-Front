@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import styles from './Featured.module.css'
-import { fetchFeaturedProducts } from '../../redux/productsReducer'
+import { fetchFeaturedProducts } from '../../redux/slices/productsReducer'
 import ProductCard from '../ProductCard/ProductCard'
 
 const FeaturedProducts = () => {

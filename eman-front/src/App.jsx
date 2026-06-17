@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { authService } from './api/authService';
-import { setToken } from './store/slices/authSlice';
+import { setToken } from './redux/slices/authReducer';
 import Home from './pages/Home/Home'
 import Layout from './components/Layout/Layout'
 import Nosotros from './pages/Nosotros/Nosotros'

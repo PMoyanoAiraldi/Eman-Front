@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { openCart, selectCartCount } from '../../redux/cartReducer'
+import { openCart, selectCartCount } from '../../redux/slices/cartReducer'
 import { Link } from 'react-router-dom'
 import { ShoppingBag, User } from 'lucide-react'
 import styles from './Navbar.module.css'

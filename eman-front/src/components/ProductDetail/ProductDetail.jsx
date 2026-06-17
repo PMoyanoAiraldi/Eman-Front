@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchProductById, clearSelectedProduct } from "../../redux/productsReducer";
-import { addItem, openCart } from "../../redux/cartReducer";
+import { fetchProductById, clearSelectedProduct } from "../../redux/slices/productsReducer";
+import { addItem, openCart } from "../../redux/slices/cartReducer";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import styles from "./ProductDetail.module.css";
 

@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal } from '../../redux/cartReducer'
+import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal } from '../../redux/slices/cartReducer'
 import styles from './CartDrawer.module.css'
 import { Trash2 } from 'lucide-react'
 
