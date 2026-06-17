@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "../api/axiosInstance"
+import axiosInstance from "../../api/axiosInstance"
 
 // Trae productos por categoría — para CategoryPage
 export const fetchProductsByCategory = createAsyncThunk(
