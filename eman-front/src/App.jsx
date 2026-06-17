@@ -9,6 +9,8 @@ import Nosotros from './pages/Nosotros/Nosotros'
 import ProductDetail from './components/ProductDetail/ProductDetail'
 import CategoryPage from './pages/CategoryPage/CategoryPage'
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage'
+import LoginPage from './pages/Auth/Login/Login';
+import RegisterPage from './pages/Auth/Register/Register';
 
 function App() {
   const dispatch = useDispatch();
@@ -30,8 +32,8 @@ function App() {
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/producto/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
-        {/* <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} /> */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} /> 
         <Route path="/:categoria" element={<CategoryPage />} />
         
       </Routes>

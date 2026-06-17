@@ -1,0 +1,139 @@
+.page {
+    padding: 2rem 1.5rem 4rem;
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.container {
+    margin-top: 2.5rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: #888;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.sectionLabel {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    margin-bottom: -0.25rem;
+    margin-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.label {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: #888;
+}
+
+.input {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background: transparent;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input::placeholder {
+    color: #bbb;
+}
+
+.input:focus {
+    border-color: var(--color-gold);
+}
+
+.error {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: #c0392b;
+    margin: 0;
+}
+
+.button {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    color: #fff;
+    background: #1a1a1a;
+    border: none;
+    padding: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+.button:hover:not(:disabled) {
+    background: #333;
+}
+
+.button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.footer {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+    margin-top: 1.75rem;
+}
+
+.footerLink {
+    color: var(--color-gold);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.footerLink:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
