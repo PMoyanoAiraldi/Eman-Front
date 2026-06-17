@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios"
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010'
+import axiosInstance from "../api/axiosInstance"
 
 // Trae productos por categoría — para CategoryPage
 export const fetchProductsByCategory = createAsyncThunk(
     'products/fetchProductsByCategory',
     async (categoryId, { rejectWithValue }) => {
         try {
-            const res = await axios.get(`${API_URL}/products?categoryId=${categoryId}`);
+            const res = await axiosInstance.get(`/products?categoryId=${categoryId}`);
             return { categoryId, products: res.data }
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Error al cargar productos');
@@ -21,7 +19,7 @@ export const fetchFeaturedProducts = createAsyncThunk(
     'products/fetchFeaturedProducts',
     async (_, { rejectWithValue }) => {
         try {
-        const res = await axios.get(`${API_URL}/products/featured`)
+        const res = await axiosInstance.get('/products/featured')
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error al cargar destacados')
@@ -34,7 +32,7 @@ export const fetchProductById = createAsyncThunk(
     'products/fetchProductById',
     async (id, { rejectWithValue }) => {
         try {
-        const res = await axios.get(`${API_URL}/products/${id}`)
+        const res = await axiosInstance.get(`/products/${id}`)
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Producto no encontrado')

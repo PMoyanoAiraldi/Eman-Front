@@ -1,18 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import axios from "axios"
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010'
-
-const getAuthHeader = (token) => ({
-    headers: { Authorization: `Bearer ${token}` }
-}) 
+import axiosInstance from '../../api/axiosInstance'
 
 export const fetchAllProducts = createAsyncThunk(
     'adminProducts/fetchAll',
-    async (_, { getState, rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
-        const token = getState().user.token // agarra el token del store de user automáticamente
-        const res = await axios.get(`${API_URL}/products/all`, getAuthHeader(token))
+        const res = await axiosInstance.get('/products/all') // ← el interceptor pone el token solo
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error')
@@ -22,10 +15,9 @@ export const fetchAllProducts = createAsyncThunk(
 
 export const createProduct = createAsyncThunk(
     'adminProducts/create',
-    async (productData, { getState, rejectWithValue }) => {
+    async (productData, { rejectWithValue }) => {
         try {
-        const token = getState().user.token
-        const res = await axios.post(`${API_URL}/products`, productData, getAuthHeader(token))
+        const res = await axiosInstance.post('/products', productData)
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error')
@@ -35,10 +27,9 @@ export const createProduct = createAsyncThunk(
 
 export const updateProduct = createAsyncThunk(
     'adminProducts/update',
-    async ({ id, data }, { getState, rejectWithValue }) => {
+    async ({ id, data }, { rejectWithValue }) => {
         try {
-        const token = getState().user.token
-        const res = await axios.put(`${API_URL}/products/${id}`, data, getAuthHeader(token))
+        const res = await axiosInstance.put(`/products/${id}`, data)
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error')
@@ -48,10 +39,9 @@ export const updateProduct = createAsyncThunk(
 
 export const toggleProductState = createAsyncThunk(
     'adminProducts/toggleState',
-    async ({ id, state }, { getState, rejectWithValue }) => {
+    async ({ id, state }, { rejectWithValue }) => {
         try {
-        const token = getState().user.token
-        const res = await axios.patch(`${API_URL}/products/${id}/state`, { state }, getAuthHeader(token))
+        const res = await axiosInstance.patch(`/products/${id}/state`, { state })
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error')

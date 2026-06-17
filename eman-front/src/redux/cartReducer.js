@@ -44,7 +44,7 @@ const cartSlice = createSlice({
             if (item.quantity === 1) {
             // si llega a 0 lo elimina directamente
             state.items = state.items.filter(
-                i => !(i.id === id && i.size === size)
+                i => !(i.id === id && i.size === size && i.color?.name === action.payload.color?.name)
             )
             } else {
             item.quantity -= 1

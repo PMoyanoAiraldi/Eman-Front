@@ -1,13 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
-import axios from "axios"
+import axiosInstance from "../api/axiosInstance"
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010'
 
 export const fetchSubCategories = createAsyncThunk(
     'subCategories/fetchAll',
     async (_, { rejectWithValue }) => {
         try {
-        const res = await axios.get(`${API_URL}/sub_categories`)
+        const res = await axiosInstance.get('/sub_categories')
         return res.data
         } catch (error) {
         return rejectWithValue(error.response?.data?.message || 'Error al cargar subcategorías')
