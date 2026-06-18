@@ -76,15 +76,13 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    background: #f5f3ef;
+    border: 1px solid #d9d4c7;
+    padding: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
-.stepTitle {
-    font-family: var(--font-serif);
-    font-size: 22px;
-    font-weight: 400;
-    color: #1a1a18;
-    margin-bottom: 0.5rem;
-}
 
 .field {
     display: flex;
@@ -277,17 +275,17 @@
 }
 
 .nextBtn, .confirmBtn {
-    flex: 1;
     height: 48px;
-    background: #2c2c2a;
-    color: #f1efe8;
+    background: #1a1a1a;
+    color: #fff;
     border: none;
-    border-radius: 10px;
-    font-size: 14px;
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
     font-weight: 500;
     cursor: pointer;
     letter-spacing: 0.04em;
-    transition: background 0.15s;
+    transition: background 0.2s;
+    padding: 0.9rem;
 }
 
 .nextBtn:hover, .confirmBtn:hover:not(:disabled) {
@@ -304,8 +302,7 @@
     padding: 0 20px;
     background: none;
     color: #888;
-    border: 0.5px solid #e0e0dc;
-    border-radius: 10px;
+    border: 0.5px solid #888;
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.15s;

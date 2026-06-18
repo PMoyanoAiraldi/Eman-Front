@@ -11,7 +11,7 @@
     justify-content: center;
     gap: 1.8rem;
     padding: 0 5% 60px 8%; /* ← padding bottom empuja el texto un poco arriba */
-    background-color: var(--color-bg);
+    /* background-color: var(--color-bg); */
 }
 
 .track {

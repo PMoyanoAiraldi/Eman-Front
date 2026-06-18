@@ -39,8 +39,13 @@ const Checkout = () => {
     const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value })
-        setErrors({ ...errors, [e.target.name]: '' })
+        const { name, value } = e.target
+    
+        // Teléfono: solo permite números
+        if (name === 'guestPhone' && !/^\d*$/.test(value)) return
+        
+        setForm({ ...form, [name]: value })
+        setErrors({ ...errors, [name]: '' })
     }
 
     const validateStep1 = () => {
@@ -250,7 +255,7 @@ const Checkout = () => {
                         />
                     <div>
                 <p className={styles.shippingName}>Coordinado</p>
-                <p className={styles.shippingDesc}>Galvez, Belgrano, López — Por WhatsApp</p>
+                <p className={styles.shippingDesc}>Galvez, Belgrano — Por WhatsApp</p>
             </div>
             <span className={styles.shippingPrice}>Gratis</span>
             </label>
@@ -322,7 +327,6 @@ const Checkout = () => {
                         <option value="">Seleccioná tu localidad</option>
                         <option value="Galvez">Galvez</option>
                         <option value="Belgrano">Belgrano</option>
-                        <option value="López">López</option>
                     </select>
                     {errors.locality && <span className={styles.error}>{errors.locality}</span>}
                 </div>
@@ -368,8 +372,7 @@ const Checkout = () => {
         {/* ── Paso 3: Pago ── */}
             {step === 3 && (
                 <div className={styles.form}>
-                    <h2 className={styles.stepTitle}>Método de pago</h2>
-
+                
                     {preferenceId && (
                         <Payment
                             initialization={{

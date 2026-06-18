@@ -5,13 +5,15 @@
 }
 
 .container {
-    margin-top: 2.5rem;
-    
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .title {
     font-family: var(--font-serif);
-    font-size: 1.75rem;
+    font-size: 2rem;
     font-weight: 400;
     color: #1a1a1a;
     margin-bottom: 0.5rem;
@@ -21,7 +23,7 @@
     font-family: var(--font-sans);
     font-size: 0.875rem;
     color: #888;
-    margin-bottom: 2rem;
+    margin-bottom: 0;
     line-height: 1.5;
 }
 
@@ -43,7 +45,6 @@
     color: var(--color-gold);
     text-transform: uppercase;
     margin-bottom: -0.25rem;
-    margin-top: 0.5rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid #f0f0f0;
 }
@@ -96,6 +97,24 @@
     border-color: var(--color-gold);
 }
 
+.inputReadonly {
+    background: #fafafa;
+    color: #aaa;
+    cursor: not-allowed;
+    border-color: #eee;
+}
+
+.inputReadonly:focus {
+    border-color: #eee;
+}
+
+.readonlyHint {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: #bbb;
+    margin-top: -0.1rem;
+}
+
 .eyeBtn {
     position: absolute;
     right: 0.75rem;
@@ -113,7 +132,7 @@
     color: #555;
 }
 
-/* Checklist de requisitos */
+/* Checklist contraseña */
 .checklist {
     list-style: none;
     margin: 0.4rem 0 0;
@@ -162,7 +181,6 @@
     background: #ccc;
 }
 
-/* Coincidencia de contraseñas */
 .matchOk {
     font-family: var(--font-sans);
     font-size: 0.72rem;
@@ -184,6 +202,13 @@
     margin: 0;
 }
 
+.success {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: #27ae60;
+    margin: 0;
+}
+
 .button {
     font-family: var(--font-sans);
     font-size: 0.85rem;
@@ -194,7 +219,6 @@
     padding: 0.9rem;
     cursor: pointer;
     transition: background 0.2s;
-    margin-top: 0.5rem;
     width: 100%;
 }
 
@@ -205,24 +229,6 @@
 .button:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-}
-
-.footer {
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    color: #888;
-    text-align: center;
-    margin-top: 1.75rem;
-}
-
-.footerLink {
-    color: var(--color-gold);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.footerLink:hover {
-    text-decoration: underline;
 }
 
 @media (max-width: 480px) {

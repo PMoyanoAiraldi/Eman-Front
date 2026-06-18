@@ -6,6 +6,7 @@
 
 .container {
     margin-top: 2.5rem;
+
 }
 
 .title {
@@ -28,6 +29,11 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    background: #f5f3ef;
+    border: 1px solid #d9d4c7;
+    padding: 2rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .field {

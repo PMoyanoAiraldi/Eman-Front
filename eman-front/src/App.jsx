@@ -11,8 +11,8 @@ import CategoryPage from './pages/CategoryPage/CategoryPage'
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage'
 import LoginPage from './pages/Auth/Login/Login';
 import RegisterPage from './pages/Auth/Register/Register';
-//import ProtectedRoute from '../src/components/ProtectedRoute/ProtectedRoute'
-// import PerfilPage from './pages/Perfil/PerfilPage'
+import ProtectedRoute from '../src/components/ProtectedRoute/ProtectedRoute'
+import ProfilePage from './pages/Profile/Profile'
 // import AdminDashboard from './pages/Admin/AdminDashboard'
 
 function App() {
@@ -37,13 +37,13 @@ function App() {
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} /> 
-        {/* <Route path="/perfil" element={
+        <Route path="/perfil" element={
               <ProtectedRoute>
-                  <PerfilPage />
+                  <ProfilePage />
               </ProtectedRoute>
           } />
 
-        <Route path="/admin/*" element={
+        {/*<Route path="/admin/*" element={
               <ProtectedRoute requiredRole="admin">
                   <AdminDashboard />
               </ProtectedRoute>
