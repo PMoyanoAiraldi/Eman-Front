@@ -49,10 +49,12 @@
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
     outline: none;
     transition: border-color 0.2s;
     background: transparent;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input::placeholder {
@@ -61,6 +63,29 @@
 
 .input:focus {
     border-color: var(--color-gold);
+}
+
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.eyeBtn:hover {
+    color: #555;
 }
 
 .error {
