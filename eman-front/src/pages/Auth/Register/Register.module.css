@@ -62,13 +62,19 @@
     color: #888;
 }
 
+.inputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .input {
     font-family: var(--font-sans);
     font-size: 0.95rem;
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
     outline: none;
     transition: border-color 0.2s;
     background: transparent;
@@ -82,6 +88,87 @@
 
 .input:focus {
     border-color: var(--color-gold);
+}
+
+.eyeBtn {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.eyeBtn:hover {
+    color: #555;
+}
+
+/* Checklist de requisitos */
+.checklist {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.75rem;
+}
+
+.checkItem {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: #bbb;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.2s;
+}
+
+.checkOk {
+    color: #27ae60;
+}
+
+.checkIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.checkOk .checkIcon {
+    background: #27ae60;
+    border-color: #27ae60;
+    color: #fff;
+}
+
+.checkDot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #ccc;
+}
+
+/* Coincidencia de contraseñas */
+.matchOk {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: #27ae60;
+    margin: 0.2rem 0 0;
+}
+
+.matchError {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: #c0392b;
+    margin: 0.2rem 0 0;
 }
 
 .error {
