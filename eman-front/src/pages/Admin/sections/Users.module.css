@@ -1,0 +1,160 @@
+.page { padding: 0; }
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.75rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.toolbar { margin-bottom: 1.25rem; }
+
+.search {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+    padding: 0.6rem 1rem;
+    outline: none;
+    width: 280px;
+    transition: border-color 0.2s;
+    background: #fff;
+}
+
+.search:focus { border-color: var(--color-gold); }
+
+.tableWrapper {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow-x: auto;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+}
+
+.table thead tr { border-bottom: 1px solid #f0f0f0; }
+
+.table th {
+    text-align: left;
+    padding: 0.9rem 1rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+    color: #999;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.table tbody tr {
+    border-bottom: 1px solid #f7f7f7;
+    transition: background 0.15s;
+}
+
+.table tbody tr:hover { background: #fafafa; }
+.table tbody tr:last-child { border-bottom: none; }
+
+.cell {
+    padding: 0.85rem 1rem;
+    color: #444;
+    vertical-align: middle;
+}
+
+.rowInactive { opacity: 0.5; }
+
+.userName {
+    font-size: 0.82rem;
+    color: #1a1a1a;
+    font-weight: 500;
+    padding: 0.85rem 1rem 0.1rem;
+}
+
+.userEmail {
+    font-size: 0.75rem;
+    color: #999;
+    padding: 0 1rem 0.85rem;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.badgeActive { background: #eaf7f0; color: #27ae60; }
+.badgeInactive { background: #fdf0f0; color: #c0392b; }
+
+.roleBadge {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.roleAdmin { background: #fdf8ec; color: var(--color-gold); }
+.roleCliente { background: #f0f0f0; color: #666; }
+
+.toggleBtn {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    border: 1px solid;
+    border-radius: 2px;
+    padding: 0.3rem 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+}
+
+.toggleDeactivate {
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+.toggleDeactivate:hover {
+    background: #c0392b;
+    color: #fff;
+}
+
+.toggleActivate {
+    color: #27ae60;
+    border-color: #27ae60;
+}
+
+.toggleActivate:hover {
+    background: #27ae60;
+    color: #fff;
+}
+
+.loading, .error, .empty {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #999;
+    padding: 2rem;
+    text-align: center;
+}
+
+.error { color: #c0392b; }

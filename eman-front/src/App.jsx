@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { authService } from './api/authService';
@@ -13,7 +13,10 @@ import LoginPage from './pages/Auth/Login/Login';
 import RegisterPage from './pages/Auth/Register/Register';
 import ProtectedRoute from '../src/components/ProtectedRoute/ProtectedRoute'
 import ProfilePage from './pages/Profile/Profile'
-// import AdminDashboard from './pages/Admin/AdminDashboard'
+import AdminLayout from './pages/Admin/AdminLayout'
+import Products from './pages/Admin/sections/Products';
+import Orders from './pages/Admin/sections/Orders';
+import Users from './pages/Admin/sections/Users'
 
 function App() {
   const dispatch = useDispatch();
@@ -29,8 +32,8 @@ function App() {
   return (
     <>
     
-      <Layout> 
       <Routes>
+      <Route element={<Layout/>}>
         <Route path="/" element={<Home />} />
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/producto/:id" element={<ProductDetail />} />
@@ -42,17 +45,20 @@ function App() {
                   <ProfilePage />
               </ProtectedRoute>
           } />
-
-        {/*<Route path="/admin/*" element={
-              <ProtectedRoute requiredRole="admin">
-                  <AdminDashboard />
-              </ProtectedRoute>
-          } /> */}
         <Route path="/:categoria" element={<CategoryPage />} />
-        
-      </Routes>
-      </Layout>
+      </Route>
+      <Route path="/admin" element={
+          <ProtectedRoute requiredRole="admin">
+              <AdminLayout />
+          </ProtectedRoute>
+        }>
+        <Route index element={<Navigate to="/admin/products" replace />} />
+        <Route path="products" element={<Products />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="users" element={<Users />} /> 
+      </Route> 
       
+      </Routes>
     </>
   )
 }

@@ -1,0 +1,186 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background: #f7f6f3;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 200;
+    transition: transform 0.3s ease;
+}
+
+.sidebarHeader {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid #2e2e2e;
+}
+
+.sidebarLogo {
+    font-family: var(--font-serif);
+    font-size: 1.4rem;
+    color: var(--color-gold);
+    letter-spacing: 0.15em;
+    display: block;
+}
+
+.sidebarSub {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    color: #666;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+    display: block;
+}
+
+/* Nav items */
+.nav {
+    flex: 1;
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.04em;
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s, background 0.2s;
+    border-left: 3px solid transparent;
+}
+
+.navItem:hover {
+    color: #fff;
+    background: #242424;
+}
+
+.navItemActive {
+    color: var(--color-gold);
+    background: #242424;
+    border-left-color: var(--color-gold);
+}
+
+/* Footer */
+.sidebarFooter {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid #2e2e2e;
+}
+
+.footerName {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.75rem;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: #666;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.logoutBtn:hover {
+    color: #c0392b;
+}
+
+/* ── Main content ── */
+.main {
+    margin-left: 240px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.content {
+    padding: 2.5rem;
+    flex: 1;
+}
+
+/* ── Mobile header ── */
+.mobileHeader {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    background: #1a1a1a;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.menuBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.mobileTitle {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    color: var(--color-gold);
+    letter-spacing: 0.1em;
+}
+
+/* ── Overlay mobile ── */
+.overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebarOpen {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .mobileHeader {
+        display: flex;
+    }
+
+    .overlay {
+        display: block;
+    }
+
+    .content {
+        padding: 1.5rem 1rem;
+    }
+}

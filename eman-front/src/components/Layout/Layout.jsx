@@ -2,12 +2,13 @@ import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
 import WhatsAppButton from '../WhatsAppButton/WhatsAppButton'
 import CartDrawer from '../CartDrawer/CartDrawer'
+import { Outlet } from 'react-router-dom'
 
-const Layout = ({ children }) => {
+const Layout = () => {
     return (
         <>
         <Navbar />
-        <main>{children}</main>
+        <Outlet/>
         <Footer />
         <WhatsAppButton />
         <CartDrawer/>
