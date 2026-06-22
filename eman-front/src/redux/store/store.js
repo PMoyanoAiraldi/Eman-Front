@@ -2,6 +2,8 @@ import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../slices/authReducer";           
 import productsReducer from "../slices/productsReducer";   
 import adminProductsReducer from "../admin/adminProductsReducer"
+import adminOrdersReducer from "../admin/adminOrdersReducer"
+import adminUsersReducer from "../admin/adminUsersReducer"
 import cartReducer from "../slices/cartReducer"
 import subCategoriesReducer from "../slices/subCategoriesReducer"
 
@@ -13,6 +15,8 @@ const store = configureStore({
         cart: cartReducer,
         adminProducts:  adminProductsReducer,
         subCategories: subCategoriesReducer,
+        adminOrders: adminOrdersReducer,
+        adminUsers: adminUsersReducer,
     }
 })
 
