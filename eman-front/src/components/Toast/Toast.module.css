@@ -1,0 +1,104 @@
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    min-width: 280px;
+    max-width: 380px;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    animation: slideIn 0.25s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.content {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.9rem 1rem;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.message {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    flex: 1;
+    line-height: 1.4;
+}
+
+.closeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+}
+
+.closeBtn:hover { opacity: 1; }
+
+/* Barra de progreso */
+.progress {
+    height: 3px;
+    animation: shrink linear forwards;
+    transform-origin: left;
+}
+
+@keyframes shrink {
+    from { transform: scaleX(1); }
+    to   { transform: scaleX(0); }
+}
+
+/* Tipos */
+.success {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.success .icon { color: #27ae60; }
+.success .progress { background: #27ae60; }
+
+.error {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.error .icon { color: #c0392b; }
+.error .progress { background: #c0392b; }
+
+.info {
+    background: #1a1a1a;
+    color: #fff;
+}
+
+.info .icon { color: var(--color-gold); }
+.info .progress { background: var(--color-gold); }
+
+@media (max-width: 480px) {
+    .toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        min-width: unset;
+        max-width: unset;
+    }
+}

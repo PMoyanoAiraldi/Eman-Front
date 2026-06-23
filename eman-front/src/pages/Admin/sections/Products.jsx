@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Plus, Pencil, Eye, EyeOff, Star } from 'lucide-react'
 import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock } from '../../../redux/admin/adminProductsReducer'
+import { useToast } from '../../../hooks/useToast'
+import Toast from '../../../components/Toast/Toast'
 import styles from './Products.module.css'
 
 const Products = ()=> {
@@ -15,7 +17,7 @@ const Products = ()=> {
     const [variantProduct, setVariantProduct] = useState(null)
     const [stockEdits, setStockEdits] = useState({}) // { variantId: nuevoStock }
     const [savingStock, setSavingStock] = useState(false)
-    const [stockSuccess, setStockSuccess] = useState(false)
+    const { toast, showToast, hideToast } = useToast()
     
 
     useEffect(() => {
@@ -40,7 +42,6 @@ const Products = ()=> {
     const handleStockChange = (variantId, value) => {
         if (!/^\d*$/.test(value)) return // bloquea para que no escriban letras en el input de stock !/^\d*$/.test(value)
         setStockEdits(prev => ({ ...prev, [variantId]: value })) // guarda los cambios en un objeto 
-        setStockSuccess(false)
     }
 
     const handleSaveStock = async () => {
@@ -52,10 +53,11 @@ const Products = ()=> {
                 )
             )
             setStockEdits({})
-            setStockSuccess(true)
+            setVariantProduct(null) // cierra el modal
             dispatch(fetchAllProducts()) // refresca la tabla
+            showToast('Stock actualizado correctamente') // toast de éxito
         } catch {
-            // el error ya lo maneja el reducer
+            showToast('Error al actualizar el stock', 'error') // toast de error
         } finally {
             setSavingStock(false)
         }
@@ -178,11 +180,11 @@ const Products = ()=> {
             )}
 
             {variantProduct && (
-        <div className={styles.modalOverlay} onClick={() => { setVariantProduct(null); setStockEdits({}); setStockSuccess(false) }}>
+        <div className={styles.modalOverlay} onClick={() => { setVariantProduct(null); setStockEdits({}) }}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>{variantProduct.name}</h2>
-                    <button className={styles.closeBtn} onClick={() => { setVariantProduct(null); setStockEdits({}); setStockSuccess(false) }}>✕</button>
+                    <button className={styles.closeBtn} onClick={() => { setVariantProduct(null); setStockEdits({}) }}>✕</button>
                 </div>
                 <p className={styles.modalSub}>Stock por variante</p>
                 <table className={styles.variantTable}>
@@ -207,9 +209,6 @@ const Products = ()=> {
                                 </td>
                                 <td>{v.size?.name || '—'}</td>
                                 <td>
-                                    {/* <span className={v.stock === 0 ? styles.stockEmpty : styles.stockOk}>
-                                        {v.stock}
-                                    </span> */}
                                     <input
                                         className={styles.stockInput}
                                         type="text"
@@ -231,7 +230,6 @@ const Products = ()=> {
                             }, 0)}
                         </span>
                     </div>
-                    {stockSuccess && <p className={styles.stockSaveSuccess}>Stock actualizado correctamente</p>}
                     <button
                         className={styles.saveStockBtn}
                         onClick={handleSaveStock}
@@ -243,6 +241,7 @@ const Products = ()=> {
             </div>
         </div>
         )}
+        <Toast toast={toast} onHide={hideToast} />
 
         </div>
     )
