@@ -301,3 +301,50 @@
     margin-top: 0.5rem;
     border-top: 1px solid #f0f0f0;
 }
+
+.stockInput {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+    padding: 0.3rem 0.5rem;
+    width: 70px;
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+}
+
+.stockInput:focus { border-color: var(--color-gold); }
+
+.modalFooter {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stockSaveSuccess {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: #27ae60;
+    margin: 0;
+}
+
+.saveStockBtn {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: #1a1a1a;
+    border: none;
+    padding: 0.7rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.saveStockBtn:hover:not(:disabled) { background: #333; }
+.saveStockBtn:disabled { opacity: 0.5; cursor: not-allowed; }

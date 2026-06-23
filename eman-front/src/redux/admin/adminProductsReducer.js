@@ -49,6 +49,18 @@ export const toggleProductState = createAsyncThunk(
     }
 )
 
+export const updateVariantStock = createAsyncThunk(
+    'adminProducts/updateVariantStock',
+    async ({ id, stock }, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.patch(`/product_variants/${id}/stock`, { stock })
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
 const initialState = {
     products: [],
     loading: false,
