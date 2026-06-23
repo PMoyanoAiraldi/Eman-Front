@@ -12,6 +12,7 @@ const Products = ()=> {
 
     const [search, setSearch] = useState('')
     const [editingProduct, setEditingProduct] = useState(null)
+    const [variantProduct, setVariantProduct] = useState(null)
 
     useEffect(() => {
         dispatch(fetchAllProducts())
@@ -28,7 +29,7 @@ const Products = ()=> {
     const handleToggleFeatured = (product) => {
         dispatch(updateProduct({
             id: product.id,
-            data: { is_featured: !product.is_featured }
+            data: { isFeatured: !product.isFeatured }
         }))
     }
 
@@ -65,6 +66,7 @@ const Products = ()=> {
                             <tr>
                                 <th>Producto</th>
                                 <th>Categoría</th>
+                                <th>Género</th>
                                 <th>Precio</th>
                                 <th>Stock</th>
                                 <th>Destacado</th>
@@ -87,20 +89,27 @@ const Products = ()=> {
                                             <span className={styles.productName}>{product.name}</span>
                                         </div>
                                     </td>
+
                                     <td className={styles.cell}>{product.subcategory?.name || '—'}</td>
+
+                                    <td className={styles.cell}>{product.gender || '—'}</td>
+
                                     <td className={styles.cell}>
                                         ${Number(product.price).toLocaleString('es-AR')}
                                     </td>
                                     <td className={styles.cell}>
-                                        {product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0}
+                                        <button className={styles.stockBtn}
+                                                onClick={() => setVariantProduct(product)}>
+                                            {product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0}
+                                        </button>
                                     </td>
                                     <td className={styles.cell}>
                                         <button
-                                            className={`${styles.iconBtn} ${product.is_featured ? styles.featuredActive : ''}`}
+                                            className={`${styles.iconBtn} ${product.isFeatured ? styles.featuredActive : ''}`}
                                             onClick={() => handleToggleFeatured(product)}
-                                            title={product.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
+                                            title={product.isFeatured ? 'Quitar destacado' : 'Marcar destacado'}
                                         >
-                                            <Star size={16} strokeWidth={1.5} fill={product.is_featured ? 'currentColor' : 'none'} />
+                                            <Star size={16} strokeWidth={1.5} fill={product.isFeatured ? 'currentColor' : 'none'} />
                                         </button>
                                     </td>
                                     <td className={styles.cell}>
@@ -139,6 +148,52 @@ const Products = ()=> {
                     )}
                 </div>
             )}
+            {variantProduct && (
+    <div className={styles.modalOverlay} onClick={() => setVariantProduct(null)}>
+        <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+                <h2 className={styles.modalTitle}>{variantProduct.name}</h2>
+                <button className={styles.closeBtn} onClick={() => setVariantProduct(null)}>✕</button>
+            </div>
+            <p className={styles.modalSub}>Stock por variante</p>
+            <table className={styles.variantTable}>
+                <thead>
+                    <tr>
+                        <th>Color</th>
+                        <th>Talle</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {variantProduct.variants?.map(v => (
+                        <tr key={v.id}>
+                            <td>
+                                <div className={styles.colorCell}>
+                                    <span
+                                        className={styles.colorDot}
+                                        style={{ background: v.color?.hex || '#ccc' }}
+                                    />
+                                    {v.color?.name || '—'}
+                                </div>
+                            </td>
+                            <td>{v.size?.name || '—'}</td>
+                            <td>
+                                <span className={v.stock === 0 ? styles.stockEmpty : styles.stockOk}>
+                                    {v.stock}
+                                </span>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <div className={styles.modalTotal}>
+                <span>Stock total</span>
+                <span>{variantProduct.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0}</span>
+            </div>
+        </div>
+    </div>
+    )}
+
         </div>
     )
 }
