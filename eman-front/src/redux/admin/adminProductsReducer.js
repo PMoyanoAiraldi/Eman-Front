@@ -61,6 +61,63 @@ export const updateVariantStock = createAsyncThunk(
     }
 )
 
+// Imágenes
+export const addProductImage = createAsyncThunk(
+    'adminProducts/addImage',
+    async ({ productId, file }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            const res = await axiosInstance.post(`/images/${productId}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
+export const replaceProductImage = createAsyncThunk(
+    'adminProducts/replaceImage',
+    async ({ imageId, file }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            const res = await axiosInstance.patch(`/images/${imageId}/replace`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            return { imageId, imgUrl: res.data.imgUrl }
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
+export const deleteProductImage = createAsyncThunk(
+    'adminProducts/deleteImage',
+    async (imageId, { rejectWithValue }) => {
+        try {
+            await axiosInstance.delete(`/images/${imageId}`)
+            return imageId
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
+export const setPrimaryImage = createAsyncThunk(
+    'adminProducts/setPrimaryImage',
+    async (imageId, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.patch(`/images/${imageId}/primary`)
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
 const initialState = {
     products: [],
     loading: false,

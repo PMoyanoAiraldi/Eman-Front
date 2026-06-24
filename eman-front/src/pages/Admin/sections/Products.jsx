@@ -5,15 +5,16 @@ import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
 import styles from './Products.module.css'
+import { useNavigate } from 'react-router-dom'
 
 const Products = ()=> {
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { products, loading, error } = useSelector(state => state.adminProducts)
 
     console.log("products", products)
 
     const [search, setSearch] = useState('')
-    const [editingProduct, setEditingProduct] = useState(null)
     const [variantProduct, setVariantProduct] = useState(null)
     const [stockEdits, setStockEdits] = useState({}) // { variantId: nuevoStock }
     const [savingStock, setSavingStock] = useState(false)
@@ -151,7 +152,7 @@ const Products = ()=> {
                                         <div className={styles.actions}>
                                             <button
                                                 className={styles.iconBtn}
-                                                onClick={() => setEditingProduct(product)}
+                                                onClick={() => navigate(`/admin/products/${product.id}/edit`)}
                                                 title="Editar"
                                             >
                                                 <Pencil size={15} strokeWidth={1.5} />

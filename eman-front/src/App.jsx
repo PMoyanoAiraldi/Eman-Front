@@ -17,6 +17,7 @@ import AdminLayout from './pages/Admin/AdminLayout'
 import Products from './pages/Admin/sections/Products';
 import Orders from './pages/Admin/sections/Orders';
 import Users from './pages/Admin/sections/Users'
+import EditProduct from './pages/Admin/sections/EditProducts/EditProducts';
 
 function App() {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ function App() {
         <Route path="products" element={<Products />} />
         <Route path="orders" element={<Orders />} />
         <Route path="users" element={<Users />} /> 
+        <Route path="products/:id/edit" element={<EditProduct/>} />
       </Route> 
       
       </Routes>
