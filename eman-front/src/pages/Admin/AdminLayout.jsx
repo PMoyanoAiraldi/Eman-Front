@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Package, ShoppingBag, Users, LogOut, Menu } from 'lucide-react'
 import { logoutUser } from '../../redux/slices/authReducer'
 import { authService } from '../../api/authService'
+import { ExternalLink } from 'lucide-react'
 import styles from './AdminLayout.module.css'
 
 const navItems = [
@@ -63,6 +64,15 @@ const AdminLayout = () => {
                 </nav>
 
                 <div className={styles.sidebarFooter}>
+                    <a   href="/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.siteLink}
+                    >
+                        <ExternalLink size={16} strokeWidth={1.5} />
+                        Ver sitio
+                    </a>
+
                     <p className={styles.footerName}>{user?.name?.split(' ')[0]}</p>
                     <button className={styles.logoutBtn} onClick={handleLogout}>
                         <LogOut size={16} strokeWidth={1.5} />

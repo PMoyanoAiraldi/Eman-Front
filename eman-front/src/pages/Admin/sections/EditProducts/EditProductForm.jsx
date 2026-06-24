@@ -12,6 +12,7 @@ import {
 import { useToast } from '../../../../hooks/useToast'
 import Toast from '../../../../components/Toast/Toast'
 import axiosInstance from '../../../../api/axiosInstance'
+import ConfirmModal from '../../../../components/ConfirmModal/ConfirmModal'
 import styles from './EditProducts.module.css'
 
 // Este componente recibe el producto garantizado como prop
@@ -39,6 +40,7 @@ const EditProductForm = ({ product }) => {
     const [productTypes, setProductTypes] = useState([])
     const [savingData, setSavingData] = useState(false)
     const [uploadingImage, setUploadingImage] = useState(false)
+    const [confirmDelete, setConfirmDelete] = useState(null) // guarda el imageId a eliminar
 
     // Cargar selects — estos sí van en useEffect porque son datos externos
     useEffect(() => {
@@ -102,14 +104,16 @@ const EditProductForm = ({ product }) => {
         }
     }
 
-    const handleDeleteImage = async (imageId) => {
-        if (!window.confirm('¿Eliminar esta imagen?')) return
+    const handleDeleteImage = async () => {
+        if (!confirmDelete) return
         try {
-            await dispatch(deleteProductImage(imageId)).unwrap()
-            setImages(prev => prev.filter(img => img.id !== imageId))
+            await dispatch(deleteProductImage(confirmDelete)).unwrap()
+            setImages(prev => prev.filter(img => img.id !== confirmDelete))
             showToast('Imagen eliminada')
         } catch (err) {
             showToast(err || 'Error al eliminar la imagen', 'error')
+        } finally {
+        setConfirmDelete(null)
         }
     }
 
@@ -237,7 +241,7 @@ const EditProductForm = ({ product }) => {
                                         <Upload size={14} strokeWidth={1.5} />
                                         <input type="file" accept="image/*" className={styles.fileInputHidden} onChange={e => handleReplaceImage(img.id, e)} />
                                     </label>
-                                    <button className={`${styles.imageBtn} ${styles.imageBtnDelete}`} onClick={() => handleDeleteImage(img.id)} title="Eliminar imagen">
+                                    <button className={`${styles.imageBtn} ${styles.imageBtnDelete}`} onClick={() => setConfirmDelete(img.id)} title="Eliminar imagen">
                                         <Trash2 size={14} strokeWidth={1.5} />
                                     </button>
                                 </div>
@@ -258,6 +262,16 @@ const EditProductForm = ({ product }) => {
                     </div>
                 </section>
             </div>
+            <ConfirmModal
+                isOpen={!!confirmDelete}
+                title="Eliminar imagen"
+                message="¿Estás segura que querés eliminar esta imagen? Esta acción no se puede deshacer."
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
+                danger
+                onConfirm={handleDeleteImage}
+                onCancel={() => setConfirmDelete(null)}
+            />              
 
             <Toast toast={toast} onHide={hideToast} />
         </div>
