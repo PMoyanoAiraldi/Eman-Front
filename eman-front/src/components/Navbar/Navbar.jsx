@@ -89,12 +89,22 @@ const Navbar = () => {
                     >
                         Mi perfil
                     </button>
+
+                    {user?.rol === 'admin' ? (
                     <button
-                        className={styles.dropdownItem}
-                        onClick={() => { navigate('/mis-compras'); setDropdownOpen(false) }}
-                    >
-                        Mis compras
-                    </button>
+                            className={styles.dropdownItem}
+                            onClick={() => { navigate('/admin'); setDropdownOpen(false) }}
+                        >
+                            Panel admin
+                        </button>
+                    ) : (
+                        <button
+                            className={styles.dropdownItem}
+                            onClick={() => { navigate('/mis-compras'); setDropdownOpen(false) }}
+                        >
+                            Mis compras
+                        </button>
+                    )}
                     <div className={styles.dropdownDivider} />
                     <button
                         className={`${styles.dropdownItem} ${styles.dropdownLogout}`}

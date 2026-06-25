@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { authService } from './api/authService';
-import { setToken } from './redux/slices/authReducer';
+import { setToken, setCredentials } from './redux/slices/authReducer';
 import Home from './pages/Home/Home'
 import Layout from './components/Layout/Layout'
 import Nosotros from './pages/Nosotros/Nosotros'
@@ -23,12 +23,24 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const savedUser = localStorage.getItem('user')
         // Intenta renovar el token al cargar la app
         // Si no hay cookie válida, falla silenciosamente
         authService.refreshToken()
-            .then(({ accessToken }) => dispatch(setToken(accessToken)))
-            .catch(() => {}); // no hay sesión activa, es normal
-    }, []);
+            .then(({ accessToken }) => {
+              if (savedUser) { // Si hay user guardado, restauramos la sesión completa
+                dispatch(setCredentials({
+                    user: JSON.parse(savedUser),
+                    accessToken,
+                }))
+            }else {
+                dispatch(setToken(accessToken))
+            }
+        })
+          .catch(() => {
+            localStorage.removeItem('user')
+        })
+    }, [])
 
   return (
     <>

@@ -17,6 +17,8 @@ export const authSlice = createSlice({
             state.accessToken = action.payload.accessToken;
             state.isAuthenticated = true;
             state.error = null;
+            // Guardamos datos básicos para persistir entre pestañas
+            localStorage.setItem('user', JSON.stringify(action.payload.user))
         },
         setToken: (state, action) => {
             // Solo actualiza el token (lo usa el interceptor en el refresh)
@@ -27,6 +29,7 @@ export const authSlice = createSlice({
             state.accessToken = null;
             state.isAuthenticated = false;
             state.error = null;
+            localStorage.removeItem('user')
         },
         setLoading: (state, action) => {
             state.loading = action.payload;
