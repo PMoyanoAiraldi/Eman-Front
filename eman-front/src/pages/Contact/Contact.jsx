@@ -29,6 +29,10 @@ const Contact = () => {
             return;
         }
 
+        // si el honeypot tiene valor, es un bot
+        const honeypot = form.current.querySelector('[name="honeypot"]');
+        if (honeypot?.value) return;
+
         setLoading(true);
 
         try {
@@ -88,6 +92,15 @@ const Contact = () => {
                 placeholder="Localidad"
                 required
             />
+            {/* campo invisible para bots */}
+            <input
+                type="text"
+                name="honeypot"
+                style={{ display: "none" }}
+                tabIndex={-1}
+                autoComplete="off"
+            />
+
             <textarea
                 className={styles.input}
                 name="message"
