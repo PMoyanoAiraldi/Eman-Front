@@ -5,7 +5,7 @@ import { authService } from './api/authService';
 import { setToken, setCredentials } from './redux/slices/authReducer';
 import Home from './pages/Home/Home'
 import Layout from './components/Layout/Layout'
-import Nosotros from './pages/Nosotros/Nosotros'
+import Contact from './pages/Contact/Contact';
 import ProductDetail from './components/ProductDetail/ProductDetail'
 import CategoryPage from './pages/CategoryPage/CategoryPage'
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage'
@@ -48,7 +48,7 @@ function App() {
       <Routes>
       <Route element={<Layout/>}>
         <Route path="/" element={<Home />} />
-        <Route path="/nosotros" element={<Nosotros />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/producto/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/login" element={<LoginPage />} />
