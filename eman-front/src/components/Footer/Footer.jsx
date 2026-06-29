@@ -14,8 +14,8 @@ const Footer = () => {
             <nav className={styles.links}>
                 <Link to="/nosotros">Nosotros</Link>
                 <Link to="/contact">Contacto</Link>
-                <Link to="/envios">Envíos</Link>
-                <Link to="/devoluciones">Devoluciones</Link>
+                <Link to="/shipping">Envíos</Link>
+                <Link to="/returns">Devoluciones</Link>
             </nav>
 
             <a   href="https://instagram.com/eman_acces"
