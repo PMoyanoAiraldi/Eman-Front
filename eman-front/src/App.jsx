@@ -19,6 +19,7 @@ import Orders from './pages/Admin/sections/Orders';
 import Users from './pages/Admin/sections/Users'
 import EditProduct from './pages/Admin/sections/EditProducts/EditProducts';
 import Shipping from './pages/Shipping/Shipping';
+import Returns from './pages/Returns/Returns';
 
 function App() {
   const dispatch = useDispatch();
@@ -51,6 +52,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/shipping" element={<Shipping/>}/>
+        <Route path="/returns" element={<Returns/>}/>
         <Route path="/producto/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/login" element={<LoginPage />} />
