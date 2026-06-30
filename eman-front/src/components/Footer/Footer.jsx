@@ -31,7 +31,7 @@ const Footer = () => {
             <span>© {currentYear} Eman. Todos los derechos reservados.</span>
             <div className={styles.legal}>
                 <Link to="/privacy">Privacidad</Link>
-                <Link to="/term">Términos</Link>
+                <Link to="/terms">Términos</Link>
             </div>
         </div>
         </footer>
