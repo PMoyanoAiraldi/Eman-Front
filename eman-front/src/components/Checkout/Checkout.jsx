@@ -95,7 +95,7 @@ const Checkout = () => {
             guestEmail:   form.guestEmail,
             guestPhone:   form.guestPhone,
             address:      form.address || 'Retiro en local',
-            city:         form.city || form.locality || 'Galvez',
+            city:         form.city || form.locality || 'Gálvez',
             zipCode:      form.zipCode || '2538',
             shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
             shippingCost,
@@ -255,7 +255,7 @@ const Checkout = () => {
                         />
                     <div>
                 <p className={styles.shippingName}>Coordinado</p>
-                <p className={styles.shippingDesc}>Galvez, Belgrano — Por WhatsApp</p>
+                <p className={styles.shippingDesc}>Gálvez, Belgrano — Por WhatsApp</p>
             </div>
             <span className={styles.shippingPrice}>Gratis</span>
             </label>
@@ -325,7 +325,7 @@ const Checkout = () => {
                         onChange={handleChange}
                     >
                         <option value="">Seleccioná tu localidad</option>
-                        <option value="Galvez">Galvez</option>
+                        <option value="Galvez">Gálvez</option>
                         <option value="Belgrano">Belgrano</option>
                     </select>
                     {errors.locality && <span className={styles.error}>{errors.locality}</span>}
@@ -380,17 +380,52 @@ const Checkout = () => {
                                 preferenceId,
                             }}
                             customization={{
+                                visual: {
+                                style: {
+                                    theme: 'default', // o 'flat' / 'bootstrap' / 'dark'
+                                    customVariables: {
+                                        baseColor: '#C9A84C',              // color principal (botón, focus, etc.)
+                                        baseColorFirstVariant: '#B8973E',  // hover/variante más oscura
+                                        baseColorSecondVariant: '#D9C27A', // variante más clara
+                                        textPrimaryColor: '#2B2B2B',
+                                        textSecondaryColor: '#6B6B6B',
+                                        buttonTextColor: '#FFFFFF',
+                                        inputBackgroundColor: '#FFFFFF',
+                                        formBackgroundColor: '#FFFFFF',
+                                        outlinePrimaryColor: '#C9A84C',
+                                        borderRadiusSmall: '6px',
+                                        borderRadiusMedium: '8px',
+                                        borderRadiusLarge: '12px',
+                                        formPadding: '24px',
+                                    },
+                                },
+                            },
                                 paymentMethods: {
-                                    ticket:          'all',
+                                    //ticket:          'all',
                                     bankTransfer:    'all',
                                     creditCard:      'all',
                                     debitCard:       'all',
                                     mercadoPago:     'all',
                                 },
                             }}
-                            onSubmit={async () => {
-                                dispatch(clearCart())
-                                navigate(`/orden-confirmada?orderId=${orderId}`)
+                            onSubmit={async ({ formData }) => {
+                                try {
+                                    const { data } = await axios.post(
+                                        `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/payments/process-payment`,
+                                        { formData, orderId }
+                                    )
+
+                                    if (data.status === 'approved') {
+                                        dispatch(clearCart())
+                                        navigate(`/order-confirm?orderId=${orderId}`)
+                                    } else if (data.status === 'in_process') {
+                                        navigate(`/order-pending?orderId=${orderId}`)
+                                    } else {
+                                        setErrors({ submit: 'El pago fue rechazado. Probá con otro medio de pago.' })
+                                    }
+                                } catch (err) {
+                                    setErrors({ submit: err.response?.data?.message || 'Error al procesar el pago. Intentá de nuevo.' })
+                                }
                             }}
                             onError={(error) => {
                                 console.error('MP Error:', error)

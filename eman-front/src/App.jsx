@@ -22,6 +22,8 @@ import Shipping from './pages/Shipping/Shipping';
 import Returns from './pages/Returns/Returns';
 import Privacy from './pages/Privacy/Privacy';
 import Terms from './pages/Terms/Terms';
+import OrderPending from './pages/OrderPending/OrderPending';
+import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
 
 function App() {
   const dispatch = useDispatch();
@@ -59,6 +61,8 @@ function App() {
         <Route path="/terms" element={<Terms/>}/>
         <Route path="/producto/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/order-pending" element={<OrderPending />} />
+        <Route path="/order-confirm" element={<OrderConfirm />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} /> 
         <Route path="/perfil" element={
