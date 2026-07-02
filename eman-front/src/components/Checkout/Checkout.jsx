@@ -4,11 +4,10 @@ import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
+import Stepper from '../Stepper/Stepper'
 import styles from './Checkout.module.css'
 import axios from 'axios'
 import { Payment } from '@mercadopago/sdk-react'
-
-const STEPS = ['Datos personales', 'Envío', 'Pago', 'Resumen']
 
 
 const Checkout = () => {
@@ -157,23 +156,8 @@ const Checkout = () => {
                 { label: 'Checkout' },
             ]} />
 
-            {/* Indicador de pasos */}
-            <div className={styles.stepper}>
-                {STEPS.map((label, i) => (
-                    <div key={i} className={styles.stepItem}>
-                        <div className={`${styles.stepCircle} ${step > i + 1 ? styles.stepDone : ''} ${step === i + 1 ? styles.stepActive : ''}`}>
-                            {step > i + 1 ? '✓' : i + 1}
-                        </div>
-                        <span className={`${styles.stepLabel} ${step === i + 1 ? styles.stepLabelActive : ''}`}>
-                            {label}
-                        </span>
-                        {i < STEPS.length - 1 && (
-                            <div className={`${styles.stepLine} ${step > i + 1 ? styles.stepLineDone : ''}`} />
-                        )}
-                    </div>
-                ))}
-            </div>
-
+            <Stepper currentStep={step} />
+            
             <div className={styles.content}>
                 {/* ── Paso 1: Datos personales ── */}
                 {step === 1 && (
@@ -443,7 +427,7 @@ const Checkout = () => {
         
 
         {/* ── Paso 4: Resumen ── */}
-        {step === 4 && (
+        {/* {step === 4 && (
             <div className={styles.form}>
             <h2 className={styles.stepTitle}>Resumen del pedido</h2>
 
@@ -493,7 +477,7 @@ const Checkout = () => {
                 </button>
                 </div>
             </div>
-        )}
+        )} */}
             </div>
         </div>
     )
