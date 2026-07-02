@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
+import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
 import styles from './Checkout.module.css'
@@ -19,6 +20,12 @@ const Checkout = () => {
     const [orderId, setOrderId] = useState(null)
     const [preferenceId, setPreferenceId] = useState(null)
 
+    const [errors, setErrors] = useState({})
+    const [loading, setLoading] = useState(false)
+    const [toast, setToast] = useState(null)
+
+    const hideToast = () => setToast(null)
+
     const [step, setStep] = useState(1)
 
     const [form, setForm] = useState({
@@ -33,9 +40,6 @@ const Checkout = () => {
         shippingType: 'correo_argentino',
         locality: ''
     })
-
-    const [errors, setErrors] = useState({})
-    const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target
@@ -95,7 +99,7 @@ const Checkout = () => {
             guestPhone:   form.guestPhone,
             address:      form.address || 'Retiro en local',
             city:         form.city || form.locality || 'Gálvez',
-            zipCode:      form.zipCode || '2538',
+            zipCode:      form.zipCode,
             shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
             shippingCost,
             items: items.map(item => ({
@@ -122,7 +126,10 @@ const Checkout = () => {
         setStep(s => s + 1)
 
         } catch (err) {
-            setErrors({ submit: err.response?.data?.message || err.message || 'Error al procesar' })
+            setToast({
+            type: 'error',
+            message: err.response?.data?.message || err.message || 'Error al procesar',
+        })
         } finally {
             setLoading(false)
         }
@@ -380,7 +387,7 @@ const Checkout = () => {
                                         borderRadiusSmall: '6px',
                                         borderRadiusMedium: '8px',
                                         borderRadiusLarge: '12px',
-                                        formPadding: '24px',
+                                        formPadding: '12px',
                                     },
                                 },
                             },
@@ -405,15 +412,24 @@ const Checkout = () => {
                                     } else if (data.status === 'in_process') {
                                         navigate(`/order-pending?orderId=${orderId}`)
                                     } else {
-                                        setErrors({ submit: 'El pago fue rechazado. Probá con otro medio de pago.' })
+                                        setToast({
+                                            type: 'error',
+                                            message: 'El pago fue rechazado. Probá con otro medio de pago.',
+                                        })
                                     }
                                 } catch (err) {
-                                    setErrors({ submit: err.response?.data?.message || 'Error al procesar el pago. Intentá de nuevo.' })
+                                    setToast({
+                                        type: 'error',
+                                        message: err.response?.data?.message || 'Error al procesar el pago. Intentá de nuevo.',
+                                    })
                                 }
                             }}
                             onError={(error) => {
                                 console.error('MP Error:', error)
-                                setErrors({ submit: 'Error en el pago. Intentá de nuevo.' })
+                                setToast({
+                                    type: 'error',
+                                    message: 'Error en el pago. Intentá de nuevo.',
+                                })
                             }}
                         />
                     )}
@@ -424,61 +440,8 @@ const Checkout = () => {
                 </div>
             )}
 
-        
-
-        {/* ── Paso 4: Resumen ── */}
-        {/* {step === 4 && (
-            <div className={styles.form}>
-            <h2 className={styles.stepTitle}>Resumen del pedido</h2>
-
-            <div className={styles.summary}>
-                {items.map((item, i) => (
-                    <div key={i} className={styles.summaryItem}>
-                        <img src={item.image} alt={item.name} className={styles.summaryImg} />
-                            <div className={styles.summaryInfo}>
-                            <p className={styles.summaryName}>{item.name}</p>
-                            <p className={styles.summaryMeta}>{item.color?.name} · Talle {item.size} · x{item.quantity}</p>
-                        </div>
-                    <span className={styles.summaryPrice}>
-                    ${Number(item.price * item.quantity).toLocaleString('es-AR')}
-                    </span>
-                </div>
-            ))}
-        </div>
-
-        <div className={styles.totals}>
-            <div className={styles.totalRow}>
-            <span>Subtotal</span>
-        <span>${Number(total).toLocaleString('es-AR')}</span>
-        </div>
-        <div className={styles.totalRow}>
-            <span>Envío</span>
-        <span>{shippingCost === 0 ? 'Gratis' : `$${Number(shippingCost).toLocaleString('es-AR')}`}</span>
-        </div>
-        <hr className={styles.divider} />
-            <div className={`${styles.totalRow} ${styles.totalFinal}`}>
-                <span>Total</span>
-        <span>${Number(total + shippingCost).toLocaleString('es-AR')}</span>
             </div>
-        </div>
-
-        {errors.submit && (
-            <p className={styles.errorSubmit}>{errors.submit}</p>
-        )}
-
-        <div className={styles.btnRow}>
-            <button className={styles.backBtn} onClick={handleBack}>Volver</button>
-                <button
-                    className={styles.confirmBtn}
-                    onClick={handleNext}
-                    disabled={loading}
-                >
-                {loading ? 'Procesando...' : 'Confirmar pedido'}
-                </button>
-                </div>
-            </div>
-        )} */}
-            </div>
+            <Toast toast={toast} onHide={hideToast} />
         </div>
     )
 

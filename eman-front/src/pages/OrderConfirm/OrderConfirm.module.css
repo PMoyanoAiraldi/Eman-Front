@@ -1,18 +1,10 @@
 .page {
-    max-width: 1200px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 0 24px 64px;
+    padding: 2rem 1rem 2rem;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 80px 24px;
-    max-width: 560px;
-    margin: 0 auto;
-}
+
 
 .title {
     font-family: var(--font-serif);
@@ -32,8 +24,111 @@
 .orderId {
     font-family: var(--font-sans);
     font-size: 0.9rem;
-    color: #6B6B6B;
+    color: #9B9B9B;
     margin-bottom: 32px;
+}
+
+/* Detalle de productos */
+.summary {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.summaryItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #EDEDED;
+}
+
+.summaryImg {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background-color: #F5F5F5;
+}
+
+.summaryInfo {
+    flex: 1;
+}
+
+.summaryName {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #2B2B2B;
+    margin-bottom: 4px;
+}
+
+.summaryMeta {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #9B9B9B;
+}
+
+.summaryPrice {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #2B2B2B;
+    white-space: nowrap;
+}
+
+
+/* Bloques de info (envío, pago) */
+.infoBlock {
+    width: 100%;
+    text-align: left;
+    padding: 16px 0;
+    border-bottom: 1px solid #EDEDED;
+}
+
+.infoLabel {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9B9B9B;
+    margin-bottom: 6px;
+}
+
+.infoValue {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: #2B2B2B;
+    line-height: 1.5;
+}
+
+/* Totales */
+.totals {
+    width: 100%;
+    margin: 16px 0 32px;
+}
+
+.totalRow {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: #6B6B6B;
+    padding: 6px 0;
+}
+
+.totalFinal {
+    font-size: 1.1rem;
+    color: #2B2B2B;
+    font-weight: 600;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #EDEDED;
+    margin: 8px 0;
 }
 
 .btn {
@@ -50,4 +145,12 @@
 
 .btn:hover {
     background-color: #B8973E;
+}
+
+.infoNote {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: #B8973E;
+    margin-top: 4px;
+    font-style: italic;
 }
