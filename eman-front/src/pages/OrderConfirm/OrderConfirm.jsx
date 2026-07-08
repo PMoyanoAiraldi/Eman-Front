@@ -26,6 +26,20 @@ const OrderConfirm = () => {
     const [loading, setLoading] = useState(!!orderId)// si no hay orderId, ni arrancamos loading
     const [error, setError] = useState(orderId ? null : 'No se encontró el número de orden')
 
+    const buildWhatsAppLink = (order, orderId) => {
+    const phone = import.meta.env.VITE_WHATSAPP_NUMBER 
+    const itemsList = order.items.map(i => `${i.productName} (${i.color}, talle ${i.size}) x${i.quantity}`).join('\n')
+
+    const message = `Hola! Quiero coordinar mi pedido #${orderId.slice(0, 8)}.
+        ${itemsList}
+
+        Total: $${Number(order.total).toLocaleString('es-AR')}
+        Tipo de entrega: ${order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro en local'}`
+
+            return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+        }
+
+
     useEffect(() => {
         if (!orderId) return // ya se resolvió arriba, el efecto no tiene nada que hacer
 
@@ -99,6 +113,16 @@ const OrderConfirm = () => {
                         <p className={styles.infoValue}>Entre Ríos 1529, López, Santa Fe</p> 
                     )}
                 </div>
+
+                {(order.shippingType === 'coordinado' || order.shippingType === 'retiro_en_local') && (
+                        <a href={buildWhatsAppLink(order, orderId)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.whatsappBtn}
+                    >
+                        Coordinar por WhatsApp
+                    </a>
+                )}
 
                 {/* Medio de pago */}
                 {order.payment && (

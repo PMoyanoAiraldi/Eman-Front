@@ -19,7 +19,7 @@ const ProductCard = ({ product }) => {
     return (
         <article
         className={styles.card}
-        onClick={() => navigate(`/producto/${product.id}`)}
+        onClick={() => navigate(`/product/${product.id}`)}
         >
         <div className={styles.imageWrapper}>
             {image

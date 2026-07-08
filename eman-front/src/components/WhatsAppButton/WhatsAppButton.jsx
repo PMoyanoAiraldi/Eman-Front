@@ -1,7 +1,7 @@
 import styles from './WhatsAppButton.module.css'
 
 const WhatsAppButton = () => {
-    const numero = "5493404535333" // número personal de Andre 
+    const numero = import.meta.env.VITE_WHATSAPP_NUMBER // número personal de Andre 
     const mensaje = "Hola! Me gustaría consultar sobre un producto."
 
     return (

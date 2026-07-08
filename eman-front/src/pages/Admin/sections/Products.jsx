@@ -20,6 +20,7 @@ const Products = ()=> {
     const [savingStock, setSavingStock] = useState(false)
     const { toast, showToast, hideToast } = useToast()
     
+    const FEATURED_LIMIT = 4
 
     useEffect(() => {
         dispatch(fetchAllProducts())
@@ -34,9 +35,26 @@ const Products = ()=> {
     }
 
     const handleToggleFeatured = (product) => {
+        // Si ya está destacado, siempre se puede destildar sin restricción
+        if (product.isFeatured) {
         dispatch(updateProduct({
             id: product.id,
-            data: { isFeatured: !product.isFeatured }
+            data: { isFeatured: false }
+        }))
+        return
+    }
+
+        // Si se quiere marcar como destacado, chequeamos el límite
+        const featuredCount = products.filter(p => p.isFeatured && p.state).length
+
+        if (featuredCount >= FEATURED_LIMIT) {
+            showToast(`Ya tenés ${FEATURED_LIMIT} productos destacados. Destildá uno para agregar otro.`, 'error')
+            return
+        }
+
+        dispatch(updateProduct({
+            id: product.id,
+            data: { isFeatured: true }
         }))
     }
 
