@@ -15,6 +15,9 @@ const Products = ()=> {
     console.log("products", products)
 
     const [search, setSearch] = useState('')
+    const [categoryFilter, setCategoryFilter] = useState('')
+    const [genderFilter, setGenderFilter] = useState('')
+    const [stateFilter, setStateFilter] = useState('')
     const [variantProduct, setVariantProduct] = useState(null)
     const [stockEdits, setStockEdits] = useState({}) // { variantId: nuevoStock }
     const [savingStock, setSavingStock] = useState(false)
@@ -26,9 +29,25 @@ const Products = ()=> {
         dispatch(fetchAllProducts())
     }, [dispatch])
 
-    const filtered = products.filter(p =>
-        p.name?.toLowerCase().includes(search.toLowerCase())
-    )
+    const categoryOptions = [...new Set(
+        products.map(p => p.subcategory?.name).filter(Boolean)
+        )]
+
+    const genderOptions = [...new Set(
+        products.map(p => p.gender).filter(Boolean)
+    )]
+
+    const filtered = products.filter(p =>{
+        const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase())
+        const matchesCategory = !categoryFilter || p.subcategory?.name === categoryFilter
+        const matchesGender = !genderFilter || p.gender === genderFilter
+        const matchesState =
+            !stateFilter ||
+            (stateFilter === 'active' && p.state) ||
+            (stateFilter === 'inactive' && !p.state)
+
+        return matchesSearch && matchesCategory && matchesGender && matchesState
+})
 
     const handleToggleState = (id, currentState) => {
         dispatch(toggleProductState({ id, state: !currentState }))
@@ -103,6 +122,38 @@ const Products = ()=> {
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
+                <select
+                    className={styles.filterSelect}
+                    value={categoryFilter}
+                    onChange={e => setCategoryFilter(e.target.value)}
+                >
+                    <option value="">Todas las categorías</option>
+                    {categoryOptions.map(cat => (
+                        <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                </select>
+
+                <select
+                    className={styles.filterSelect}
+                    value={genderFilter}
+                    onChange={e => setGenderFilter(e.target.value)}
+                >
+                    <option value="">Todos los géneros</option>
+                    {genderOptions.map(g => (
+                        <option key={g} value={g}>{g}</option>
+                    ))}
+                </select>
+
+                <select
+                    className={styles.filterSelect}
+                    value={stateFilter}
+                    onChange={e => setStateFilter(e.target.value)}
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="active">Activos</option>
+                    <option value="inactive">Inactivos</option>
+                </select>
+
             </div>
 
             {loading && <p className={styles.loading}>Cargando productos...</p>}
