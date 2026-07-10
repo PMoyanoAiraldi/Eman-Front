@@ -82,6 +82,12 @@
     gap: 1rem;
 }
 
+.featuredRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .label {
     font-family: var(--font-sans);
     font-size: 0.68rem;

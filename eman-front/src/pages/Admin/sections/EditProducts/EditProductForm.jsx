@@ -39,12 +39,14 @@ const EditProductForm = ({ product }) => {
         price: product.price || '',
         gender: product.gender || '',
         isFeatured: product.isFeatured || false,
+        brandId: product.brand?.id || '',
         categoryId: product.category?.id || '',
         subcategoryId: product.subcategory?.id || '',
         productTypeId: product.productType?.id || '',
     })
 
     const [images, setImages] = useState(product.images || [])
+    const [brands, setBrands] = useState([])
     const [categories, setCategories] = useState([])
     const [subCategories, setSubCategories] = useState([])
     const [productTypes, setProductTypes] = useState([])
@@ -57,6 +59,7 @@ const EditProductForm = ({ product }) => {
         axiosInstance.get('/categories').then(r => setCategories(r.data)).catch(() => {})
         axiosInstance.get('/sub_categories').then(r => setSubCategories(r.data)).catch(() => {})
         axiosInstance.get('/product_types').then(r => setProductTypes(r.data)).catch(() => {})
+        axiosInstance.get('/brands').then(r => setBrands(r.data)).catch(() => {})
     }, [])
 
     const FEATURED_LIMIT = 4
@@ -221,14 +224,24 @@ const EditProductForm = ({ product }) => {
 
                     <div className={styles.row}>
                         <div className={styles.field}>
+                            <label className={styles.label}>MARCA</label>
+                                <select className={styles.input} name="brandId" value={form.brandId} onChange={handleChange}>
+                                    <option value="">Sin marca</option>
+                                    {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                </select>
+                            </div>
+                        <div className={styles.field}>
                             <label className={styles.label}>TIPO DE PRODUCTO</label>
                             <select className={styles.input} name="productTypeId" value={form.productTypeId} onChange={handleChange}>
                                 <option value="">Sin tipo</option>
                                 {productTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                             </select>
+                            </div>
                         </div>
+
                         <div className={styles.field}>
                             <label className={styles.label}>DESTACADO</label>
+                            <div className={styles.featuredRow}>
                             <label className={styles.checkboxLabel}>
                                 <input
                                     type="checkbox"
