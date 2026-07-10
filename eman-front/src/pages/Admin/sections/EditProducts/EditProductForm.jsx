@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Trash2, Star, Upload } from 'lucide-react'
 import {
@@ -13,6 +13,7 @@ import { useToast } from '../../../../hooks/useToast'
 import Toast from '../../../../components/Toast/Toast'
 import axiosInstance from '../../../../api/axiosInstance'
 import ConfirmModal from '../../../../components/ConfirmModal/ConfirmModal'
+import { fetchAllProducts } from '../../../../redux/admin/adminProductsReducer'
 import styles from './EditProducts.module.css'
 
 // Este componente recibe el producto garantizado como prop
@@ -21,6 +22,15 @@ const EditProductForm = ({ product }) => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { toast, showToast, hideToast } = useToast()
+    const { products: allProducts } = useSelector(state => state.adminProducts)
+    
+
+    useEffect(() => {
+        if (allProducts.length === 0) {
+            dispatch(fetchAllProducts())
+        }
+    }, [dispatch, allProducts.length])
+
 
     // El form se inicializa directamente con el producto — sin useEffect
     const [form, setForm] = useState({
@@ -48,6 +58,23 @@ const EditProductForm = ({ product }) => {
         axiosInstance.get('/sub_categories').then(r => setSubCategories(r.data)).catch(() => {})
         axiosInstance.get('/product_types').then(r => setProductTypes(r.data)).catch(() => {})
     }, [])
+
+    const FEATURED_LIMIT = 4
+
+    const featuredCount = allProducts.filter(
+        p => p.isFeatured && p.state && p.id !== product.id
+    ).length
+
+    const handleFeaturedChange = (e) => {
+        const checked = e.target.checked
+
+        if (checked && featuredCount >= FEATURED_LIMIT) {
+            showToast(`Ya tenés ${FEATURED_LIMIT} productos destacados. Destildá uno para agregar este.`, 'error')
+            return
+        }
+
+        setForm(prev => ({ ...prev, isFeatured: checked }))
+    }
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
@@ -207,11 +234,14 @@ const EditProductForm = ({ product }) => {
                                     type="checkbox"
                                     name="isFeatured"
                                     checked={form.isFeatured}
-                                    onChange={handleChange}
+                                    onChange={handleFeaturedChange}
                                     className={styles.checkbox}
                                 />
                                 Mostrar en destacados
                             </label>
+                            <span className={styles.featuredCount}>
+                                {featuredCount + (form.isFeatured ? 1 : 0)}/{FEATURED_LIMIT} destacados en uso
+                            </span>
                         </div>
                     </div>
 

@@ -175,20 +175,22 @@ const Products = ()=> {
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.map(product => (
-                                <tr key={product.id} className={!product.state ? styles.rowInactive : ''}>
-                                    <td>
-                                        <div className={styles.productCell}>
-                                            {product.images?.[0]?.url && (
-                                                <img
-                                                    src={product.images[0]?.url}
-                                                    alt={product.name}
-                                                    className={styles.productImg}
-                                                />
-                                            )}
-                                            <span className={styles.productName}>{product.name}</span>
-                                        </div>
-                                    </td>
+                            {filtered.map(product => {
+                                const primaryImage = product.images?.find(img => img.isPrimary) || product.images?.[0];
+                                return (
+                                    <tr key={product.id} className={!product.state ? styles.rowInactive : ''}>
+                                        <td>
+                                            <div className={styles.productCell}>
+                                                {primaryImage?.url && (
+                                                    <img
+                                                        src={primaryImage?.url}
+                                                        alt={product.name}
+                                                        className={styles.productImg}
+                                                    />
+                                                )}
+                                                <span className={styles.productName}>{product.name}</span>
+                                            </div>
+                                        </td>
 
                                     <td className={styles.cell}>{product.subcategory?.name || '—'}</td>
 
@@ -239,7 +241,8 @@ const Products = ()=> {
                                         </div>
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
 

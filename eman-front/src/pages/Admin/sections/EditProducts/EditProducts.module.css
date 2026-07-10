@@ -124,6 +124,14 @@
     cursor: pointer;
 }
 
+.featuredCount {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: #999;
+    margin-top: 0.4rem;
+}
+
 .saveBtn {
     font-family: var(--font-sans);
     font-size: 0.82rem;
