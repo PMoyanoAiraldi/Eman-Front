@@ -25,6 +25,18 @@ export const createProduct = createAsyncThunk(
     }
 )
 
+export const createProductVariant = createAsyncThunk(
+    'adminProducts/createVariant',
+    async ({ productId, sizeId, colorId, stock }, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.post('/product_variants', { productId, sizeId, colorId, stock })
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error')
+        }
+    }
+)
+
 export const updateProduct = createAsyncThunk(
     'adminProducts/update',
     async ({ id, data }, { rejectWithValue }) => {
