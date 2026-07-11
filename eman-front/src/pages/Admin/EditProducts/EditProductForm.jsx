@@ -8,12 +8,12 @@ import {
     replaceProductImage,
     deleteProductImage,
     setPrimaryImage,
-} from '../../../../redux/admin/adminProductsReducer'
-import { useToast } from '../../../../hooks/useToast'
-import Toast from '../../../../components/Toast/Toast'
-import axiosInstance from '../../../../api/axiosInstance'
-import ConfirmModal from '../../../../components/ConfirmModal/ConfirmModal'
-import { fetchAllProducts } from '../../../../redux/admin/adminProductsReducer'
+} from '../../../redux/admin/adminProductsReducer'
+import { useToast } from '../../../hooks/useToast'
+import Toast from '../../../components/Toast/Toast'
+import axiosInstance from '../../../api/axiosInstance'
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
+import { fetchAllProducts } from '../../../redux/admin/adminProductsReducer'
 import styles from './EditProducts.module.css'
 
 // Este componente recibe el producto garantizado como prop

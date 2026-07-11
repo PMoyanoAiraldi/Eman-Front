@@ -17,13 +17,15 @@ import AdminLayout from './pages/Admin/AdminLayout'
 import Products from './pages/Admin/sections/Products';
 import Orders from './pages/Admin/sections/Orders';
 import Users from './pages/Admin/sections/Users'
-import EditProduct from './pages/Admin/sections/EditProducts/EditProducts';
+import EditProduct from './pages/Admin/EditProducts/EditProducts';
 import Shipping from './pages/Shipping/Shipping';
 import Returns from './pages/Returns/Returns';
 import Privacy from './pages/Privacy/Privacy';
 import Terms from './pages/Terms/Terms';
 import OrderPending from './pages/OrderPending/OrderPending';
 import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
+import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
+
 
 function App() {
   const dispatch = useDispatch();
@@ -81,6 +83,7 @@ function App() {
         <Route path="products" element={<Products />} />
         <Route path="orders" element={<Orders />} />
         <Route path="users" element={<Users />} /> 
+        <Route path="products/new" element={<NewProductsForm />} />
         <Route path="products/:id/edit" element={<EditProduct/>} />
       </Route> 
       

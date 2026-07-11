@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
-import { fetchAllProducts } from '../../../../redux/admin/adminProductsReducer'
+import { fetchAllProducts } from '../../../redux/admin/adminProductsReducer'
 import EditProductForm from './EditProductForm'
 import styles from './EditProducts.module.css'
 

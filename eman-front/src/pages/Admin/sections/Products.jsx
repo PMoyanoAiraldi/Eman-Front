@@ -108,7 +108,7 @@ const Products = ()=> {
                     <h1 className={styles.title}>Productos</h1>
                     <p className={styles.subtitle}>{products.length} productos en total</p>
                 </div>
-                <button className={styles.addBtn}>
+                <button className={styles.addBtn} onClick={() => navigate('/admin/products/new')}>
                     <Plus size={16} strokeWidth={2} />
                     Nuevo producto
                 </button>
