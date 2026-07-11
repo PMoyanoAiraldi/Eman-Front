@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, Star } from 'lucide-react'
+import { ArrowLeft, Upload, Star, Plus } from 'lucide-react'
 import {
     createProduct,
     createProductVariant,
@@ -11,13 +11,72 @@ import {
 } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
+import Stepper from '../../../components/Stepper/Stepper'
 import axiosInstance from '../../../api/axiosInstance'
 import styles from '../NewProducts/NewProducts.module.css'
+
+
+const STEPS = ['Datos del producto', 'Variantes', 'Imágenes', 'Confirmación']
+
+const InlineAddPopover = ({ label, placeholder, onCreate, disabled }) => {
+    const [open, setOpen] = useState(false)
+    const [value, setValue] = useState('')
+    const [saving, setSaving] = useState(false)
+
+    const handleSave = async () => {
+        if (!value.trim()) return
+        setSaving(true)
+        try {
+            await onCreate(value.trim())
+            setValue('')
+            setOpen(false)
+        } catch {
+            // el error ya se muestra vía toast dentro de onCreate
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    return (
+        <div className={styles.inlineAddWrapper}>
+            <button
+                type="button"
+                className={styles.inlineAddBtn}
+                onClick={() => setOpen(prev => !prev)}
+                disabled={disabled}
+                title={`Agregar ${label}`}
+            >
+                <Plus size={14} strokeWidth={2} />
+            </button>
+            {open && (
+                <div className={styles.inlineAddPopover}>
+                    <input
+                    className={styles.input}
+                        placeholder={placeholder}
+                        value={value}
+                        onChange={e => setValue(e.target.value)}
+                        autoFocus
+                    />
+                    <div className={styles.inlineAddActions}>
+                        <button type="button" className={styles.inlineAddSave} onClick={handleSave} disabled={saving}>
+                            {saving ? 'Guardando...' : 'Guardar'}
+                        </button>
+                        <button type="button" className={styles.inlineAddCancel} onClick={() => { setOpen(false); setValue('') }}>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
 
 const NewProductsForm = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const { toast, showToast, hideToast } = useToast()
+    const [currentStep, setCurrentStep] = useState(1)
 
     // Datos del producto (fase 1)
     const [form, setForm] = useState({
@@ -63,6 +122,46 @@ const NewProductsForm = () => {
         setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
     }
 
+    const handleCreateBrand = async (name) => {
+        try {
+            const res = await axiosInstance.post('/brands', { name })
+            setBrands(prev => [...prev, res.data])
+            setForm(prev => ({ ...prev, brandId: res.data.id }))
+            showToast('Marca agregada')
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al crear la marca', 'error')
+            throw err
+        }
+    }
+
+    const handleCreateProductType = async (name) => {
+        try {
+            const res = await axiosInstance.post('/product_types', { name })
+            setProductTypes(prev => [...prev, res.data])
+            setForm(prev => ({ ...prev, productTypeId: res.data.id }))
+            showToast('Tipo de producto agregado')
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al crear el tipo de producto', 'error')
+            throw err
+        }
+    }
+
+    const handleCreateSubCategory = async (name) => {
+        if (!form.categoryId) {
+            showToast('Primero seleccioná una categoría', 'error')
+            throw new Error('Sin categoría')
+        }
+        try {
+            const res = await axiosInstance.post('/sub_categories', { name, categoryId: form.categoryId })
+            setSubCategories(prev => [...prev, res.data])
+            setForm(prev => ({ ...prev, subcategoryId: res.data.id }))
+            showToast('Subcategoría agregada')
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al crear la subcategoría', 'error')
+            throw err
+        }
+    }
+
     const handleCreateProduct = async () => {
         if (!form.name || !form.description || !form.price || !form.categoryId || !form.subcategoryId) {
             showToast('Completá nombre, descripción, precio, categoría y subcategoría', 'error')
@@ -77,7 +176,8 @@ const NewProductsForm = () => {
                 productTypeId: form.productTypeId || undefined,
             })).unwrap()
             setCreatedProduct(result)
-            showToast('Producto creado. Ahora agregá variantes e imágenes.')
+            showToast('Producto creado')
+            setCurrentStep(2)
         } catch (err) {
             showToast(err || 'Error al crear el producto', 'error')
         } finally {
@@ -114,18 +214,7 @@ const NewProductsForm = () => {
         }
     }
 
-    const handleSetPrimary = async (imageId) => {
-    try {
-        await dispatch(setPrimaryImage(imageId)).unwrap()
-        setImages(prev => prev.map(img => ({
-            ...img,
-            isPrimary: img.id === imageId
-        })))
-        showToast('Imagen principal actualizada')
-    } catch (err) {
-        showToast(err || 'Error al actualizar imagen principal', 'error')
-    }
-}
+    
 
     const handleAddImage = async (e) => {
         const file = e.target.files[0]
@@ -142,6 +231,19 @@ const NewProductsForm = () => {
             e.target.value = ''
         }
     }
+
+    const handleSetPrimary = async (imageId) => {
+    try {
+        await dispatch(setPrimaryImage(imageId)).unwrap()
+        setImages(prev => prev.map(img => ({
+            ...img,
+            isPrimary: img.id === imageId
+        })))
+        showToast('Imagen principal actualizada')
+    } catch (err) {
+        showToast(err || 'Error al actualizar imagen principal', 'error')
+    }
+}
 
     const handleFinish = () => {
         dispatch(fetchAllProducts())
@@ -164,94 +266,112 @@ const NewProductsForm = () => {
                 </p>
             </div>
 
-            <div className={styles.grid}>
+            <Stepper currentStep={currentStep} steps={STEPS} />
+
+            <div className={styles.stepContent}>
                 {/* SECCIÓN: Datos del producto */}
+                {currentStep === 1 && (
                 <section className={styles.card}>
                     <p className={styles.sectionLabel}>Datos del producto</p>
 
                     <div className={styles.field}>
                         <label className={styles.label}>NOMBRE</label>
-                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} disabled={!!createdProduct} />
+                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} />
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>DESCRIPCIÓN</label>
-                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} rows={3} disabled={!!createdProduct} />
-                    </div>
-
-                    <div className={styles.row}>
-                        <div className={styles.field}>
-                            <label className={styles.label}>PRECIO</label>
-                            <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} disabled={!!createdProduct} />
-                        </div>
-                        <div className={styles.field}>
-                            <label className={styles.label}>GÉNERO</label>
-                            <select className={styles.input} name="gender" value={form.gender} onChange={handleChange} disabled={!!createdProduct}>
-                                <option value="">Sin especificar</option>
-                                <option value="mujer">Mujer</option>
-                                <option value="hombre">Hombre</option>
-                                <option value="unisex">Unisex</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div className={styles.row}>
-                        <div className={styles.field}>
-                            <label className={styles.label}>CATEGORÍA</label>
-                            <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleChange} disabled={!!createdProduct}>
-                                <option value="">Seleccioná</option>
-                                {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                            </select>
-                        </div>
-                        <div className={styles.field}>
-                            <label className={styles.label}>SUBCATEGORÍA</label>
-                            <select className={styles.input} name="subcategoryId" value={form.subcategoryId} onChange={handleChange} disabled={!!createdProduct}>
-                                <option value="">Seleccioná</option>
-                                {subCategories.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                            </select>
-                        </div>
+                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} rows={3} />
                     </div>
 
                     <div className={styles.row}>
                     <div className={styles.field}>
-                        <label className={styles.label}>MARCA</label>
-                        <select className={styles.input} name="brandId" value={form.brandId} onChange={handleChange} disabled={!!createdProduct}>
-                            <option value="">Sin marca</option>
-                            {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                        <label className={styles.label}>PRECIO</label>
+                        <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} />
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>GÉNERO</label>
+                        <select className={styles.input} name="gender" value={form.gender} onChange={handleChange}>
+                            <option value="">Sin especificar</option>
+                            <option value="mujer">Mujer</option>
+                            <option value="hombre">Hombre</option>
+                            <option value="unisex">Unisex</option>
+                        </select>
+                    </div>
+                </div>
+
+                    <div className={styles.row}>
+                    <div className={styles.field}>
+                        <label className={styles.label}>CATEGORÍA</label>
+                        <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleChange}>
+                            <option value="">Seleccioná</option>
+                            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                         <div className={styles.field}>
+                        <label className={styles.label}>SUBCATEGORÍA</label>
+                        <select className={styles.input} name="subcategoryId" value={form.subcategoryId} onChange={handleChange}>
+                            <option value="">Seleccioná</option>
+                            {subCategories.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                        <InlineAddPopover
+                            label="subcategoría"
+                            placeholder="Nombre de la subcategoría"
+                            onCreate={handleCreateSubCategory}
+                            disabled={!form.categoryId}
+                        />
+                    </div>
+                </div>
+
+                    <div className={styles.row}>
+                        <div className={styles.field}>
+                            <label className={styles.label}>MARCA</label>
+                            <select className={styles.input} name="brandId" value={form.brandId} onChange={handleChange}>
+                                <option value="">Sin marca</option>
+                                {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                            </select>
+                            <InlineAddPopover
+                                label="marca"
+                                placeholder="Nombre de la marca"
+                                onCreate={handleCreateBrand}
+                            />
+                        </div>
+                    
+                        <div className={styles.field}>
                             <label className={styles.label}>TIPO DE PRODUCTO</label>
-                            <select className={styles.input} name="productTypeId" value={form.productTypeId} onChange={handleChange} disabled={!!createdProduct}>
+                            <select className={styles.input} name="productTypeId" value={form.productTypeId} onChange={handleChange}>
                                 <option value="">Sin tipo</option>
                                 {productTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                             </select>
-                        </div>
-                        <div className={styles.field}>
-                            <label className={styles.label}>DESTACADO</label>
-                            <label className={styles.checkboxLabel}>
-                                <input
-                                    type="checkbox"
-                                    name="isFeatured"
-                                    checked={form.isFeatured}
-                                    onChange={handleChange}
-                                    className={styles.checkbox}
-                                    disabled={!!createdProduct}
-                                />
-                                Mostrar en destacados
-                            </label>
+                            <InlineAddPopover
+                                label="tipo de producto"
+                                placeholder="Nombre del tipo"
+                                onCreate={handleCreateProductType}
+                            />
                         </div>
                     </div>
 
-                    {!createdProduct && (
-                        <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct}>
-                            {creatingProduct ? 'Creando...' : 'Crear producto'}
-                        </button>
-                    )}
+                        <div className={styles.field}>
+                        <label className={styles.label}>DESTACADO</label>
+                        <label className={styles.checkboxLabel}>
+                            <input
+                                type="checkbox"
+                                name="isFeatured"
+                                checked={form.isFeatured}
+                                onChange={handleChange}
+                                className={styles.checkbox}
+                            />
+                            Mostrar en destacados
+                        </label>
+                    </div>
+                    
+                    <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct}>
+                        {creatingProduct ? 'Creando...' : 'Siguiente'}
+                    </button>
                 </section>
+            )}
 
-                {/* SECCIÓN: Variantes + Imágenes (solo una vez creado el producto) */}
-                {createdProduct && (
+                {currentStep === 2 && (
                     <section className={styles.card}>
                         <p className={styles.sectionLabel}>Variantes (color / talle / stock)</p>
 
@@ -282,16 +402,31 @@ const NewProductsForm = () => {
                         </button>
 
                         {variants.length > 0 && (
-                            <ul style={{ marginTop: '0.75rem', fontFamily: 'var(--font-sans)', fontSize: '0.8rem', color: '#444' }}>
+                            <ul className={styles.variantList}>
                                 {variants.map(v => (
-                                    <li key={v.id}>
-                                        {v.color?.name} / {v.size?.name} — stock: {v.stock}
-                                    </li>
+                                    <li key={v.id}>{v.color?.name} / {v.size?.name} — stock: {v.stock}</li>
                                 ))}
                             </ul>
                         )}
 
-                        <p className={styles.sectionLabel} style={{ marginTop: '1rem' }}>Imágenes</p>
+                        <button
+                            className={styles.saveBtn}
+                            onClick={() => {
+                                if (variants.length === 0) {
+                                    showToast('Agregá al menos una variante para continuar', 'error')
+                                    return
+                                }
+                                setCurrentStep(3)
+                            }}
+                        >
+                            Siguiente
+                        </button>
+                    </section>
+                )}
+
+                    {currentStep === 3 && (
+                    <section className={styles.card}>
+                        <p className={styles.sectionLabel}>Imágenes</p>
 
                         <div className={styles.imagesGrid}>
                             {images.map(img => (
@@ -321,12 +456,34 @@ const NewProductsForm = () => {
                             </label>
                         </div>
 
-                        <button className={styles.saveBtn} onClick={handleFinish}>
-                            Finalizar
+                        <button
+                            className={styles.saveBtn}
+                            onClick={() => {
+                                if (images.length === 0) {
+                                    showToast('Agregá al menos una imagen para continuar', 'error')
+                                    return
+                                }
+                                setCurrentStep(4)
+                            }}
+                        >
+                            Siguiente
                         </button>
                     </section>
                 )}
-            </div>
+                {currentStep === 4 && (
+                        <section className={styles.card}>
+                            <p className={styles.sectionLabel}>Confirmación</p>
+                            <p><strong>{createdProduct?.name}</strong></p>
+                            <p>${Number(createdProduct?.price).toLocaleString('es-AR')}</p>
+                            <p>{variants.length} variante(s) cargada(s)</p>
+                            <p>{images.length} imagen(es) cargada(s)</p>
+
+                            <button className={styles.saveBtn} onClick={handleFinish}>
+                                Finalizar
+                            </button>
+                        </section>
+                    )}
+                </div>
 
             <Toast toast={toast} onHide={hideToast} />
         </div>
