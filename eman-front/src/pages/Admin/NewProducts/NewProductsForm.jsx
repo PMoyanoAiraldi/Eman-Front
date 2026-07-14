@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, Star, Plus } from 'lucide-react'
+import { ArrowLeft, Upload, Star, Plus, Eye, EyeOff } from 'lucide-react'
 import {
     createProduct,
     createProductVariant,
@@ -18,10 +18,11 @@ import styles from '../NewProducts/NewProducts.module.css'
 
 const STEPS = ['Datos del producto', 'Variantes', 'Imágenes', 'Confirmación']
 
-const InlineAddPopover = ({ label, placeholder, onCreate, disabled }) => {
+const InlineManagePopover = ({ label, placeholder, items = [], onCreate, onToggleState, disabled }) => {
     const [open, setOpen] = useState(false)
     const [value, setValue] = useState('')
     const [saving, setSaving] = useState(false)
+    const [togglingId, setTogglingId] = useState(null)
 
     const handleSave = async () => {
         if (!value.trim()) return
@@ -29,7 +30,6 @@ const InlineAddPopover = ({ label, placeholder, onCreate, disabled }) => {
         try {
             await onCreate(value.trim())
             setValue('')
-            setOpen(false)
         } catch {
             // el error ya se muestra vía toast dentro de onCreate
         } finally {
@@ -37,38 +37,171 @@ const InlineAddPopover = ({ label, placeholder, onCreate, disabled }) => {
         }
     }
 
+    const handleToggle = async (item) => {
+        setTogglingId(item.id)
+        try {
+            await onToggleState(item.id, !item.state)
+        } finally {
+            setTogglingId(null)
+        }
+    }
+
     return (
-        <div className={styles.inlineAddWrapper}>
-            <button
+        <>
+        <button
                 type="button"
                 className={styles.inlineAddBtn}
-                onClick={() => setOpen(prev => !prev)}
+                onClick={() => setOpen(true)}
                 disabled={disabled}
                 title={`Agregar ${label}`}
             >
                 <Plus size={14} strokeWidth={2} />
             </button>
             {open && (
-                <div className={styles.inlineAddPopover}>
-                    <input
-                    className={styles.input}
-                        placeholder={placeholder}
-                        value={value}
-                        onChange={e => setValue(e.target.value)}
-                        autoFocus
-                    />
-                    <div className={styles.inlineAddActions}>
-                        <button type="button" className={styles.inlineAddSave} onClick={handleSave} disabled={saving}>
-                            {saving ? 'Guardando...' : 'Guardar'}
+                <div className={styles.manageModalOverlay} onClick={() => setOpen(false)}>
+                    <div className={styles.manageModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.manageModalHeader}>
+                            <h3 className={styles.manageModalTitle}>Agregar {label}</h3>
+                            <button className={styles.closeBtn} onClick={() => setOpen(false)}>✕</button>
+                        </div>
+
+                        <div className={styles.manageModalAdd}>
+                            <input
+                                className={styles.input}
+                                placeholder={placeholder}
+                                value={value}
+                                onChange={e => setValue(e.target.value)}
+                                autoFocus
+                            />
+                        <button type="button" className={styles.manageModalAddBtn} onClick={handleSave} disabled={saving}>
+                            {saving ? 'Guardando...' : 'Agregar'}
                         </button>
-                        <button type="button" className={styles.inlineAddCancel} onClick={() => { setOpen(false); setValue('') }}>
-                            Cancelar
-                        </button>
+                    </div>
+
+                    {items.length > 0 ? (
+                        <ul className={styles.manageList}>
+                            {items.map(item => (
+                                <li key={item.id} className={styles.manageItem}>
+                                    <span className={`${styles.manageItemName} ${!item.state ? styles.manageItemInactive : ''}`}>
+                                        {item.name}
+                                    </span>
+                                    <button
+                                            type="button"
+                                            className={styles.manageToggleBtn}
+                                            onClick={() => handleToggle(item)}
+                                            disabled={togglingId === item.id}
+                                            title={item.state ? 'Desactivar' : 'Activar'}
+                                        >
+                                            {item.state
+                                                ? <Eye size={14} strokeWidth={1.5} />
+                                                : <EyeOff size={14} strokeWidth={1.5} />
+                                            }
+                                        </button>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                            <p className={styles.manageEmpty}>Todavía no hay {label}s cargadas.</p>
+                    )}
+                </div>
+        </div>
+        )}
+        </>
+    )
+}
+
+const InlineManageColorModal = ({ items = [], onCreate, onToggleState }) => {
+    const [open, setOpen] = useState(false)
+    const [name, setName] = useState('')
+    const [hex, setHex] = useState('#000000')
+    const [saving, setSaving] = useState(false)
+    const [togglingId, setTogglingId] = useState(null)
+
+    const handleSave = async () => {
+        if (!name.trim()) return
+        setSaving(true)
+        try {
+            await onCreate(name.trim(), hex)
+            setName('')
+            setHex('#000000')
+        } catch {
+            // el error ya se muestra vía toast dentro de onCreate
+        } finally {
+            setSaving(false)
+        }
+    }
+
+    const handleToggle = async (item) => {
+        setTogglingId(item.id)
+        try {
+            await onToggleState(item.id, !item.state)
+        } finally {
+            setTogglingId(null)
+        }
+    }
+
+    return (
+        <>
+            <button type="button" className={styles.inlineAddBtn} onClick={() => setOpen(true)} title="Gestionar colores">
+                <Plus size={14} strokeWidth={2} />
+            </button>
+            {open && (
+                <div className={styles.manageModalOverlay} onClick={() => setOpen(false)}>
+                    <div className={styles.manageModal} onClick={e => e.stopPropagation()}>
+                        <div className={styles.manageModalHeader}>
+                            <h3 className={styles.manageModalTitle}>Gestionar colores</h3>
+                            <button className={styles.closeBtn} onClick={() => setOpen(false)}>✕</button>
+                        </div>
+                    <div className={styles.manageModalAdd}>
+                            <div className={styles.colorInputRow}>
+                                <input
+                                    type="color"
+                                    className={styles.colorPicker}
+                                    value={hex}
+                                    onChange={e => setHex(e.target.value)}
+                                />
+                                <input
+                                    className={styles.input}
+                                    placeholder="Nombre del color"
+                                    value={name}
+                                    onChange={e => setName(e.target.value)}
+                                />
+                            </div>
+                        <button type="button" className={styles.manageModalAddBtn} onClick={handleSave} disabled={saving}>
+                                {saving ? 'Guardando...' : 'Agregar'}
+                            </button>
+                        </div>
+
+                        {items.length > 0 ? (
+                            <ul className={styles.manageList}>
+                                {items.map(item => (
+                                    <li key={item.id} className={styles.manageItem}>
+                                        <span className={styles.manageItemColorRow}>
+                                            <span className={styles.manageItemSwatch} style={{ background: item.hex }} />
+                                            <span className={`${styles.manageItemName} ${!item.state ? styles.manageItemInactive : ''}`}>
+                                                {item.name}
+                                            </span>
+                                            </span>
+                                        <button
+                                            type="button"
+                                            className={styles.manageToggleBtn}
+                                            onClick={() => handleToggle(item)}
+                                            disabled={togglingId === item.id}
+                                            title={item.state ? 'Desactivar' : 'Activar'}
+                                        >
+                                            {item.state ? <Eye size={14} strokeWidth={1.5} /> : <EyeOff size={14} strokeWidth={1.5} />}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className={styles.manageEmpty}>Todavía no hay colores cargados.</p>
+                        )}
                     </div>
                 </div>
             )}
-        </div>
-    )
+        </>
+            )
 }
 
 
@@ -103,6 +236,9 @@ const NewProductsForm = () => {
     const [variantForm, setVariantForm] = useState({ colorId: '', sizeId: '', stock: '' })
     const [addingVariant, setAddingVariant] = useState(false)
     const [variants, setVariants] = useState([])
+    const { products: allProducts } = useSelector(state => state.adminProducts)
+    const FEATURED_LIMIT = 4
+    const featuredCount = allProducts.filter(p => p.isFeatured && p.state).length
 
     // Imágenes (fase 2)
     const [images, setImages] = useState([])
@@ -110,12 +246,18 @@ const NewProductsForm = () => {
 
     useEffect(() => {
         axiosInstance.get('/categories').then(r => setCategories(r.data)).catch(() => {})
-        axiosInstance.get('/sub_categories').then(r => setSubCategories(r.data)).catch(() => {})
-        axiosInstance.get('/product_types').then(r => setProductTypes(r.data)).catch(() => {})
-        axiosInstance.get('/brands').then(r => setBrands(r.data)).catch(() => {})
-        axiosInstance.get('/colors').then(r => setColors(r.data)).catch(() => {})
-        axiosInstance.get('/sizes').then(r => setSizes(r.data)).catch(() => {})
+        axiosInstance.get('/sub_categories/all').then(r => setSubCategories(r.data)).catch(() => {})
+        axiosInstance.get('/product_types/all').then(r => setProductTypes(r.data)).catch(() => {})
+        axiosInstance.get('/brands/all').then(r => setBrands(r.data)).catch(() => {})
+        axiosInstance.get('/colors/all').then(r => setColors(r.data)).catch(() => {})
+        axiosInstance.get('/sizes/all').then(r => setSizes(r.data)).catch(() => {})
     }, [])
+
+    useEffect(() => {
+    if (allProducts.length === 0) {
+        dispatch(fetchAllProducts())
+    }
+}, [dispatch, allProducts.length])
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
@@ -185,6 +327,74 @@ const NewProductsForm = () => {
         }
     }
 
+    const handleCreateColor = async (name, hex) => {
+    try {
+        const res = await axiosInstance.post('/colors', { name, hex })
+        setColors(prev => [...prev, res.data])
+        showToast('Color agregado')
+    } catch (err) {
+        showToast(err.response?.data?.message || 'Error al crear el color', 'error')
+        throw err
+    }
+}
+
+    const handleToggleColorState = async (id, state) => {
+        try {
+            const res = await axiosInstance.patch(`/colors/${id}/state`, { state })
+            setColors(prev => prev.map(c => c.id === id ? res.data : c))
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al actualizar el color', 'error')
+        }
+    }
+
+    const handleCreateSize = async (name) => {
+    try {
+        const res = await axiosInstance.post('/sizes', { name })
+        setSizes(prev => [...prev, res.data])
+        showToast('Talle agregado')
+    } catch (err) {
+        showToast(err.response?.data?.message || 'Error al crear el talle', 'error')
+        throw err
+    }
+    }
+
+    const handleToggleSizeState = async (id, state) => {
+        try {
+            const res = await axiosInstance.patch(`/sizes/${id}/state`, { state })
+            setSizes(prev => prev.map(s => s.id === id ? res.data : s))
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al actualizar el talle', 'error')
+        }
+    }
+
+    const handleToggleBrandState = async (id, state) => {
+    try {
+        const res = await axiosInstance.patch(`/brands/${id}/state`, { state })
+        setBrands(prev => prev.map(b => b.id === id ? res.data : b))
+    } catch (err) {
+        showToast(err.response?.data?.message || 'Error al actualizar la marca', 'error')
+    }
+}
+
+    const handleToggleProductTypeState = async (id, state) => {
+        try {
+            const res = await axiosInstance.patch(`/product_types/${id}/state`, { state })
+            setProductTypes(prev => prev.map(t => t.id === id ? res.data : t))
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al actualizar el tipo de producto', 'error')
+        }
+    }
+
+    const handleToggleSubCategoryState = async (id, state) => {
+        try {
+            const res = await axiosInstance.patch(`/sub_categories/${id}/state`, { state })
+            setSubCategories(prev => prev.map(s => s.id === id ? res.data : s))
+        } catch (err) {
+            showToast(err.response?.data?.message || 'Error al actualizar la subcategoría', 'error')
+        }
+    }
+
+
     const handleVariantChange = (e) => {
         const { name, value } = e.target
         if (name === 'stock' && !/^\d*$/.test(value)) return
@@ -250,8 +460,25 @@ const NewProductsForm = () => {
         navigate('/admin/products')
     }
 
+    const handleCategoryChange = (e) => {
+        setForm(prev => ({ ...prev, categoryId: e.target.value, subcategoryId: '' }))
+    }
+
+    const handleFeaturedChange = (e) => {
+    const checked = e.target.checked
+
+    if (checked && featuredCount >= FEATURED_LIMIT) {
+        showToast(`Ya tenés ${FEATURED_LIMIT} productos destacados. Destildá uno para agregar este.`, 'error')
+        return
+    }
+
+    setForm(prev => ({ ...prev, isFeatured: checked }))
+}
+
+
     return (
         <div className={styles.page}>
+            <div className={styles.formWrapper}>
             <div className={styles.topBar}>
                 <button className={styles.backBtn} onClick={() => navigate('/admin/products')}>
                     <ArrowLeft size={16} strokeWidth={1.5} />
@@ -265,7 +492,7 @@ const NewProductsForm = () => {
                     {createdProduct ? createdProduct.name : 'Completá los datos para crear el producto'}
                 </p>
             </div>
-
+        
             <Stepper currentStep={currentStep} steps={STEPS} />
 
             <div className={styles.stepContent}>
@@ -303,52 +530,66 @@ const NewProductsForm = () => {
                     <div className={styles.row}>
                     <div className={styles.field}>
                         <label className={styles.label}>CATEGORÍA</label>
-                        <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleChange}>
+                        <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleCategoryChange}>
                             <option value="">Seleccioná</option>
                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                     </div>
                         <div className={styles.field}>
                         <label className={styles.label}>SUBCATEGORÍA</label>
+                        <div className={styles.fieldRow}>
                         <select className={styles.input} name="subcategoryId" value={form.subcategoryId} onChange={handleChange}>
                             <option value="">Seleccioná</option>
-                            {subCategories.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                            {subCategories.filter(s => s.state && s.category?.id === form.categoryId).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
-                        <InlineAddPopover
+                        <InlineManagePopover
                             label="subcategoría"
                             placeholder="Nombre de la subcategoría"
+                            items={subCategories.filter(s => s.category?.id === form.categoryId)}
                             onCreate={handleCreateSubCategory}
+                            onToggleState={handleToggleSubCategoryState}
                             disabled={!form.categoryId}
                         />
+                        </div>
+                        {!form.categoryId && (
+                            <span className={styles.hintText}>Elegí una categoría primero</span>
+                        )}
                     </div>
                 </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>MARCA</label>
+                            <div className={styles.fieldRow}>
                             <select className={styles.input} name="brandId" value={form.brandId} onChange={handleChange}>
                                 <option value="">Sin marca</option>
-                                {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                                {brands.filter(b => b.state).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                             </select>
-                            <InlineAddPopover
+                            <InlineManagePopover
                                 label="marca"
                                 placeholder="Nombre de la marca"
+                                items={brands}
                                 onCreate={handleCreateBrand}
+                                onToggleState={handleToggleBrandState}
                             />
                         </div>
-                    
+                    </div>
                         <div className={styles.field}>
                             <label className={styles.label}>TIPO DE PRODUCTO</label>
+                            <div className={styles.fieldRow}>
                             <select className={styles.input} name="productTypeId" value={form.productTypeId} onChange={handleChange}>
                                 <option value="">Sin tipo</option>
-                                {productTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                {productTypes.filter(t => t.state).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                             </select>
-                            <InlineAddPopover
+                            <InlineManagePopover
                                 label="tipo de producto"
                                 placeholder="Nombre del tipo"
+                                items={productTypes}
                                 onCreate={handleCreateProductType}
+                                onToggleState={handleToggleProductTypeState}
                             />
                         </div>
+                    </div>
                     </div>
 
                         <div className={styles.field}>
@@ -358,11 +599,14 @@ const NewProductsForm = () => {
                                 type="checkbox"
                                 name="isFeatured"
                                 checked={form.isFeatured}
-                                onChange={handleChange}
+                                onChange={handleFeaturedChange}
                                 className={styles.checkbox}
                             />
                             Mostrar en destacados
                         </label>
+                        <span className={styles.featuredCount}>
+                            {featuredCount + (form.isFeatured ? 1 : 0)}/{FEATURED_LIMIT} destacados en uso
+                        </span>
                     </div>
                     
                     <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct}>
@@ -377,22 +621,60 @@ const NewProductsForm = () => {
 
                         <div className={styles.row}>
                             <div className={styles.field}>
+                            <div className={styles.fieldLabelRow}>
                                 <label className={styles.label}>COLOR</label>
-                                <select className={styles.input} name="colorId" value={variantForm.colorId} onChange={handleVariantChange}>
-                                    <option value="">Seleccioná</option>
-                                    {colors.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                                </select>
+                                <InlineManageColorModal
+                                items={colors}
+                                onCreate={handleCreateColor}
+                                onToggleState={handleToggleColorState}
+                            />
                             </div>
-                            <div className={styles.field}>
-                                <label className={styles.label}>TALLE</label>
-                                <select className={styles.input} name="sizeId" value={variantForm.sizeId} onChange={handleVariantChange}>
-                                    <option value="">Seleccioná</option>
-                                    {sizes.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                                </select>
+                            <div className={styles.colorSwatches}>
+                                {colors.filter(c => c.state).map(c => (
+                                    <button
+                                        key={c.id}
+                                        type="button"
+                                        className={`${styles.colorSwatch} ${variantForm.colorId === c.id ? styles.colorSwatchSelected : ''}`}
+                                        style={{ background: c.hex || '#ccc' }}
+                                        onClick={() => setVariantForm(prev => ({ ...prev, colorId: c.id }))}
+                                        title={c.name}
+                                    />
+                                ))}
                             </div>
-                        </div>
+                            {variantForm.colorId && (
+                                <span className={styles.colorSelectedName}>
+                                    {colors.find(c => c.id === variantForm.colorId)?.name}
+                                </span>
+                            )}
+                            </div>
 
-                        <div className={styles.field}>
+                            <div className={styles.field}>
+                            <div className={styles.fieldLabelRow}>
+                            <label className={styles.label}>TALLE</label>
+                            <InlineManagePopover
+                                    label="talle"
+                                    placeholder="Nombre del talle"
+                                    items={sizes}
+                                    onCreate={handleCreateSize}
+                                    onToggleState={handleToggleSizeState}
+                                />
+                            </div>
+                            <div className={styles.sizeChips}>
+                            {sizes.filter(s => s.state).map(s => (
+                            <button
+                                key={s.id}
+                                type="button"
+                                className={`${styles.sizeChip} ${variantForm.sizeId === s.id ? styles.sizeChipSelected : ''}`}
+                                onClick={() => setVariantForm(prev => ({ ...prev, sizeId: s.id }))}
+                            >
+                                {s.name}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+                </div>
+
+                        <div className={`${styles.field} ${styles.stockFieldSpacing}`}>
                             <label className={styles.label}>STOCK</label>
                             <input className={styles.input} name="stock" type="text" value={variantForm.stock} onChange={handleVariantChange} />
                         </div>
@@ -484,7 +766,7 @@ const NewProductsForm = () => {
                         </section>
                     )}
                 </div>
-
+                </div>
             <Toast toast={toast} onHide={hideToast} />
         </div>
     )
