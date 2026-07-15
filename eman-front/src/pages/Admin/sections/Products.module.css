@@ -161,6 +161,11 @@
     color: #c0392b;
 }
 
+.badgeDraft {
+    background: #fdf0d5;
+    color: #b0834f;
+}
+
 .actions {
     display: flex;
     gap: 0.5rem;

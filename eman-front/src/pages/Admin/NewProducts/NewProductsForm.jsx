@@ -455,7 +455,13 @@ const NewProductsForm = () => {
     }
 }
 
-    const handleFinish = () => {
+    const handleFinish = async () => {
+        try {
+            await axiosInstance.patch(`/products/${createdProduct.id}/publish`)
+        } catch (err) {
+            showToast(err || 'Error al publicar el producto', 'error')
+            return
+        }
         dispatch(fetchAllProducts())
         navigate('/admin/products')
     }
@@ -679,7 +685,7 @@ const NewProductsForm = () => {
                             <input className={styles.input} name="stock" type="text" value={variantForm.stock} onChange={handleVariantChange} />
                         </div>
 
-                        <button className={styles.saveBtn} onClick={handleAddVariant} disabled={addingVariant}>
+                        <button className={styles.addVariantBtn} onClick={handleAddVariant} disabled={addingVariant}>
                             {addingVariant ? 'Agregando...' : 'Agregar variante'}
                         </button>
 
@@ -690,6 +696,7 @@ const NewProductsForm = () => {
                                 ))}
                             </ul>
                         )}
+                        <div className={styles.stepDivider} />
 
                         <button
                             className={styles.saveBtn}

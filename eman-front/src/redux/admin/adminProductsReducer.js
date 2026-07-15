@@ -130,6 +130,30 @@ export const setPrimaryImage = createAsyncThunk(
     }
 )
 
+export const publishProduct = createAsyncThunk(
+    'adminProducts/publish',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.patch(`/products/${id}/publish`)
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al publicar')
+        }
+    }
+)
+
+export const deleteDraftProduct = createAsyncThunk(
+    'adminProducts/deleteDraft',
+    async (id, { rejectWithValue }) => {
+        try {
+            await axiosInstance.delete(`/products/${id}`)
+            return id
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al eliminar')
+        }
+    }
+)
+
 const initialState = {
     products: [],
     loading: false,
@@ -156,6 +180,15 @@ const adminProductsSlice = createSlice({
         .addCase(toggleProductState.fulfilled, (state, action) => {
             const index = state.products.findIndex(p => p.id === action.payload.id)
             if (index !== -1) state.products[index] = action.payload // actualiza el estado del producto
+        })
+
+        .addCase(publishProduct.fulfilled, (state, action) => {
+            const index = state.products.findIndex(p => p.id === action.payload.id)
+            if (index !== -1) state.products[index] = action.payload
+        })
+
+        .addCase(deleteDraftProduct.fulfilled, (state, action) => {
+            state.products = state.products.filter(p => p.id !== action.payload)
         })
     }
 })

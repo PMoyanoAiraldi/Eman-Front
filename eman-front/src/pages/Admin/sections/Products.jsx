@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Plus, Pencil, Eye, EyeOff, Star } from 'lucide-react'
-import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock } from '../../../redux/admin/adminProductsReducer'
+import { Plus, Pencil, Eye, EyeOff, Star, Upload, Trash2 } from 'lucide-react'
+import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock, publishProduct, deleteDraftProduct } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
 import styles from './Products.module.css'
@@ -101,6 +101,27 @@ const Products = ()=> {
         }
 }
 
+
+const handlePublish = async (id) => {
+    try {
+        await dispatch(publishProduct(id)).unwrap()
+        showToast('Producto publicado correctamente')
+        dispatch(fetchAllProducts())
+    } catch (err) {
+        showToast(err?.message || 'Faltan datos para publicar', 'error')
+    }
+}
+
+const handleDeleteDraft = async (id) => {
+    if (!window.confirm('¿Eliminar este borrador? Esta acción no se puede deshacer.')) return
+    try {
+        await dispatch(deleteDraftProduct(id)).unwrap()
+        showToast('Borrador eliminado')
+        dispatch(fetchAllProducts())
+    } catch (err) {
+        showToast(err?.message || 'Error al eliminar', 'error')
+    }
+}
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -193,9 +214,7 @@ const Products = ()=> {
                                         </td>
 
                                     <td className={styles.cell}>{product.subcategory?.name || '—'}</td>
-
                                     <td className={styles.cell}>{product.gender || '—'}</td>
-
                                     <td className={styles.cell}>
                                         ${Number(product.price).toLocaleString('es-AR')}
                                     </td>
@@ -214,31 +233,56 @@ const Products = ()=> {
                                             <Star size={16} strokeWidth={1.5} fill={product.isFeatured ? 'currentColor' : 'none'} />
                                         </button>
                                     </td>
+
+                                    {/* Estado */}
                                     <td className={styles.cell}>
-                                        <span className={`${styles.badge} ${product.state ? styles.badgeActive : styles.badgeInactive}`}>
-                                            {product.state ? 'Activo' : 'Inactivo'}
-                                        </span>
+                                        {product.isDraft ? (
+                                            <span className={`${styles.badge} ${styles.badgeDraft}`}>Borrador</span>
+                                        ) : (
+                                            <span className={`${styles.badge} ${product.state ? styles.badgeActive : styles.badgeInactive}`}>
+                                                {product.state ? 'Activo' : 'Inactivo'}
+                                            </span>
+                                        )}
                                     </td>
-                                    <td className={styles.cell}>
-                                        <div className={styles.actions}>
+
+                                {/* Acciones */}
+                                <td className={styles.cell}>
+                                    <div className={styles.actions}>
+                                        <button
+                                            className={styles.iconBtn}
+                                            onClick={() => navigate(`/admin/products/${product.id}/edit`)}
+                                            title="Editar"
+                                        >
+                                        <Pencil size={15} strokeWidth={1.5} />
+                                    </button>
+
+                                        {product.isDraft ? (
+                                            <>
                                             <button
-                                                className={styles.iconBtn}
-                                                onClick={() => navigate(`/admin/products/${product.id}/edit`)}
-                                                title="Editar"
-                                            >
-                                                <Pencil size={15} strokeWidth={1.5} />
-                                            </button>
+                                                    className={styles.iconBtn}
+                                                    onClick={() => handlePublish(product.id)}
+                                                    title="Publicar"
+                                                >
+                                                    <Upload size={15} strokeWidth={1.5} />
+                                                </button>
+                                                <button
+                                                    className={styles.iconBtn}
+                                                    onClick={() => handleDeleteDraft(product.id)}
+                                                    title="Eliminar borrador"
+                                                >
+                                                    <Trash2 size={15} strokeWidth={1.5} />
+                                                </button>
+                                            </>
+                                        ) : (
                                             <button
                                                 className={styles.iconBtn}
                                                 onClick={() => handleToggleState(product.id, product.state)}
                                                 title={product.state ? 'Desactivar' : 'Activar'}
                                             >
-                                                {product.state
-                                                    ? <EyeOff size={15} strokeWidth={1.5} />
-                                                    : <Eye size={15} strokeWidth={1.5} />
-                                                }
+                                                {product.state ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
                                             </button>
-                                        </div>
+                                        )}
+                                    </div>
                                     </td>
                                 </tr>
                                 );
