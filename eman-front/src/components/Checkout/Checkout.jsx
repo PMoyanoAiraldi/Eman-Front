@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
+import { sanitizeName, sanitizePhone, validateName, validateEmail, validatePhone, validateStep1 } from '../../utils/checkoutValidation'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
@@ -23,6 +24,7 @@ const Checkout = () => {
     const [errors, setErrors] = useState({})
     const [loading, setLoading] = useState(false)
     const [toast, setToast] = useState(null)
+    const [touched, setTouched] = useState({})
 
     const hideToast = () => setToast(null)
 
@@ -41,26 +43,49 @@ const Checkout = () => {
         locality: ''
     })
 
-    const handleChange = (e) => {
-        const { name, value } = e.target
-    
-        // Teléfono: solo permite números
-        if (name === 'guestPhone' && !/^\d*$/.test(value)) return
-        
-        setForm({ ...form, [name]: value })
+
+const handleChange = (e) => {
+    const { name, value } = e.target
+    let cleanValue = value
+
+    // sanitiza directo en el input: ni se escribe lo inválido
+    if (name === 'guestName')  cleanValue = sanitizeName(value)
+    if (name === 'guestPhone') cleanValue = sanitizePhone(value)
+
+    setForm({ ...form, [name]: cleanValue })
+
+    const fieldValidators = {
+        guestName:  validateName,
+        guestEmail: validateEmail,
+        guestPhone: validatePhone,
+    }
+    const validator = fieldValidators[name]
+
+    if (validator) {
+        if (touched[name]) {
+            setErrors({ ...errors, [name]: validator(cleanValue) })
+        }
+    } else {
+        // paso 2: comportamiento simple, borra el error apenas se edita
         setErrors({ ...errors, [name]: '' })
     }
+}
 
-    const validateStep1 = () => {
-        const e = {}
-        if (!form.guestName.trim())  e.guestName  = 'El nombre es requerido'
-        if (!form.guestEmail.trim()) e.guestEmail = 'El email es requerido'
-        else if (!/\S+@\S+\.\S+/.test(form.guestEmail)) e.guestEmail = 'Email inválido'
-        if (!form.guestPhone.trim()) e.guestPhone = 'El teléfono es requerido'
-        else if (!/^\d{8,15}$/.test(form.guestPhone.trim())) e.guestPhone = 'El teléfono debe contener solo números'
-        setErrors(e)
-        return Object.keys(e).length === 0
+const handleBlur = (e) => {
+    const { name, value } = e.target
+    setTouched({ ...touched, [name]: true })
+
+    const fieldValidators = {
+        guestName:  validateName,
+        guestEmail: validateEmail,
+        guestPhone: validatePhone,
     }
+    const validator = fieldValidators[name]
+    if (validator) {
+        setErrors({ ...errors, [name]: validator(value) })
+    }
+}
+
 
     const validateStep2 = () => {
         const e = {}
@@ -82,16 +107,20 @@ const Checkout = () => {
 
     const handleNext = async () => {
         if (step === 1) {
-        if (!validateStep1()) return
+            const stepErrors = validateStep1(form)
+            setErrors(stepErrors)
+        if (Object.keys(stepErrors).length > 0) {
+            setTouched({ guestName: true, guestEmail: true, guestPhone: true })
+            return
+        }
         setStep(s => s + 1)
         return
-        }
-
+    }
 
         if (step === 2){
         if (!validateStep2()) return
         setLoading(true)
-    try{
+    try {
         const orderRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/order`,
         {
             guestName:    form.guestName,
@@ -178,6 +207,7 @@ const Checkout = () => {
                                 name="guestName"
                                 value={form.guestName}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 placeholder="Ej: Juan Perez"
                             />
                             {errors.guestName && <span className={styles.error}>{errors.guestName}</span>}
@@ -191,6 +221,7 @@ const Checkout = () => {
                         type="email"
                         value={form.guestEmail}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="Ej: juan@gmail.com"
                     />
                 {errors.guestEmail && <span className={styles.error}>{errors.guestEmail}</span>}
@@ -203,7 +234,8 @@ const Checkout = () => {
                         name="guestPhone"
                         value={form.guestPhone}
                         onChange={handleChange}
-                        placeholder="Ej: 3404123456"
+                        onBlur={handleBlur}
+                        placeholder="Ej: 1123456789 (sin 0 ni 15)"
                     />
                 {errors.guestPhone && <span className={styles.error}>{errors.guestPhone}</span>}
             </div>
