@@ -175,7 +175,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: 2px solid #555;
     outline: 2px solid transparent;
     outline-offset: 2px;
     cursor: pointer;
