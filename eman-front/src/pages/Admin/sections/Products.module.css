@@ -60,21 +60,57 @@
 
 .search:focus { border-color: var(--color-gold); }
 
+.selectWrapper {
+    position: relative;
+    display: inline-block;
+}
+
 .filterSelect {
     font-family: var(--font-sans);
     font-size: 0.85rem;
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.6rem 0.85rem;
+    padding: 0.6rem 2.25rem 0.6rem 0.85rem;
     outline: none;
     background: #fff;
     cursor: pointer;
     transition: border-color 0.2s;
     min-width: 160px;
+
+    /* saca la flecha nativa */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+
 }
 
-.filterSelect:focus { border-color: var(--color-gold); }
+.filterSelect:focus { 
+    border-color: var(--color-gold); 
+}
+
+.selectIcon {
+    position: absolute;
+    right: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a89a7d;
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.selectWrapper:focus-within .selectIcon {
+    color: var(--color-gold);
+}
+
+/* letra un poco más suave/espaciada, igual que el buscador */
+.filterSelect,
+.filterSelect option {
+    letter-spacing: 0.01em;
+    font-weight: 400;
+    color: #706f6e;
+}
 
 .tableWrapper {
     background: #fff;

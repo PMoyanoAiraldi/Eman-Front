@@ -137,6 +137,9 @@
     cursor: pointer;
 }
 
+.checkOk { color: #16a34a; }
+.checkMissing { color: #dc2626; }
+
 .featuredCount {
     display: block;
     font-family: var(--font-sans);

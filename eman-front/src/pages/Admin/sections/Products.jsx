@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Plus, Pencil, Eye, EyeOff, Star, Upload, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Eye, EyeOff, Star, Upload, Trash2, ChevronDown } from 'lucide-react'
 import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock, publishProduct, deleteDraftProduct } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
+import { getMissingFields } from '../../../utils/productValidation'
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import Toast from '../../../components/Toast/Toast'
 import styles from './Products.module.css'
 import { useNavigate } from 'react-router-dom'
@@ -22,6 +24,7 @@ const Products = ()=> {
     const [stockEdits, setStockEdits] = useState({}) // { variantId: nuevoStock }
     const [savingStock, setSavingStock] = useState(false)
     const { toast, showToast, hideToast } = useToast()
+    
     
     const FEATURED_LIMIT = 4
 
@@ -102,9 +105,14 @@ const Products = ()=> {
 }
 
 
-const handlePublish = async (id) => {
+const handlePublish = async (product) => {
+    const missing = getMissingFields(product)
+    if (missing.length > 0) {
+        showToast(`Falta: ${missing.join(', ')}`, 'error')
+        return
+    }
     try {
-        await dispatch(publishProduct(id)).unwrap()
+        await dispatch(publishProduct(product.id)).unwrap()
         showToast('Producto publicado correctamente')
         dispatch(fetchAllProducts())
     } catch (err) {
@@ -112,16 +120,24 @@ const handlePublish = async (id) => {
     }
 }
 
-const handleDeleteDraft = async (id) => {
-    if (!window.confirm('¿Eliminar este borrador? Esta acción no se puede deshacer.')) return
-    try {
-        await dispatch(deleteDraftProduct(id)).unwrap()
-        showToast('Borrador eliminado')
-        dispatch(fetchAllProducts())
-    } catch (err) {
-        showToast(err?.message || 'Error al eliminar', 'error')
+    const [productToDelete, setProductToDelete] = useState(null)
+
+    const handleDeleteDraft = (id) => {
+        setProductToDelete(id)
     }
-}
+
+    const confirmDeleteDraft = async () => {
+        const id = productToDelete
+        setProductToDelete(null)
+        try {
+            await dispatch(deleteDraftProduct(id)).unwrap()
+            showToast('Borrador eliminado')
+            dispatch(fetchAllProducts())
+        } catch (err) {
+            showToast(err?.message || 'Error al eliminar', 'error')
+        }
+    }
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -139,10 +155,11 @@ const handleDeleteDraft = async (id) => {
                 <input
                     className={styles.search}
                     type="text"
-                    placeholder="Buscar producto..."
+                    placeholder="Buscar producto por nombre..."
                     value={search}
                     onChange={e => setSearch(e.target.value)}
                 />
+                <div className={styles.selectWrapper}>
                 <select
                     className={styles.filterSelect}
                     value={categoryFilter}
@@ -153,7 +170,11 @@ const handleDeleteDraft = async (id) => {
                         <option key={cat} value={cat}>{cat}</option>
                     ))}
                 </select>
+                <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+                </div>
 
+
+                <div className={styles.selectWrapper}>
                 <select
                     className={styles.filterSelect}
                     value={genderFilter}
@@ -164,7 +185,10 @@ const handleDeleteDraft = async (id) => {
                         <option key={g} value={g}>{g}</option>
                     ))}
                 </select>
+                <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+                </div>
 
+                <div className={styles.selectWrapper}>
                 <select
                     className={styles.filterSelect}
                     value={stateFilter}
@@ -174,6 +198,8 @@ const handleDeleteDraft = async (id) => {
                     <option value="active">Activos</option>
                     <option value="inactive">Inactivos</option>
                 </select>
+                <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+                </div>
 
             </div>
 
@@ -260,7 +286,7 @@ const handleDeleteDraft = async (id) => {
                                             <>
                                             <button
                                                     className={styles.iconBtn}
-                                                    onClick={() => handlePublish(product.id)}
+                                                    onClick={() => handlePublish(product)}
                                                     title="Publicar"
                                                 >
                                                     <Upload size={15} strokeWidth={1.5} />
@@ -358,6 +384,15 @@ const handleDeleteDraft = async (id) => {
             </div>
         </div>
         )}
+        <ConfirmModal
+            isOpen={!!productToDelete}
+            title="Eliminar borrador"
+            message="¿Eliminar este borrador? Esta acción no se puede deshacer."
+            confirmLabel="Eliminar"
+            danger
+            onConfirm={confirmDeleteDraft}
+            onCancel={() => setProductToDelete(null)}
+        />
         <Toast toast={toast} onHide={hideToast} />
 
         </div>

@@ -8,6 +8,7 @@ import {
     addProductImage,
     setPrimaryImage,
     fetchAllProducts,
+    publishProduct
 } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
@@ -457,13 +458,15 @@ const NewProductsForm = () => {
 
     const handleFinish = async () => {
         try {
-            await axiosInstance.patch(`/products/${createdProduct.id}/publish`)
+            await dispatch(publishProduct(createdProduct.id)).unwrap()
+            showToast('Producto publicado correctamente')
+            dispatch(fetchAllProducts())
+            navigate('/admin/products')
         } catch (err) {
             showToast(err || 'Error al publicar el producto', 'error')
-            return
+            
         }
-        dispatch(fetchAllProducts())
-        navigate('/admin/products')
+        
     }
 
     const handleCategoryChange = (e) => {
@@ -764,11 +767,24 @@ const NewProductsForm = () => {
                             <p className={styles.sectionLabel}>Confirmación</p>
                             <p><strong>{createdProduct?.name}</strong></p>
                             <p>${Number(createdProduct?.price).toLocaleString('es-AR')}</p>
-                            <p>{variants.length} variante(s) cargada(s)</p>
-                            <p>{images.length} imagen(es) cargada(s)</p>
+
+                            <ul className={styles.checklist}>
+                            <li className={variants.length > 0 ? styles.checkOk : styles.checkMissing}>
+                                {variants.length > 0 ? '✓' : '✕'} {variants.length} variante(s) cargada(s)
+                            </li>
+                            <li className={images.length > 0 ? styles.checkOk : styles.checkMissing}>
+                                {images.length > 0 ? '✓' : '✕'} {images.length} imagen(es) cargada(s)
+                            </li>
+                        </ul>
+
+                        {(variants.length === 0 || images.length === 0) && (
+                            <p className={styles.hintText}>
+                                ⚠️ Faltan datos: el producto se publicará igual, pero podría no verse bien en la tienda.
+                            </p>
+                        )}
 
                             <button className={styles.saveBtn} onClick={handleFinish}>
-                                Finalizar
+                                Finalizar y publicar
                             </button>
                         </section>
                     )}
