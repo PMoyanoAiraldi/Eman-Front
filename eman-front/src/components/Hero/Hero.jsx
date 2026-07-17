@@ -54,7 +54,11 @@ const Hero = () => {
             </div>
 
         <div className={styles.imageWrapper}>
-                <img src={slide.url} alt={slide.altText || slide.tag || 'Eman'} />
+                <img 
+                src={slide.url} 
+                alt={slide.altText || slide.tag || 'Eman'} 
+                style={{ objectPosition: slide.focalPoint || 'center center' }}
+                />
             </div>
             </div>
         ))}

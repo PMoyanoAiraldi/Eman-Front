@@ -111,7 +111,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
     display: block;
 }
 
@@ -176,5 +175,33 @@
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .slide {
+        flex-direction: column;
+        height: auto;
+    }
+
+    .hero {
+        height: auto; /* dejá que el contenido defina el alto en mobile */
+    }
+
+    .content {
+        flex: none;
+        padding: 40px 6% 30px;
+        order: 2; /* texto abajo de la imagen, sacá esto si lo querés arriba */
+    }
+
+    .imageWrapper {
+        flex: none;
+        width: 100%;
+        height: 60vh; /* alto fijo razonable para la imagen en mobile */
+        order: 1;
+    }
+
+    .imageWrapper img {
+    object-position: center center; /* ← esto centra en vez de anclar arriba */
     }
 }
