@@ -6,7 +6,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 
 const Layout = () => {
     const location = useLocation()
-    const hideFloatingWhatsapp = location.pathname.startsWith('/order-confirm')
+    const hideFloatingWhatsapp = location.pathname.startsWith('/checkout') || location.pathname.startsWith('/order-confirm')
 
 
     return (
