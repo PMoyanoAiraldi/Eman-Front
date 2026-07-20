@@ -154,3 +154,43 @@
     margin-top: 4px;
     font-style: italic;
 }
+
+.shippingCard {
+     width: 100%;
+    text-align: left;
+    padding: 16px 0;
+    border-bottom: 1px solid #EDEDED;
+}
+
+.shippingNote {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #6B6B6B;
+    line-height: 1.5;
+    margin: 12px 0 16px;
+}
+
+.whatsappBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-sans);
+    background-color: #25D366;
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.whatsappBtn:hover {
+    background-color: #1DA851;
+}
+
+.whatsappIcon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}

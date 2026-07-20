@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
+import { FaWhatsapp } from 'react-icons/fa'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import Stepper from '../../components/Stepper/Stepper'
 import axios from 'axios'
@@ -100,28 +101,41 @@ const OrderConfirm = () => {
                 </div>
 
                 {/* Envío */}
-                <div className={styles.infoBlock}>
-                    <p className={styles.infoLabel}>Envío</p>
-                    <p className={styles.infoValue}>{SHIPPING_LABELS[order.shippingType] || order.shippingType}</p>
-                    {order.shippingType === 'correo_argentino' && (
-                        <p className={styles.infoValue}>{order.address}, {order.city} ({order.zipCode})</p>
-                    )}
-                    {order.shippingType === 'coordinado' && (
-                        <p className={styles.infoValue}>{order.address}, {order.city}</p>
-                    )}
-                    {order.shippingType === 'retiro_en_local' && (
-                        <p className={styles.infoValue}>Entre Ríos 1529, López, Santa Fe</p> 
-                    )}
-                </div>
+                {(order.shippingType === 'coordinado' || order.shippingType === 'retiro_en_local') ? (
+                    <div className={styles.shippingCard}>
+                        <p className={styles.infoLabel}>Envío</p>
+                        <p className={styles.infoValue}>{SHIPPING_LABELS[order.shippingType]}</p>
 
-                {(order.shippingType === 'coordinado' || order.shippingType === 'retiro_en_local') && (
-                        <a href={buildWhatsAppLink(order, orderId)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.whatsappBtn}
-                    >
-                        Coordinar por WhatsApp
-                    </a>
+                        {order.shippingType === 'coordinado' && (
+                            <p className={styles.infoValue}>{order.address}, {order.city}</p>
+                        )}
+                        {order.shippingType === 'retiro_en_local' && (
+                            <p className={styles.infoValue}>Entre Ríos 1529, López, Santa Fe</p>
+                        )}
+
+                        <p className={styles.shippingNote}>
+                            {order.shippingType === 'coordinado'
+                                ? 'Nos vamos a contactar por WhatsApp para coordinar el día y la entrega según tu zona.'
+                                : 'Coordiná por WhatsApp el día y horario en que vas a pasar a retirar tu pedido.'}
+                        </p>
+
+                    <a   href={buildWhatsAppLink(order, orderId)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.whatsappBtn}
+                        >
+                        <FaWhatsapp size={18} className={styles.whatsappIcon} />
+                            Coordinar por WhatsApp
+                        </a>
+                    </div>
+                ) : (
+                    <div className={styles.infoBlock}>
+                        <p className={styles.infoLabel}>Envío</p>
+                        <p className={styles.infoValue}>{SHIPPING_LABELS[order.shippingType] || order.shippingType}</p>
+                        {order.shippingType === 'correo_argentino' && (
+                            <p className={styles.infoValue}>{order.address}, {order.city} ({order.zipCode})</p>
+                        )}
+                    </div>
                 )}
 
                 {/* Medio de pago */}
