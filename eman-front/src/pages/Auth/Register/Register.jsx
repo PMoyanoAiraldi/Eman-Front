@@ -2,6 +2,12 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Eye, EyeOff, Check } from 'lucide-react'
 import { authService } from '../../../api/authService'
+import {
+    sanitizeName, sanitizePhone, sanitizeAddress,
+    validateName, validateEmail, validatePhone,
+    validateAddress, validateCity, validateProvince,
+    PROVINCIAS_ARGENTINAS,
+} from '../../../utils/registerValidation'
 import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb'
 import styles from './Register.module.css'
 
@@ -12,6 +18,7 @@ const passwordRules = [
     { label: '1 número', test: (p) => /\d/.test(p) },
     { label: '1 carácter especial', test: (p) => /[=!@#$%^&*]/.test(p) },
 ]
+
 
 const RegisterPage = () => {
     const navigate = useNavigate()
@@ -32,31 +39,66 @@ const RegisterPage = () => {
     const [passwordFocused, setPasswordFocused] = useState(false)
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({})
+    
+
+    const validators = {
+        name: validateName,
+        email: validateEmail,
+        address: validateAddress,
+        city: validateCity,
+        province: validateProvince,
+        phone: validatePhone,
+    }
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        if (validators[name]) {
+            setErrors((prev) => ({ ...prev, [name]: validators[name](value) }))
+        }
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target
+        let cleanValue = value
 
-        // Teléfono: solo permite números
-        if (name === 'phone' && !/^\d*$/.test(value)) return
+        if (name === 'name') cleanValue = sanitizeName(value)
+        if (name === 'address') cleanValue = sanitizeAddress(value)
+        if (name === 'phone') cleanValue = sanitizePhone(value)
 
-        setForm({ ...form, [name]: value })
+        setForm({ ...form, [name]: cleanValue })
         setError(null)
+
+        // si el campo ya tiene error visible, re-validar en cada cambio
+        if (errors[name] && validators[name]) {
+            setErrors((prev) => ({ ...prev, [name]: validators[name](cleanValue) }))
+        }
     }
 
     const passwordValid = passwordRules.every(r => r.test(form.password))
 
+    
+    const validateForm = () => {
+        const newErrors = {
+            name: validateName(form.name),
+            email: validateEmail(form.email),
+            address: validateAddress(form.address),
+            city: validateCity(form.city),
+            province: validateProvince(form.province),
+            phone: validatePhone(form.phone),
+        }
+
+        if (!passwordValid) newErrors.password = 'La contraseña no cumple los requisitos'
+        if (form.password !== form.confirmPassword) newErrors.confirmPassword = 'Las contraseñas no coinciden'
+
+        setErrors(newErrors)
+        return Object.values(newErrors).every((e) => !e)
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!passwordValid) {
-            setError('La contraseña no cumple los requisitos')
-            return
-        }
-
-        if (form.password !== form.confirmPassword) {
-            setError('Las contraseñas no coinciden')
-            return
-        }
+        if (!validateForm()) return
 
         setLoading(true)
         setError(null)
@@ -73,6 +115,7 @@ const RegisterPage = () => {
             setLoading(false)
         }
     }
+    
 
     return (
         <div className={styles.page}>
@@ -85,7 +128,7 @@ const RegisterPage = () => {
                 <h1 className={styles.title}>Crear cuenta</h1>
                 <p className={styles.subtitle}>Completá tus datos para registrarte y hacer seguimiento de tus pedidos.</p>
 
-                <form className={styles.form} onSubmit={handleSubmit}>
+                <form className={styles.form} onSubmit={handleSubmit} noValidate>
 
                     <p className={styles.sectionLabel}>Datos personales</p>
 
@@ -98,8 +141,10 @@ const RegisterPage = () => {
                             placeholder="Ej: Juan Pérez"
                             value={form.name}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        {errors.name && <p className={styles.error}>{errors.name}</p>}
                     </div>
 
                     <div className={styles.field}>
@@ -111,8 +156,10 @@ const RegisterPage = () => {
                             placeholder="Ej: juan@gmail.com"
                             value={form.email}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        {errors.email && <p className={styles.error}>{errors.email}</p>}
                     </div>
                     <div className={styles.row}>
                         <div className={styles.field}>
@@ -197,8 +244,10 @@ const RegisterPage = () => {
                             placeholder="Ej: Av. Corrientes 1234"
                             value={form.address}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             required
                         />
+                        {errors.address && <p className={styles.error}>{errors.address}</p>}
                     </div>
 
                     <div className={styles.row}>
@@ -211,20 +260,27 @@ const RegisterPage = () => {
                                 placeholder="Ej: Buenos Aires"
                                 value={form.city}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 required
                             />
+                            {errors.city && <p className={styles.error}>{errors.city}</p>}
                         </div>
                         <div className={styles.field}>
                             <label className={styles.label}>PROVINCIA</label>
-                            <input
+                            <select
                                 className={styles.input}
-                                type="text"
                                 name="province"
-                                placeholder="Ej: Santa Fe"
                                 value={form.province}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 required
-                            />
+                            >
+                            <option value="">Seleccioná...</option>
+                                {PROVINCIAS_ARGENTINAS.map((p) => (
+                                    <option key={p} value={p}>{p}</option>
+                                ))}
+                            </select>
+                            {errors.province && <p className={styles.error}>{errors.province}</p>}
                         </div>
                         </div>
                         <div className={styles.field}>
@@ -236,9 +292,11 @@ const RegisterPage = () => {
                                 placeholder="Ej: 3404123456"
                                 value={form.phone}
                                 onChange={handleChange}
+                                onBlur={handleBlur}
                                 required
                                 maxLength={20}
                             />
+                            {errors.phone && <p className={styles.error}>{errors.phone}</p>}
                         </div>
                     
 
