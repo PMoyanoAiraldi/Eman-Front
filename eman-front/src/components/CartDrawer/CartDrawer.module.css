@@ -65,6 +65,45 @@
     font-size: 14px;
 }
 
+.categoryLinks {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 260px;
+}
+
+.categoryLabel {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.categoryButtons {
+    display: flex;
+    gap: 8px;
+}
+
+.categoryButtons a {
+    flex: 1;
+    text-align: center;
+    padding: 10px 6px;
+    border: 1.5px solid var(--color-gold);
+    border-radius: 10px;
+    color: var(--color-gold);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: background 0.15s;
+}
+
+.categoryButtons a:hover {
+    background: rgba(201, 168, 76, 0.25);
+}
+
 .items {
     flex: 1;
     overflow-y: auto;

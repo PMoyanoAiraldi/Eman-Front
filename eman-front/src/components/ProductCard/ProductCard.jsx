@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import styles from './ProductCard.module.css'
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product}) => {
     const navigate = useNavigate()
     const image = product.images?.[0]?.url
     const hasStock = product.variants?.some(s => s.stock > 0)
@@ -35,6 +35,7 @@ const ProductCard = ({ product }) => {
             <p className={styles.price}>
             ${Number(product.price).toLocaleString('es-AR')}
             </p>
+
             {sizesWithStock?.length > 0 && (
             <div className={styles.sizes}>
                 {sizesWithStock.map(ps => (

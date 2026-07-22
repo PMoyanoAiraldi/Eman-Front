@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal } from '../../redux/slices/cartReducer'
 import styles from './CartDrawer.module.css'
 import { Trash2 } from 'lucide-react'
@@ -14,7 +14,6 @@ export default function CartDrawer() {
         dispatch(closeCart())
         navigate('/checkout')
     }
-
 
     return (
         <>
@@ -31,8 +30,17 @@ export default function CartDrawer() {
                 <div className={styles.empty}>
                     <p>Tu carrito está vacío</p>
                     <button className={styles.keepShoppingBtn} onClick={() => dispatch(closeCart())}>
-                        Ver productos
+                        Seguir comprando
                     </button>
+
+                    <div className={styles.categoryLinks}>
+                        <span className={styles.categoryLabel}>¿Qué estás buscando?</span>
+                        <div className={styles.categoryButtons}>
+                            <Link to="/mujer" onClick={() => dispatch(closeCart())}>Mujer</Link>
+                            <Link to="/hombre" onClick={() => dispatch(closeCart())}>Hombre</Link>
+                            <Link to="/deportivo" onClick={() => dispatch(closeCart())}>Deportivo</Link>
+                        </div>
+                    </div>
                 </div>
             ) : (
                 <>
