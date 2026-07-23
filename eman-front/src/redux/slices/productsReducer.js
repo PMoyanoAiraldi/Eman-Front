@@ -44,7 +44,9 @@ const initialState = {
     products: [],           // productos de la categoría activa
     featuredProducts: [],   // productos destacados del home
     selectedProduct: null,  // producto del detalle
-    loading: false,
+    loadingProducts: false,
+    loadingFeatured: false,
+    loadingProduct: false,
     error: null
 };
 
@@ -63,43 +65,43 @@ export const productsSlice = createSlice({
         builder
             // fetchProductsByCategory
             .addCase(fetchProductsByCategory.pending, (state) => {
-                state.loading = true;
+                state.loadingProducts = true;
                 state.error = null;
             })
             .addCase(fetchProductsByCategory.fulfilled, (state, action) => {
-                state.loading = false;
+                state.loadingProducts = false;
                 state.products = action.payload.products  // reemplaza toda la lista
             })
             .addCase(fetchProductsByCategory.rejected, (state, action) => {
-                state.loading = false;
+                state.loadingProducts = false;
                 state.error = action.payload;
             })
 
             // fetchFeaturedProducts
             .addCase(fetchFeaturedProducts.pending, (state) => {
-                state.loading = true
+                state.loadingFeatured  = true
                 state.error = null
             })
             .addCase(fetchFeaturedProducts.fulfilled, (state, action) => {
-                state.loading = false
+                state.loadingFeatured  = false
                 state.featuredProducts = action.payload
             })
             .addCase(fetchFeaturedProducts.rejected, (state, action) => {
-                state.loading = false
+                state.loadingFeatured  = false
                 state.error = action.payload
             })
 
             // fetchProductById
             .addCase(fetchProductById.pending, (state) => {
-                state.loading = true
+                state.loadingProduct  = true
                 state.error = null
             })
             .addCase(fetchProductById.fulfilled, (state, action) => {
-                state.loading = false
+                state.loadingProduct  = false
                 state.selectedProduct = action.payload
             })
             .addCase(fetchProductById.rejected, (state, action) => {
-                state.loading = false
+                state.loadingProduct  = false
                 state.error = action.payload
             })
         }

@@ -15,7 +15,7 @@ const CategoryPage = () => {
     const dispatch = useDispatch()
     const subParam = searchParams.get('sub')
 
-    const { products, loading } = useSelector(state => state.products)
+    const { products, loadingProducts: loading  } = useSelector(state => state.products)
     const { subCategories } = useSelector(state => state.subCategories)
 
     const [categoryId, setCategoryId] = useState(null)

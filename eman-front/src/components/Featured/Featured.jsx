@@ -6,7 +6,7 @@ import ProductCard from '../ProductCard/ProductCard'
 
 const FeaturedProducts = () => {
     const dispatch = useDispatch()
-    const { featuredProducts, loading } = useSelector(state => state.products)
+    const { featuredProducts, loadingFeatured: loading  } = useSelector(state => state.products)
     
 
     useEffect(() => {

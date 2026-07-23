@@ -11,7 +11,7 @@ export default function ProductDetail() {
     const { id } = useParams();
     const dispatch = useDispatch();
     
-    const { selectedProduct: product, loading, error } = useSelector(
+    const { selectedProduct: product, loadingProduct: loading, error } = useSelector(
         (state) => state.products
     );
     

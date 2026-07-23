@@ -256,6 +256,61 @@
     align-items: center;
 }
 
+.emptyBtn {
+    height: 48px;
+    padding: 0 2rem;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s;
+}
+
+.emptyBtn:hover {
+    background: #444441;
+}
+
+.emptyCategories {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.emptyCategoriesLabel {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.emptyCategoriesRow {
+    display: flex;
+    gap: 8px;
+}
+
+.emptyCategoriesRow button {
+    padding: 10px 18px;
+    background: none;
+    border: 1.5px solid var(--color-gold);
+    border-radius: 8px;
+    color: var(--color-gold);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.emptyCategoriesRow button:hover {
+    background: rgba(201, 168, 76, 0.25);
+}
+
 .localInfo {
     background: var(--color-bg);
     border: 0.5px solid #e0e0dc;

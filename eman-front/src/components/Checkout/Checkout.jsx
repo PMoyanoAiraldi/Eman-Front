@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
-import { sanitizeName, sanitizePhone, validateName, validateEmail, validatePhone, validateStep1 } from '../../utils/checkoutValidation'
+import { sanitizeName, sanitizePhone, sanitizeAddress, sanitizeZipCode, validateName, validateEmail, validatePhone, validateAddress, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
@@ -11,6 +11,23 @@ import styles from './Checkout.module.css'
 import axios from 'axios'
 import { Payment } from '@mercadopago/sdk-react'
 
+
+    const fieldValidators = {
+        guestName:  validateName,
+        guestEmail: validateEmail,
+        guestPhone: validatePhone,
+        address:    validateAddress,
+        city:       validateCity,
+        zipCode:    validateZipCode,
+        locality:   validateLocality,
+    }
+
+    const fieldSanitizers = {
+        guestName:  sanitizeName,
+        guestPhone: sanitizePhone,
+        address:    sanitizeAddress,
+        zipCode:    sanitizeZipCode,
+}
 
 const Checkout = () => {
     const dispatch = useDispatch()
@@ -46,26 +63,15 @@ const Checkout = () => {
 
 const handleChange = (e) => {
     const { name, value } = e.target
-    let cleanValue = value
-
-    // sanitiza directo en el input: ni se escribe lo inválido
-    if (name === 'guestName')  cleanValue = sanitizeName(value)
-    if (name === 'guestPhone') cleanValue = sanitizePhone(value)
+    const sanitizer = fieldSanitizers[name]
+    const cleanValue = sanitizer ? sanitizer(value) : value
 
     setForm({ ...form, [name]: cleanValue })
 
-    const fieldValidators = {
-        guestName:  validateName,
-        guestEmail: validateEmail,
-        guestPhone: validatePhone,
-    }
     const validator = fieldValidators[name]
-
-    if (validator) {
-        if (touched[name]) {
-            setErrors({ ...errors, [name]: validator(cleanValue) })
-        }
-    } else {
+    if (validator && touched[name]) {
+        setErrors({ ...errors, [name]: validator(cleanValue) })
+    } else if (!validator){
         // paso 2: comportamiento simple, borra el error apenas se edita
         setErrors({ ...errors, [name]: '' })
     }
@@ -75,93 +81,90 @@ const handleBlur = (e) => {
     const { name, value } = e.target
     setTouched({ ...touched, [name]: true })
 
-    const fieldValidators = {
-        guestName:  validateName,
-        guestEmail: validateEmail,
-        guestPhone: validatePhone,
-    }
     const validator = fieldValidators[name]
     if (validator) {
         setErrors({ ...errors, [name]: validator(value) })
     }
 }
 
+const handleShippingTypeChange = (e) => {
+    const { value } = e.target
+    setForm({
+        ...form,
+        shippingType: value,
+        address:  '',
+        city:     '',
+        zipCode:  '',
+        locality: '',
+    })
+    setErrors({ ...errors, address: '', city: '', zipCode: '', locality: '' })
+    setTouched({ ...touched, address: false, city: false, zipCode: false, locality: false })
+}
 
-    const validateStep2 = () => {
-        const e = {}
-
-        if (form.shippingType === 'correo_argentino') {
-            if (!form.address.trim()) e.address = 'La dirección es requerida'
-            if (!form.city.trim())    e.city    = 'La ciudad es requerida'
-            if (!form.zipCode.trim()) e.zipCode = 'El código postal es requerido'
-        }
-
-        if (form.shippingType === 'coordinado') {
-        if (!form.locality) e.locality = 'Seleccioná una localidad'
-        if (!form.address.trim()) e.address = 'La dirección es requerida'
-        }
-
-        setErrors(e)
-        return Object.keys(e).length === 0
-    }
-
-    const handleNext = async () => {
-        if (step === 1) {
-            const stepErrors = validateStep1(form)
-            setErrors(stepErrors)
-        if (Object.keys(stepErrors).length > 0) {
-            setTouched({ guestName: true, guestEmail: true, guestPhone: true })
-            return
-        }
-        setStep(s => s + 1)
+const handleNext = async () => {
+    if (step === 1) {
+        const stepErrors = validateStep1(form)
+        setErrors(stepErrors)
+    if (Object.keys(stepErrors).length > 0) {
+        setTouched({ guestName: true, guestEmail: true, guestPhone: true })
         return
     }
+    setStep(s => s + 1)
+    return
+}
 
-        if (step === 2){
-        if (!validateStep2()) return
+    if (step === 2){
+        const stepErrors = validateStep2(form)
+        console.log('stepErrors:', stepErrors)
+        setErrors(stepErrors)
+        if (Object.keys(stepErrors).length > 0) {
+        setTouched({ ...touched, address: true, city: true, zipCode: true, locality: true })
+        return
+    }
         setLoading(true)
     try {
         const orderRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/order`,
-        {
-            guestName:    form.guestName,
-            guestEmail:   form.guestEmail,
-            guestPhone:   form.guestPhone,
-            address:      form.address || 'Retiro en local',
-            city:         form.city || form.locality || 'Gálvez',
-            zipCode:      form.zipCode,
-            shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
-            shippingCost,
-            items: items.map(item => ({
-                productId:   item.id,
-                variantId:   item.variantId,
-                productName: item.name,
-                quantity:    item.quantity,
-                unitPrice:   Number(item.price),
-            }))
-            }
-        )
+            {
+                guestName:    form.guestName,
+                guestEmail:   form.guestEmail,
+                guestPhone:   form.guestPhone,
+                address:      form.address || 'Retiro en local',
+                city:         form.city || form.locality || 'Gálvez',
+                zipCode:      form.shippingType === 'correo_argentino' ? form.zipCode : undefined,
+                shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
+                shippingCost,
+                items: items.map(item => ({
+                    productId:   item.id,
+                    variantId:   item.variantId,
+                    productName: item.name,
+                    quantity:    item.quantity,
+                    unitPrice:   Number(item.price),
+                }))
+                }
+            )
         const order = orderRes.data
         setOrderId(order.id)
 
-        // 2. Crear preferencia de MercadoPago
-        const prefRes = await axios.post(
-            `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/payments/create-preference`,
-            {
-                orderId:      order.id,
-                shippingCost,
-            }
-        )
-        setPreferenceId(prefRes.data.preferenceId)
-        setStep(s => s + 1)
-
-        } catch (err) {
-            setToast({
-            type: 'error',
-            message: err.response?.data?.message || err.message || 'Error al procesar',
-        })
-        } finally {
-            setLoading(false)
+// 2. Crear preferencia de MercadoPago
+const prefRes = await axios.post(
+    `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/payments/create-preference`,
+        {
+            orderId:      order.id,
+            shippingCost,
         }
+    )
+    setPreferenceId(prefRes.data.preferenceId)
+    setStep(s => s + 1)
+
+    } catch (err) {
+        console.error('Error completo:', err.response?.data || err.message)
+    setToast({
+        type: 'error',
+            message: err.response?.data?.message || err.message || 'Error al procesar',
+    })
+    } finally {
+        setLoading(false)
+    }
         return
     }
     
@@ -171,21 +174,32 @@ const handleBlur = (e) => {
     }
     
 }
-    const handleBack = () => setStep(s => s - 1)
 
-    const shippingCost = form.shippingType === 'coordinado' ? 0 : 0 // TODO: API Correo Argentino, reemplaza con credenciales
+const handleBack = () => setStep(s => s - 1)
 
+const shippingCost = form.shippingType === 'coordinado' ? 0 : 0 // TODO: API Correo Argentino, reemplaza con credenciales
 
-    if (items.length === 0 && step < 3) {
-            return (
-                <div className={styles.empty}>
-                    <p>Tu carrito está vacío</p>
-                    <button onClick={() => navigate('/')}>Ver productos</button>
-                </div>
-            )
-        }
-
+if (items.length === 0 && step < 3) {
     return (
+        <div className={styles.empty}>
+            <p>Tu carrito está vacío</p>
+            <button className={styles.emptyBtn} onClick={() => navigate('/')}>
+                Ver productos
+            </button>
+
+            <div className={styles.emptyCategories}>
+                <span className={styles.emptyCategoriesLabel}>¿Qué estás buscando?</span>
+                <div className={styles.emptyCategoriesRow}>
+                    <button onClick={() => navigate('/mujer')}>Mujer</button>
+                    <button onClick={() => navigate('/hombre')}>Hombre</button>
+                    <button onClick={() => navigate('/deportivo')}>Deportivo</button>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+return (
         <div className={styles.page}>
             <Breadcrumb items={[
                 { label: 'Inicio', path: '/' },
@@ -259,7 +273,7 @@ const handleBlur = (e) => {
                                     name="shippingType"
                                     value="correo_argentino"
                                     checked={form.shippingType === 'correo_argentino'}
-                                    onChange={handleChange}
+                                    onChange={handleShippingTypeChange}
                             />
                     <div>
                     <p className={styles.shippingName}>Correo Argentino</p>
@@ -274,7 +288,7 @@ const handleBlur = (e) => {
                             name="shippingType"
                             value="coordinado"
                             checked={form.shippingType === 'coordinado'}
-                            onChange={handleChange}
+                            onChange={handleShippingTypeChange}
                         />
                     <div>
                 <p className={styles.shippingName}>Coordinado</p>
@@ -283,7 +297,7 @@ const handleBlur = (e) => {
             <span className={styles.shippingPrice}>Gratis</span>
             </label>
             <label className={`${styles.shippingOption} ${form.shippingType === 'retiro' ? styles.shippingOptionActive : ''}`}>
-                    <input type="radio" name="shippingType" value="retiro" checked={form.shippingType === 'retiro'} onChange={handleChange} />
+                    <input type="radio" name="shippingType" value="retiro" checked={form.shippingType === 'retiro'} onChange={handleShippingTypeChange} />
                     <div>
                         <p className={styles.shippingName}>Retiro en local</p>
                         <p className={styles.shippingDesc}>Entre Ríos 1529 — Lun a Sáb 10 a 12hs y 17 a 20hs</p>
@@ -303,6 +317,7 @@ const handleBlur = (e) => {
                         name="address"
                         value={form.address}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="Ej: San Martín 123"
                     />
                 {errors.address && <span className={styles.error}>{errors.address}</span>}
@@ -316,6 +331,7 @@ const handleBlur = (e) => {
                             name="city"
                             value={form.city}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="Ej: Galvez"
                         />
                     {errors.city && <span className={styles.error}>{errors.city}</span>}
@@ -328,6 +344,7 @@ const handleBlur = (e) => {
                             name="zipCode"
                             value={form.zipCode}
                             onChange={handleChange}
+                            onBlur={handleBlur}
                             placeholder="Ej: 2538"
                         />
                     {errors.zipCode && <span className={styles.error}>{errors.zipCode}</span>}
@@ -361,6 +378,7 @@ const handleBlur = (e) => {
                         name="address"
                         value={form.address}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                         placeholder="Ej: San Martín 123"
                     />
                     {errors.address && <span className={styles.error}>{errors.address}</span>}

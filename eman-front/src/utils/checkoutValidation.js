@@ -1,4 +1,6 @@
 const NAME_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü' -]*$/
+const ADDRESS_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü0-9°.,#º -]*$/
+const ZIPCODE_REGEX = /^[A-Za-z0-9]*$/
 const EMAIL_REGEX = /\S+@\S+\.\S+/
 const PHONE_MAX_LENGTH = 10
 
@@ -12,9 +14,26 @@ export const sanitizeName = (value) => {
         .join('')
 }
 
+export const sanitizeAddress = (value) => {
+  // letras, números, espacios y algunos signos típicos de direcciones (Av. Corrientes 1234, 2° B)
+    return value
+        .split('')
+        .filter((char) => ADDRESS_REGEX.test(char))
+        .join('')
+}
+
+
 export const sanitizePhone = (value) => {
   // solo dígitos, tope de 10
     return value.replace(/\D/g, '').slice(0, PHONE_MAX_LENGTH)
+}
+
+export const sanitizeZipCode = (value) => {
+    return value
+        .split('')
+        .filter((char) => ZIPCODE_REGEX.test(char))
+        .slice(0, 8)
+        .join('')
 }
 
 // ── Validadores de un solo campo: devuelven un string de error o '' si está OK ──
@@ -42,7 +61,34 @@ export const validatePhone = (value) => {
     return ''
 }
 
-// ── Validador de paso completo: mismo formato que tu validateStep1 actual ──
+export const validateAddress = (value) => {
+    const v = value.trim()
+    if (!v) return 'La dirección es requerida'
+    if (v.length < 5) return 'Ingresá una dirección completa'
+    if (!/\d/.test(v)) return 'Incluí el número de la dirección'
+    return ''
+}
+
+export const validateCity = (value) => {
+    const v = value.trim()
+    if (!v) return 'La ciudad es requerida'
+    if (v.length < 3) return 'Ingresá una ciudad válida'
+    return ''
+}
+
+export const validateZipCode = (value) => {
+    const v = value.trim()
+    if (!v) return 'El código postal es requerido'
+    if (v.length < 4) return 'Código postal inválido'
+    return ''
+}
+
+export const validateLocality = (value) => {
+    if (!value) return 'Seleccioná una localidad'
+    return ''
+}
+
+// ── Validador de paso completo ──
 
 export const validateStep1 = (form) => {
     const errors = {}
@@ -58,5 +104,30 @@ export const validateStep1 = (form) => {
 
     return errors
 }
+
+export const validateStep2 = (form) => {
+    const errors = {}
+
+    if (form.shippingType === 'correo_argentino') {
+        const addressError = validateAddress(form.address)
+        if (addressError) errors.address = addressError
+
+        const cityError = validateCity(form.city)
+        if (cityError) errors.city = cityError
+
+        const zipError = validateZipCode(form.zipCode)
+        if (zipError) errors.zipCode = zipError
+    }
+    if (form.shippingType === 'coordinado') {
+        const localityError = validateLocality(form.locality)
+        if (localityError) errors.locality = localityError
+
+        const addressError = validateAddress(form.address)
+        if (addressError) errors.address = addressError
+    }
+
+    return errors
+}
+
 
 export const PHONE_LENGTH = PHONE_MAX_LENGTH
