@@ -8,7 +8,7 @@ import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
 import styles from './Checkout.module.css'
-import axios from 'axios'
+import axiosInstance from '../../api/axiosInstance'
 import { Payment } from '@mercadopago/sdk-react'
 
 
@@ -123,7 +123,7 @@ const handleNext = async () => {
     }
         setLoading(true)
     try {
-        const orderRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/order`,
+        const orderRes = await axiosInstance.post(`/order`,
             {
                 guestName:    form.guestName,
                 guestEmail:   form.guestEmail,
@@ -146,8 +146,8 @@ const handleNext = async () => {
         setOrderId(order.id)
 
 // 2. Crear preferencia de MercadoPago
-const prefRes = await axios.post(
-    `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/payments/create-preference`,
+const prefRes = await axiosInstance.post(
+    `/payments/create-preference`,
         {
             orderId:      order.id,
             shippingCost,
@@ -451,8 +451,8 @@ return (
                             }}
                             onSubmit={async ({ formData }) => {
                                 try {
-                                    const { data } = await axios.post(
-                                        `${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/payments/process-payment`,
+                                    const { data } = await axiosInstance.post(
+                                        `/payments/process-payment`,
                                         { formData, orderId }
                                     )
 
