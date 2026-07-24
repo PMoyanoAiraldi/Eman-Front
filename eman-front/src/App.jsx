@@ -25,6 +25,7 @@ import Terms from './pages/Terms/Terms';
 import OrderPending from './pages/OrderPending/OrderPending';
 import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
 import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
+import MyPurchases from './pages/MyPurchases/MyPurchases';
 
 
 function App() {
@@ -72,6 +73,12 @@ function App() {
                   <ProfilePage />
               </ProtectedRoute>
           } />
+
+        <Route path="/mis-compras" element={
+            <ProtectedRoute>
+                <MyPurchases />
+            </ProtectedRoute>
+        } />
         <Route path="/:categoria" element={<CategoryPage />} />
       </Route>
       <Route path="/admin" element={
