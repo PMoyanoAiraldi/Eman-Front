@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import axiosInstance from '../../api/axiosInstance'
@@ -50,7 +51,11 @@ const MyPurchases = () => {
                     {orders.map(order => {
                         const lastPayment = order.payments?.[order.payments.length - 1]
                         return (
-                            <div key={order.id} className={styles.orderCard}>
+                            <Link
+                                key={order.id}
+                                to={`/mis-compras/${order.id}`}
+                                className={styles.orderCard}
+                            >
                                 <div className={styles.orderHeader}>
                                     <span className={styles.orderId}>
                                         Orden #{order.id.slice(0, 8)}
@@ -99,8 +104,10 @@ const MyPurchases = () => {
                                         </span>
                                     </div>
                                     <span className={styles.total}>Total: ${order.total}</span>
+                                    <span className={styles.viewDetail}>Ver detalle →</span>
                                 </div>
-                            </div>
+                            </Link>
+                            
                         )
                     })}
                 </div>

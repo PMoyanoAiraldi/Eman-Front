@@ -26,6 +26,8 @@ import OrderPending from './pages/OrderPending/OrderPending';
 import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
 import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
 import MyPurchases from './pages/MyPurchases/MyPurchases';
+import OrderDetail from './pages/OrderDetail/OrderDetail';
+
 
 
 function App() {
@@ -79,6 +81,11 @@ function App() {
                 <MyPurchases />
             </ProtectedRoute>
         } />
+        <Route path="/mis-compras/:orderId" element={
+      <ProtectedRoute>
+          <OrderDetail />
+      </ProtectedRoute>
+  } />
         <Route path="/:categoria" element={<CategoryPage />} />
       </Route>
       <Route path="/admin" element={

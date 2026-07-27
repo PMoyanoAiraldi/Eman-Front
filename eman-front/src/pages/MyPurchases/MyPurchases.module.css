@@ -57,11 +57,21 @@
 }
 
 .orderCard {
+    display: block;
+    text-decoration: none;
+    color: inherit;
     background: #f5f3ef;
     border: 1px solid #d9d4c7;
     border-radius: 4px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     padding: 1.25rem 1.5rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.orderCard:hover {
+    border-color: var(--color-gold);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .orderHeader {
@@ -179,6 +189,26 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: #999;
+}
+
+.footerRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.15rem;
+}
+
+.viewDetail {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    transition: transform 0.2s ease;
+}
+
+.orderCard:hover .viewDetail {
+    transform: translateX(3px);
 }
 
 .total {
