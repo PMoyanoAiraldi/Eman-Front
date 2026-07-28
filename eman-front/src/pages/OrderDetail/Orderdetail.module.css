@@ -23,7 +23,54 @@
     font-family: var(--font-sans);
     font-size: 0.9rem;
     color: #9B9B9B;
-    margin-bottom: 32px;
+    
+}
+
+.detailCard {
+    background: #f5f3ef;
+    border: 1px solid #d9d4c7;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.orderMeta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.orderState {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid #d9d4c7;
+    color: #888;
+    border-radius: 2px;
+    background: #fff;
+}
+
+.orderState.confirmado,
+.orderState.enviado {
+    color: #2B2B2B;
+    border-color: var(--color-gold);
+}
+
+.orderState.entregado {
+    background: #2B2B2B;
+    color: #fff;
+    border-color: #2B2B2B;
+}
+
+.orderState.cancelado {
+    color: #c0392b;
+    border-color: #e5b3b3;
 }
 
 .btn {
@@ -40,4 +87,11 @@
 
 .btn:hover {
     background-color: #B8973E;
+}
+
+.totals {
+    background: #fff;
+    border-radius: 4px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0 0;
 }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import axiosInstance from '../../api/axiosInstance'
+import { formatCurrency } from '../../utils/formatCurrency'
 import styles from './MyPurchases.module.css'
 
 const stateLabels = {
@@ -85,7 +86,7 @@ const MyPurchases = () => {
                                                         {detail.variant?.color?.name} · Talle {detail.variant?.size?.name} · x{detail.quantity}
                                                     </p>
                                                 </div>
-                                                <span className={styles.itemPrice}>${detail.unitPrice}</span>
+                                                <span className={styles.itemPrice}>${formatCurrency(detail.unitPrice)}</span>
                                             </div>
                                         )
                                     })}
@@ -103,7 +104,7 @@ const MyPurchases = () => {
                                             {order.shippingType?.replace(/_/g, ' ')}
                                         </span>
                                     </div>
-                                    <span className={styles.total}>Total: ${order.total}</span>
+                                    <span className={styles.total}>Total: ${formatCurrency(order.total)}</span>
                                     <span className={styles.viewDetail}>Ver detalle →</span>
                                 </div>
                             </Link>

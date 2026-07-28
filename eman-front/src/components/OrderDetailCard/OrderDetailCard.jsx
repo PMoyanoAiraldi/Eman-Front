@@ -1,5 +1,6 @@
 import { FaWhatsapp } from 'react-icons/fa'
 import styles from './OrderDetailCard.module.css'
+import { formatCurrency } from '../../utils/formatCurrency'
 
 const SHIPPING_LABELS = {
     correo_argentino: 'Correo Argentino',
@@ -42,7 +43,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                             </p>
                         </div>
                         <span className={styles.summaryPrice}>
-                            ${Number(item.unitPrice * item.quantity).toLocaleString('es-AR')}
+                            ${formatCurrency(item.unitPrice * item.quantity)}
                         </span>
                     </div>
                 ))}
@@ -95,7 +96,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <p className={styles.infoValue}>
                         {PAYMENT_METHOD_LABELS[order.payment.method] || order.payment.method}
                         {order.payment.installments > 1 && (
-                            <> · {order.payment.installments} cuotas de ${Number(order.payment.installmentsAmount).toLocaleString('es-AR')}</>
+                            <> · {order.payment.installments} cuotas de ${formatCurrency(order.payment.installmentsAmount)}</>
                         )}
                     </p>
                     {order.payment.installments > 1 && order.total !== order.catalogTotal && (
@@ -108,12 +109,12 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
             <div className={styles.totals}>
                 <div className={styles.totalRow}>
                     <span>Envío</span>
-                    <span>{order.shippingCost === 0 ? 'Gratis' : `$${Number(order.shippingCost).toLocaleString('es-AR')}`}</span>
+                    <span>{order.shippingCost === 0 ? 'Gratis' : `$${formatCurrency(order.shippingCost)}`}</span>
                 </div>
                 <hr className={styles.divider} />
                 <div className={`${styles.totalRow} ${styles.totalFinal}`}>
                     <span>Total</span>
-                    <span>${Number(order.total).toLocaleString('es-AR')}</span>
+                    <span>${formatCurrency(order.total)}</span>
                 </div>
             </div>
         </>

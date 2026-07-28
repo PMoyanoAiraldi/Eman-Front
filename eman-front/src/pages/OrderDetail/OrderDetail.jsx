@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import OrderDetailCard from '../../components/OrderDetailCard/OrderDetailCard'
 import axiosInstance from '../../api/axiosInstance'
-import styles from './OrderDetail.module.css' // heredá estructura de OrderConfirm.module.css
+import { stateLabels} from '../../constants/orderLabels'
+import styles from './OrderDetail.module.css' 
+
 
 const OrderDetail = () => {
     const { orderId } = useParams()
@@ -45,9 +47,17 @@ const OrderDetail = () => {
 
             <div className={styles.content}>
                 <h1 className={styles.title}>Detalle de tu pedido</h1>
-                <p className={styles.orderId}>Orden #{orderId.slice(0, 8)} · {new Date(order.createdAt).toLocaleDateString('es-AR')}</p>
 
+                <div className={styles.orderMeta}>
+                <span className={styles.orderId}>Orden #{orderId.slice(0, 8)} · {new Date(order.createdAt).toLocaleDateString('es-AR')}</span>
+                <span className={`${styles.orderState} ${styles[order.state]}`}>
+                    {stateLabels[order.state] ?? order.state}
+                </span>
+                </div>
+
+                <div className={styles.detailCard}>
                 <OrderDetailCard order={order} orderId={orderId} showWhatsApp={false} />
+                </div>
 
                 <button className={styles.btn} onClick={() => navigate('/mis-compras')}>
                     Volver a Mis Compras
