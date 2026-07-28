@@ -17,8 +17,8 @@
 }
 
 .summaryImg {
-    width: 64px;
-    height: 64px;
+    width: 68px;
+    height: 68px;
     object-fit: cover;
     border-radius: 6px;
     flex-shrink: 0;
@@ -124,23 +124,39 @@
 /* Totales */
 .totals {
     width: 100%;
-    margin: 16px 0 32px;
-    background: #fff;
-    border-radius: 4px;
-    padding: 1rem 1.25rem;
+    margin: 24px 0 0;
+    
 }
 
 .totalRow {
     display: flex;
     justify-content: space-between;
     font-family: var(--font-sans);
-    font-size: 0.9rem;
-    color: #6B6B6B;
-    padding: 6px 0;
+    font-size: 0.85rem;
+    color: #9B9B9B;
+    padding: 4px 0;
 }
 
 .totalFinal {
-    font-size: 1.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #E0DBCC;
+}
+
+.totalFinal span:first-child {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #9B9B9B;
+}
+
+.totalFinal span:last-child {
+    font-family: var(--font-sans);
+    font-size: 1.2rem;
     color: #2B2B2B;
     font-weight: 600;
 }

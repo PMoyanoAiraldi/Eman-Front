@@ -108,8 +108,8 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
             {/* Totales */}
             <div className={styles.totals}>
                 <div className={styles.totalRow}>
-                    <span>Envío</span>
-                    <span>{order.shippingCost === 0 ? 'Gratis' : `$${formatCurrency(order.shippingCost)}`}</span>
+                    <span>Costo de envío</span>
+                    <span>{Number(order.shippingCost) === 0 ? 'Gratis' : `$${formatCurrency(order.shippingCost)}`}</span>
                 </div>
                 <hr className={styles.divider} />
                 <div className={`${styles.totalRow} ${styles.totalFinal}`}>
