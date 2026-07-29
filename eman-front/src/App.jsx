@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authService } from './api/authService';
 import { setToken, setCredentials } from './redux/slices/authReducer';
 import Home from './pages/Home/Home'
@@ -27,12 +27,20 @@ import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
 import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
 import MyPurchases from './pages/MyPurchases/MyPurchases';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
+import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
 
 
 function App() {
   const dispatch = useDispatch();
+  const { loading } = useSelector(s => s.siteSettings);
 
+  // 1. Chequeo de mantenimiento
+  useEffect(() => {
+    dispatch(fetchMaintenanceStatus());
+  }, []);
+
+  // 2. Restaurar sesión
   useEffect(() => {
     const savedUser = localStorage.getItem('user')
         // Intenta renovar el token al cargar la app
@@ -44,7 +52,7 @@ function App() {
                     user: JSON.parse(savedUser),
                     accessToken,
                 }))
-            }else {
+            } else {
                 dispatch(setToken(accessToken))
             }
         })
@@ -52,6 +60,11 @@ function App() {
             localStorage.removeItem('user')
         })
     }, [])
+
+    // Después de declarar todos los hooks, cortamos el render
+    if (loading) {
+      return <div style={{ minHeight: '100vh' }} />; // vacío momentáneo, sin parpadeo de contenido
+    }
 
   return (
     <>

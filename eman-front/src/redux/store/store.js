@@ -6,6 +6,7 @@ import adminOrdersReducer from "../admin/adminOrdersReducer"
 import adminUsersReducer from "../admin/adminUsersReducer"
 import cartReducer from "../slices/cartReducer"
 import subCategoriesReducer from "../slices/subCategoriesReducer"
+import siteSettingsReducer from "../slices/siteSettingsReducer"
 
 
 const store = configureStore({
@@ -17,6 +18,7 @@ const store = configureStore({
         subCategories: subCategoriesReducer,
         adminOrders: adminOrdersReducer,
         adminUsers: adminUsersReducer,
+        siteSettings: siteSettingsReducer
     }
 })
 

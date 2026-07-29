@@ -1,0 +1,57 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+    background: #f9f6f1;
+    border: 1px solid #e5e0d5;
+}
+
+.statusRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dotOn { background: #4caf50; }
+.dotOff { background: #d64545; }
+
+.statusText {
+    font-size: 0.85rem;
+    font-family: 'Montserrat', sans-serif;
+    color: #1A1A1A;
+}
+
+.toggleBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.toggleBtn:hover { opacity: 0.85; }
+
+.btnInhabilitar {
+    background: #d64545;
+    color: #fff;
+}
+
+.btnHabilitar {
+    background: #4caf50;
+    color: #fff;
+}

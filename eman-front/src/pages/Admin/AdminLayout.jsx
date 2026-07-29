@@ -5,6 +5,7 @@ import { Package, ShoppingBag, Users, LogOut, Menu } from 'lucide-react'
 import { logoutUser } from '../../redux/slices/authReducer'
 import { authService } from '../../api/authService'
 import { ExternalLink } from 'lucide-react'
+import MaintenanceToggle from '../../components/MaintenanceToggle/MaintenanceToggle'
 import styles from './AdminLayout.module.css'
 
 const navItems = [
@@ -64,6 +65,9 @@ const AdminLayout = () => {
                 </nav>
 
                 <div className={styles.sidebarFooter}>
+                    <MaintenanceToggle />
+
+
                     <a   href="/"
                         target="_blank"
                         rel="noopener noreferrer"
