@@ -27,6 +27,7 @@ import OrderConfirm from './pages/OrderConfirm/OrderConfirm';
 import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
 import MyPurchases from './pages/MyPurchases/MyPurchases';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
+import CookieConsentBanner from './components/CookieConsentBanner/CookieConsentBanner';
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
 
@@ -115,6 +116,7 @@ function App() {
       </Route> 
       
       </Routes>
+      <CookieConsentBanner />
     </>
   )
 }
