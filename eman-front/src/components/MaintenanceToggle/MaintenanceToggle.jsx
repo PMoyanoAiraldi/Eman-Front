@@ -32,8 +32,10 @@ const MaintenanceToggle = () => {
                 {maintenanceMode ? 'Habilitar página' : 'Inhabilitar página'}
             </button>
 
-            {showConfirm && (
+            
                 <ConfirmModal
+                    isOpen={showConfirm}
+                    title={maintenanceMode ? 'Habilitar página' : 'Inhabilitar página'}
                     message={
                         maintenanceMode
                             ? '¿Confirmás que querés volver a habilitar la tienda? Los visitantes van a poder navegar y comprar de nuevo.'
@@ -42,7 +44,7 @@ const MaintenanceToggle = () => {
                     onConfirm={handleConfirm}
                     onCancel={() => setShowConfirm(false)}
                 />
-            )}
+            
         </div>
     )
 }
