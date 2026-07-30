@@ -64,10 +64,10 @@ const AdminLayout = () => {
                     ))}
                 </nav>
 
+                <MaintenanceToggle />
+
                 <div className={styles.sidebarFooter}>
-                    <MaintenanceToggle />
-
-
+                    
                     <a   href="/"
                         target="_blank"
                         rel="noopener noreferrer"

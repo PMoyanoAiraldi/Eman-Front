@@ -16,7 +16,9 @@ const MaintenanceToggle = () => {
     }
 
     return (
-        <div className={styles.wrapper}>
+        <div className={styles.wrapper}
+        style={{ '--status-color': maintenanceMode ? '#E27D7D' : '#6FCF97' }}
+        >
             <div className={styles.statusRow}>
                 <span className={`${styles.dot} ${maintenanceMode ? styles.dotOff : styles.dotOn}`} />
                 <span className={styles.statusText}>
