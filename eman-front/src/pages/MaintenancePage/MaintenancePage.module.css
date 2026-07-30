@@ -21,6 +21,9 @@
     height: auto;
     opacity: 0.75;      
     filter: saturate(0.9) brightness(1.03);
+    cursor: default;
+    user-select: none;
+    -webkit-user-drag: none; /* evita que el navegador lo trate como imagen arrastrable */
 }
 
     .branch {
