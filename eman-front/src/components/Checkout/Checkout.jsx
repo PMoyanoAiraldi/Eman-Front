@@ -34,6 +34,9 @@ const Checkout = () => {
     const navigate = useNavigate()
     const items    = useSelector(state => state.cart.items)
     const total    = useSelector(selectCartTotal)
+    const user     = useSelector(state => state.auth.user) 
+    const isAuthenticated = !!user
+
 
     const [orderId, setOrderId] = useState(null)
     const [preferenceId, setPreferenceId] = useState(null)
@@ -49,12 +52,12 @@ const Checkout = () => {
 
     const [form, setForm] = useState({
         // Paso 1
-        guestName:  '',
-        guestEmail: '',
-        guestPhone: '',
+        guestName:  user?.name  || '',
+        guestEmail: user?.email || '',
+        guestPhone: user?.phone || '',
         // Paso 2
-        address:      '',
-        city:         '',
+        address:  user?.address  || '',
+        city:     user?.city     || '',
         zipCode:      '',
         shippingType: 'correo_argentino',
         locality: ''
@@ -238,6 +241,11 @@ return (
                         onBlur={handleBlur}
                         placeholder="Ej: juan@gmail.com"
                     />
+                {isAuthenticated && form.guestEmail === user?.email && (
+                    <span className={styles.readonlyHint}>
+                        Este es el email de tu cuenta. Si comprás para otra persona, podés cambiarlo.
+                    </span>
+                )}
                 {errors.guestEmail && <span className={styles.error}>{errors.guestEmail}</span>}
             </div>
 
