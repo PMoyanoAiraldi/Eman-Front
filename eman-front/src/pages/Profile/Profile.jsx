@@ -4,6 +4,11 @@ import { Eye, EyeOff, Check } from 'lucide-react'
 import { setCredentials } from '../../redux/slices/authReducer'
 import { userService } from '../../api/userService'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
+import {
+    sanitizeName, sanitizeAddress, sanitizePhone,
+    validateName, validateAddress, validateCity, validateProvince, validatePhone,
+    PROVINCIAS_ARGENTINAS, PHONE_LENGTH
+} from '../../utils/registerValidation'
 import styles from './Profile.module.css'
 
 const passwordRules = [
@@ -13,6 +18,20 @@ const passwordRules = [
     { label: '1 número', test: (p) => /\d/.test(p) },
     { label: '1 carácter especial', test: (p) => /[=!@#$%^&*]/.test(p) },
 ]
+
+const profileFieldSanitizers = {
+    name:    sanitizeName,
+    address: sanitizeAddress,
+    phone:   sanitizePhone,
+}
+
+const profileFieldValidators = {
+    name:     validateName,
+    address:  validateAddress,
+    city:     validateCity,
+    province: validateProvince,
+    phone:    validatePhone,
+}
 
 const ProfilePage = () => {
     const dispatch = useDispatch()
@@ -27,6 +46,8 @@ const ProfilePage = () => {
         province: user?.province || '',
         phone: user?.phone || '',
     })
+    const [profileErrors, setProfileErrors] = useState({})
+    const [profileTouched, setProfileTouched] = useState({})
     const [profileLoading, setProfileLoading] = useState(false)
     const [profileSuccess, setProfileSuccess] = useState(false)
     const [profileError, setProfileError] = useState(null)
@@ -47,10 +68,27 @@ const ProfilePage = () => {
 
     const handleProfileChange = (e) => {
         const { name, value } = e.target
-        if (name === 'phone' && !/^\d*$/.test(value)) return
-        setProfileForm({ ...profileForm, [name]: value })
+        const sanitizer = profileFieldSanitizers[name]
+        const cleanValue = sanitizer ? sanitizer(value) : value
+
+        setProfileForm({ ...profileForm, [name]: cleanValue })
         setProfileSuccess(false)
         setProfileError(null)
+
+        const validator = profileFieldValidators[name]
+        if (validator && profileTouched[name]) {
+            setProfileErrors({ ...profileErrors, [name]: validator(cleanValue) })
+        }
+    }
+
+    const handleProfileBlur = (e) => {
+        const { name, value } = e.target
+        setProfileTouched({ ...profileTouched, [name]: true })
+
+        const validator = profileFieldValidators[name]
+        if (validator) {
+            setProfileErrors({ ...profileErrors, [name]: validator(value) })
+        }
     }
 
     const handlePasswordChange = (e) => {
@@ -61,6 +99,20 @@ const ProfilePage = () => {
 
     const handleProfileSubmit = async (e) => {
         e.preventDefault()
+
+        // valida todo el form antes de mandar
+        const stepErrors = {}
+        Object.keys(profileFieldValidators).forEach((field) => {
+            const error = profileFieldValidators[field](profileForm[field])
+            if (error) stepErrors[field] = error
+        })
+        setProfileErrors(stepErrors)
+
+        if (Object.keys(stepErrors).length > 0) {
+            setProfileTouched({ name: true, address: true, city: true, province: true, phone: true })
+            return
+        }
+
         setProfileLoading(true)
         setProfileError(null)
         setProfileSuccess(false)
@@ -140,63 +192,78 @@ const ProfilePage = () => {
                     <div className={styles.field}>
                         <label className={styles.label}>NOMBRE Y APELLIDO</label>
                         <input
-                            className={styles.input}
+                            className={`${styles.input} ${profileErrors.name ? styles.inputError : ''}`}
                             type="text"
                             name="name"
                             value={profileForm.name}
                             onChange={handleProfileChange}
+                            onBlur={handleProfileBlur}
                             required
                         />
+                        {profileErrors.name && <span className={styles.error}>{profileErrors.name}</span>}
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>DIRECCIÓN</label>
                         <input
-                            className={styles.input}
+                            className={`${styles.input} ${profileErrors.address ? styles.inputError : ''}`}
                             type="text"
                             name="address"
                             value={profileForm.address}
                             onChange={handleProfileChange}
+                            onBlur={handleProfileBlur}
                             required
                         />
+                        {profileErrors.address && <span className={styles.error}>{profileErrors.address}</span>}
                     </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>CIUDAD</label>
                             <input
-                                className={styles.input}
+                                className={`${styles.input} ${profileErrors.city ? styles.inputError : ''}`}
                                 type="text"
                                 name="city"
                                 value={profileForm.city}
                                 onChange={handleProfileChange}
+                                onBlur={handleProfileBlur}
                                 required
                             />
+                            {profileErrors.city && <span className={styles.error}>{profileErrors.city}</span>}
                         </div>
                         <div className={styles.field}>
                             <label className={styles.label}>PROVINCIA</label>
-                            <input
-                                className={styles.input}
-                                type="text"
+                            <select
+                                className={`${styles.input} ${profileErrors.province ? styles.inputError : ''}`}
                                 name="province"
                                 value={profileForm.province}
                                 onChange={handleProfileChange}
+                                onBlur={handleProfileBlur}
                                 required
-                            />
+                            >
+                            <option value="">Seleccioná tu provincia</option>
+                                {PROVINCIAS_ARGENTINAS.map((prov) => (
+                                    <option key={prov} value={prov}>{prov}</option>
+                                ))}
+                            </select>
+                            {profileErrors.province && <span className={styles.error}>{profileErrors.province}</span>}
+                        
                         </div>
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>TELÉFONO</label>
                         <input
-                            className={styles.input}
+                            className={`${styles.input} ${profileErrors.phone ? styles.inputError : ''}`}
                             type="tel"
                             name="phone"
                             value={profileForm.phone}
                             onChange={handleProfileChange}
+                            onBlur={handleProfileBlur}
                             required
-                            maxLength={20}
+                            maxLength={PHONE_LENGTH}
                         />
+                        {profileErrors.phone && <span className={styles.error}>{profileErrors.phone}</span>}
                     </div>
 
                     {profileError && <p className={styles.error}>{profileError}</p>}

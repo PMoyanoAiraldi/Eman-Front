@@ -98,3 +98,6 @@ export const validateProvince = (value) => {
     if (!value) return 'Seleccioná una provincia'
     return ''
 }
+
+
+export const PHONE_LENGTH = PHONE_MAX_LENGTH
