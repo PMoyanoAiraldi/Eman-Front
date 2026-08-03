@@ -69,7 +69,10 @@ const LoginPage = () => {
                     </div>
 
                     <div className={styles.field}>
+                    
                         <label className={styles.label}>CONTRASEÑA</label>
+                        
+                        
                         <div className={styles.inputWrapper}>
                         <input
                             className={styles.input}
@@ -88,10 +91,18 @@ const LoginPage = () => {
                         >
                             {showPassword ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                         </button>
+
                     </div>
+
                     </div>
 
                     {error && <p className={styles.error}>{error}</p>}
+
+                    <div className={styles.labelRow}>
+                        <Link to="/forgot-password" className={styles.forgotLink}>
+                            ¿Olvidaste tu contraseña?
+                        </Link>
+                        </div>
 
                     <button
                         className={styles.button}

@@ -49,6 +49,22 @@
     color: #888;
 }
 
+.labelRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.forgotLink {
+    font-size: 0.8rem;
+    color: var(--color-primary, #555);
+    text-decoration: none;
+}
+
+.forgotLink:hover {
+    text-decoration: underline;
+}
+
 .input {
     font-family: var(--font-sans);
     font-size: 0.95rem;

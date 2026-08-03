@@ -6,6 +6,7 @@ import { useToast } from '../../../hooks/useToast'
 import { getMissingFields } from '../../../utils/productValidation'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import Toast from '../../../components/Toast/Toast'
+import { GENDER_LABELS } from '../../../constants/gender'
 import styles from './Products.module.css'
 import { useNavigate } from 'react-router-dom'
 
@@ -240,7 +241,7 @@ const handlePublish = async (product) => {
                                         </td>
 
                                     <td className={styles.cell}>{product.subcategory?.name || '—'}</td>
-                                    <td className={styles.cell}>{product.gender || '—'}</td>
+                                    <td className={styles.cell}>{GENDER_LABELS[product.gender] || '—'}</td>
                                     <td className={styles.cell}>
                                         ${Number(product.price).toLocaleString('es-AR')}
                                     </td>

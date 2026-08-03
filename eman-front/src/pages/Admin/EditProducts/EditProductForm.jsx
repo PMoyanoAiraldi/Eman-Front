@@ -14,6 +14,7 @@ import Toast from '../../../components/Toast/Toast'
 import axiosInstance from '../../../api/axiosInstance'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import { fetchAllProducts } from '../../../redux/admin/adminProductsReducer'
+import { GENDER_OPTIONS } from '../../../constants/gender'; 
 import styles from './EditProducts.module.css'
 
 // Este componente recibe el producto garantizado como prop
@@ -198,9 +199,9 @@ const EditProductForm = ({ product }) => {
                             <label className={styles.label}>GÉNERO</label>
                             <select className={styles.input} name="gender" value={form.gender} onChange={handleChange}>
                                 <option value="">Sin especificar</option>
-                                <option value="mujer">Mujer</option>
-                                <option value="hombre">Hombre</option>
-                                <option value="unisex">Unisex</option>
+                                {GENDER_OPTIONS.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
