@@ -91,10 +91,13 @@ const EditProductForm = ({ product }) => {
     const handleSaveData = async () => {
         setSavingData(true)
         try {
-            await dispatch(updateProduct({
-                id: product.id,
-                data: { ...form, price: Number(form.price) }
-            })).unwrap()
+            const payload = {
+            ...form,
+            price: Number(form.price),
+            brandId: form.brandId || null,
+            productTypeId: form.productTypeId || null,
+        }
+            await dispatch(updateProduct({ id: product.id, data: payload })).unwrap()
             showToast('Producto actualizado correctamente')
         } catch (err) {
             showToast(err || 'Error al actualizar el producto', 'error')
