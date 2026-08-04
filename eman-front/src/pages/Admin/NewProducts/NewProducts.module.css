@@ -670,6 +670,17 @@
     margin-top: 0.5rem;
 }
 
+.inputError {
+    border-color: #e74c3c;
+}
+
+.fieldError {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
 
 @media (max-width: 900px) {
     .grid {

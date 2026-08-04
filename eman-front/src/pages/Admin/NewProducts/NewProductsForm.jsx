@@ -15,6 +15,7 @@ import Toast from '../../../components/Toast/Toast'
 import Stepper from '../../../components/Stepper/Stepper'
 import axiosInstance from '../../../api/axiosInstance'
 import { GENDER_OPTIONS } from '../../../constants/gender'; 
+import { validateProductField, validateProductForm, isFormValid, REQUIRED_PRODUCT_FIELDS } from '../../../utils/productValidators'
 import styles from '../NewProducts/NewProducts.module.css'
 
 
@@ -25,6 +26,8 @@ const InlineManagePopover = ({ label, placeholder, items = [], onCreate, onToggl
     const [value, setValue] = useState('')
     const [saving, setSaving] = useState(false)
     const [togglingId, setTogglingId] = useState(null)
+    
+
 
     const handleSave = async () => {
         if (!value.trim()) return
@@ -231,6 +234,8 @@ const NewProductsForm = () => {
     const [brands, setBrands] = useState([])
     const [creatingProduct, setCreatingProduct] = useState(false)
     const [createdProduct, setCreatedProduct] = useState(null) // producto ya creado en el back
+    const [errors, setErrors] = useState({})
+    const [touched, setTouched] = useState({})
 
     // Variantes (fase 2)
     const [colors, setColors] = useState([])
@@ -263,8 +268,19 @@ const NewProductsForm = () => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
-        setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
+        const newValue = type === 'checkbox' ? checked : value
+        setForm(prev => ({ ...prev, [name]: newValue}))
+
+        if (touched[name]) {
+        setErrors(prev => ({ ...prev, [name]: validateProductField(name, newValue) }))
     }
+    }
+
+    const handleBlur = (e) => {
+    const { name, value } = e.target
+    setTouched(prev => ({ ...prev, [name]: true }))
+    setErrors(prev => ({ ...prev, [name]: validateProductField(name, value) }))
+}
 
     const handleCreateBrand = async (name) => {
         try {
@@ -307,8 +323,12 @@ const NewProductsForm = () => {
     }
 
     const handleCreateProduct = async () => {
-        if (!form.name || !form.description || !form.price || !form.categoryId || !form.subcategoryId) {
-            showToast('Completá nombre, descripción, precio, categoría y subcategoría', 'error')
+        const validationErrors = validateProductForm(form)
+        setErrors(validationErrors)
+        setTouched(REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}))
+
+        if (!isFormValid(validationErrors)) {
+            showToast('Completá todos los campos obligatorios', 'error')
             return
         }
         setCreatingProduct(true)
@@ -471,7 +491,10 @@ const NewProductsForm = () => {
     }
 
     const handleCategoryChange = (e) => {
-        setForm(prev => ({ ...prev, categoryId: e.target.value, subcategoryId: '' }))
+        const value = e.target.value
+        setForm(prev => ({ ...prev, categoryId: value, subcategoryId: '' }))
+        setTouched(prev => ({ ...prev, categoryId: true }))
+        setErrors(prev => ({ ...prev, categoryId: validateProductField('categoryId', value) }))
     }
 
     const handleFeaturedChange = (e) => {
@@ -485,6 +508,8 @@ const NewProductsForm = () => {
     setForm(prev => ({ ...prev, isFeatured: checked }))
 }
 
+    const formErrors = validateProductForm(form)
+    const formIsValid = isFormValid(formErrors)
 
     return (
         <div className={styles.page}>
@@ -513,44 +538,80 @@ const NewProductsForm = () => {
 
                     <div className={styles.field}>
                         <label className={styles.label}>NOMBRE</label>
-                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} />
+                        <input className={`${styles.input} ${touched.name && errors.name ? styles.inputError : ''}`} 
+                        name="name" 
+                        value={form.name} 
+                        onChange={handleChange} 
+                        onBlur={handleBlur}
+                        />
+                        {touched.name && errors.name && <span className={styles.fieldError}>{errors.name}</span>}
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>DESCRIPCIÓN</label>
-                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} rows={3} />
+                        <textarea className={`${styles.textarea} ${touched.description && errors.description ? styles.inputError : ''}`} 
+                        name="description" 
+                        value={form.description} 
+                        onChange={handleChange} 
+                        onBlur={handleBlur}
+                        rows={3} 
+                        />
+                    {touched.description && errors.description && <span className={styles.fieldError}>{errors.description}</span>}
                     </div>
 
                     <div className={styles.row}>
                     <div className={styles.field}>
                         <label className={styles.label}>PRECIO</label>
-                        <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} />
+                        <input className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} 
+                        name="price" 
+                        type="number" 
+                        value={form.price} 
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        />
+                    {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
                     </div>
                     <div className={styles.field}>
                         <label className={styles.label}>GÉNERO</label>
-                        <select className={styles.input} name="gender" value={form.gender} onChange={handleChange}>
-                            <option value="">Sin especificar</option>
+                        <select className={`${styles.input} ${touched.gender && errors.gender ? styles.inputError : ''}`} 
+                        name="gender" 
+                        value={form.gender} 
+                        onChange={handleChange}>
+                        onBlur={handleBlur}
+                            <option value="">Seleccioná</option>
                             {GENDER_OPTIONS.map(opt => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
                             ))}
                         </select>
+                        {touched.gender && errors.gender && <span className={styles.fieldError}>{errors.gender}</span>}
                     </div>
                 </div>
 
                     <div className={styles.row}>
                     <div className={styles.field}>
                         <label className={styles.label}>CATEGORÍA</label>
-                        <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleCategoryChange}>
+                        <select className={`${styles.input} ${touched.categoryId && errors.categoryId ? styles.inputError : ''}`} 
+                        name="categoryId" 
+                        value={form.categoryId} 
+                        onChange={handleCategoryChange}
+                        onBlur={handleBlur}
+                        >
                             <option value="">Seleccioná</option>
                             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
+                    {touched.categoryId && errors.categoryId && <span className={styles.fieldError}>{errors.categoryId}</span>}
                     </div>
-                        <div className={styles.field}>
-                        <label className={styles.label}>SUBCATEGORÍA</label>
-                        <div className={styles.fieldRow}>
-                        <select className={styles.input} name="subcategoryId" value={form.subcategoryId} onChange={handleChange}>
-                            <option value="">Seleccioná</option>
-                            {subCategories.filter(s => s.state && s.category?.id === form.categoryId).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+
+                    <div className={styles.field}>
+                    <label className={styles.label}>SUBCATEGORÍA</label>
+                    <div className={styles.fieldRow}>
+                    <select className={`${styles.input} ${touched.subcategoryId && errors.subcategoryId ? styles.inputError : ''}`} 
+                    name="subcategoryId" 
+                    value={form.subcategoryId} 
+                    onChange={handleChange}
+                    onBlur={handleBlur}>
+                        <option value="">Seleccioná</option>
+                        {subCategories.filter(s => s.state && s.category?.id === form.categoryId).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                         </select>
                         <InlineManagePopover
                             label="subcategoría"
@@ -564,6 +625,7 @@ const NewProductsForm = () => {
                         {!form.categoryId && (
                             <span className={styles.hintText}>Elegí una categoría primero</span>
                         )}
+                        {touched.subcategoryId && errors.subcategoryId && <span className={styles.fieldError}>{errors.subcategoryId}</span>}
                     </div>
                 </div>
 
@@ -619,7 +681,7 @@ const NewProductsForm = () => {
                         </span>
                     </div>
                     
-                    <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct}>
+                    <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct || !formIsValid}>
                         {creatingProduct ? 'Creando...' : 'Siguiente'}
                     </button>
                 </section>
