@@ -681,6 +681,77 @@
     display: block;
 }
 
+.variantSummary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #faf7f0;
+    border: 1px solid #e8ddc8;
+    border-radius: 6px;
+    margin-top: 4px;
+}
+.variantSummaryLabel {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9a8c6a;
+}
+.variantSummaryValue {
+    font-size: 14px;
+    font-weight: 600;
+    color: #2a2a2a;
+}
+
+.variantListWrapper {
+    margin-top: 16px;
+}
+.variantListCount {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #9a8c6a;
+    margin-bottom: 6px;
+}
+
+.variantList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.variantItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.variantRemoveBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    color: #b04a4a;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+}
+.variantRemoveBtn:hover {
+    background: #fbeaea;
+}
+.variantRemoveBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
 
 @media (max-width: 900px) {
     .grid {

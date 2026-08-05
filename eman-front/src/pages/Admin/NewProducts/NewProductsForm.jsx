@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Upload, Star, Plus, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Upload, Star, Plus, Eye, EyeOff, Trash2 } from 'lucide-react'
 import {
     createProduct,
     createProductVariant,
     addProductImage,
     setPrimaryImage,
     fetchAllProducts,
+    deleteProductVariant,
     publishProduct
 } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
 import Stepper from '../../../components/Stepper/Stepper'
 import axiosInstance from '../../../api/axiosInstance'
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import { GENDER_OPTIONS } from '../../../constants/gender'; 
 import { validateProductField, validateProductForm, isFormValid, REQUIRED_PRODUCT_FIELDS } from '../../../utils/productValidators'
 import styles from '../NewProducts/NewProducts.module.css'
@@ -236,12 +238,15 @@ const NewProductsForm = () => {
     const [createdProduct, setCreatedProduct] = useState(null) // producto ya creado en el back
     const [errors, setErrors] = useState({})
     const [touched, setTouched] = useState({})
+    
 
     // Variantes (fase 2)
     const [colors, setColors] = useState([])
     const [sizes, setSizes] = useState([])
     const [variantForm, setVariantForm] = useState({ colorId: '', sizeId: '', stock: '' })
     const [addingVariant, setAddingVariant] = useState(false)
+    const [removingVariantId, setRemovingVariantId] = useState(null)
+    const [variantToDelete, setVariantToDelete] = useState(null) // objeto variant completo
     const [variants, setVariants] = useState([])
     const { products: allProducts } = useSelector(state => state.adminProducts)
     const FEATURED_LIMIT = 4
@@ -446,6 +451,21 @@ const NewProductsForm = () => {
         }
     }
 
+    const handleDeleteVariant = async () => {
+        if (!variantToDelete) return
+        setRemovingVariantId(variantToDelete.id)
+        try {
+            await dispatch(deleteProductVariant(variantToDelete.id)).unwrap()
+            setVariants(prev => prev.filter(v => v.id !== variantToDelete.id))
+            showToast('Variante eliminada')
+        } catch (err) {
+            showToast(err || 'Error al eliminar la variante', 'error')
+        } finally {
+            setRemovingVariantId(null)
+            setVariantToDelete(null)
+        }
+}
+
     
 
     const handleAddImage = async (e) => {
@@ -507,6 +527,8 @@ const NewProductsForm = () => {
 
     setForm(prev => ({ ...prev, isFeatured: checked }))
 }
+
+
 
     const formErrors = validateProductForm(form)
     const formIsValid = isFormValid(formErrors)
@@ -576,8 +598,9 @@ const NewProductsForm = () => {
                         <select className={`${styles.input} ${touched.gender && errors.gender ? styles.inputError : ''}`} 
                         name="gender" 
                         value={form.gender} 
-                        onChange={handleChange}>
+                        onChange={handleChange}
                         onBlur={handleBlur}
+                        >
                             <option value="">Seleccioná</option>
                             {GENDER_OPTIONS.map(opt => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -746,6 +769,17 @@ const NewProductsForm = () => {
                 </div>
                 </div>
 
+                {(variantForm.colorId || variantForm.sizeId) && (
+                    <div className={styles.variantSummary}>
+                        <span className={styles.variantSummaryLabel}>Variante a agregar:</span>
+                        <span className={styles.variantSummaryValue}>
+                            {colors.find(c => c.id === variantForm.colorId)?.name || '— color —'}
+                            {' / '}
+                            {sizes.find(s => s.id === variantForm.sizeId)?.name || '— talle —'}
+                        </span>
+                    </div>
+                )}
+
                         <div className={`${styles.field} ${styles.stockFieldSpacing}`}>
                             <label className={styles.label}>STOCK</label>
                             <input className={styles.input} name="stock" type="text" value={variantForm.stock} onChange={handleVariantChange} />
@@ -756,12 +790,26 @@ const NewProductsForm = () => {
                         </button>
 
                         {variants.length > 0 && (
+                            <div className={styles.variantListWrapper}>
+                            <p className={styles.variantListCount}>{variants.length} variante{variants.length !== 1 ? 's' : ''} cargada{variants.length !== 1 ? 's' : ''}</p>
                             <ul className={styles.variantList}>
                                 {variants.map(v => (
-                                    <li key={v.id}>{v.color?.name} / {v.size?.name} — stock: {v.stock}</li>
-                                ))}
+                                    <li key={v.id} className={styles.variantItem}>
+                                    <span>{v.color?.name} / {v.size?.name} — stock: {v.stock}</span>
+                                    <button
+                                        type="button"
+                                        className={styles.variantRemoveBtn}
+                                        onClick={() => setVariantToDelete(v)}
+                                        disabled={removingVariantId === v.id}
+                                        title="Eliminar variante"
+                                    >
+                                        {removingVariantId === v.id ? '...' : <Trash2 size={14} strokeWidth={1.5} />}
+                                    </button>
+                                </li>
+                                            ))}
                             </ul>
-                        )}
+                        </div>
+                    )}
                         <div className={styles.stepDivider} />
 
                         <button
@@ -853,6 +901,20 @@ const NewProductsForm = () => {
                     )}
                 </div>
                 </div>
+            <ConfirmModal
+                isOpen={!!variantToDelete}
+                title="Eliminar variante"
+                message={
+                    variantToDelete
+                        ? `¿Eliminar ${variantToDelete.color?.name} / ${variantToDelete.size?.name} (stock: ${variantToDelete.stock})? Esta acción no se puede deshacer.`
+                        : ''
+                }
+                confirmLabel="Eliminar"
+                cancelLabel="Cancelar"
+                danger
+                onConfirm={handleDeleteVariant}
+                onCancel={() => setVariantToDelete(null)}
+            />
             <Toast toast={toast} onHide={hideToast} />
         </div>
     )

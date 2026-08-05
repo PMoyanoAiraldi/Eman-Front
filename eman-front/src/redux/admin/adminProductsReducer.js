@@ -25,6 +25,18 @@ export const createProduct = createAsyncThunk(
     }
 )
 
+export const deleteProductVariant = createAsyncThunk(
+    'adminProducts/deleteVariant',
+    async (variantId, { rejectWithValue }) => {
+        try {
+            await axiosInstance.delete(`/product_variants/${variantId}`)
+            return variantId
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al eliminar la variante')
+        }
+    }
+)
+
 export const createProductVariant = createAsyncThunk(
     'adminProducts/createVariant',
     async ({ productId, sizeId, colorId, stock }, { rejectWithValue }) => {
