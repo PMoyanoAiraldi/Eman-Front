@@ -273,6 +273,23 @@
     text-align: center;
 }
 
+.inputError {
+    border-color: #e74c3c;
+}
+
+.fieldError {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+.hintText {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    color: #b0834f;
+    margin-top: 0.3rem;
+}
+
 @media (max-width: 900px) {
     .grid {
         grid-template-columns: 1fr;

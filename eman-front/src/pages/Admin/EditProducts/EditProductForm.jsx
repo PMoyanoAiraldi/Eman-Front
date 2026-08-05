@@ -9,6 +9,7 @@ import {
     deleteProductImage,
     setPrimaryImage,
 } from '../../../redux/admin/adminProductsReducer'
+import { validateProductField, validateProductForm, isFormValid, REQUIRED_PRODUCT_FIELDS } from '../../../utils/productValidators'
 import { useToast } from '../../../hooks/useToast'
 import Toast from '../../../components/Toast/Toast'
 import axiosInstance from '../../../api/axiosInstance'
@@ -54,6 +55,8 @@ const EditProductForm = ({ product }) => {
     const [savingData, setSavingData] = useState(false)
     const [uploadingImage, setUploadingImage] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState(null) // guarda el imageId a eliminar
+    const [errors, setErrors] = useState({})
+    const [touched, setTouched] = useState({})
 
     // Cargar selects — estos sí van en useEffect porque son datos externos
     useEffect(() => {
@@ -82,13 +85,37 @@ const EditProductForm = ({ product }) => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
-        setForm(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }))
+        const newValue = type === 'checkbox' ? checked : value
+        setForm(prev => ({ ...prev, [name]: newValue }))
+
+        if (touched[name]) {
+            setErrors(prev => ({ ...prev, [name]: validateProductField(name, newValue) }))
+        }
+    }
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target
+        setTouched(prev => ({ ...prev, [name]: true }))
+        setErrors(prev => ({ ...prev, [name]: validateProductField(name, value) }))
+    }
+
+    const handleCategoryChange = (e) => {
+        const value = e.target.value
+        setForm(prev => ({ ...prev, categoryId: value, subcategoryId: '' }))
+        setTouched(prev => ({ ...prev, categoryId: true }))
+        setErrors(prev => ({ ...prev, categoryId: validateProductField('categoryId', value) }))
     }
 
     const handleSaveData = async () => {
+        const validationErrors = validateProductForm(form)
+        setErrors(validationErrors)
+        setTouched(REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}))
+
+        if (!isFormValid(validationErrors)) {
+            showToast('Completá todos los campos obligatorios', 'error')
+            return
+        }
+
         setSavingData(true)
         try {
             const payload = {
@@ -164,6 +191,9 @@ const EditProductForm = ({ product }) => {
         }
     }
 
+    const formErrors = validateProductForm(form)
+    const formIsValid = isFormValid(formErrors)
+
     return (
         <div className={styles.page}>
             <div className={styles.topBar}>
@@ -185,61 +215,102 @@ const EditProductForm = ({ product }) => {
 
                     <div className={styles.field}>
                         <label className={styles.label}>NOMBRE</label>
-                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} />
+                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} onBlur={handleBlur}/>
+                        {touched.name && errors.name && <span className={styles.fieldError}>{errors.name}</span>}
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>DESCRIPCIÓN</label>
-                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} rows={3} />
+                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} onBlur={handleBlur} rows={3} />
+                    {touched.description && errors.description && <span className={styles.fieldError}>{errors.description}</span>}
                     </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>PRECIO</label>
-                            <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} />
+                            <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
+                        {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
                         </div>
+
                         <div className={styles.field}>
                             <label className={styles.label}>GÉNERO</label>
-                            <select className={styles.input} name="gender" value={form.gender} onChange={handleChange}>
+                            <select className={`${styles.input} ${touched.gender && errors.gender ? styles.inputError : ''}`}
+                                    name="gender"
+                                    value={form.gender}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}>
                                 <option value="">Sin especificar</option>
                                 {GENDER_OPTIONS.map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
                             </select>
+                            {touched.gender && errors.gender && <span className={styles.fieldError}>{errors.gender}</span>}
                         </div>
                     </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>CATEGORÍA</label>
-                            <select className={styles.input} name="categoryId" value={form.categoryId} onChange={handleChange}>
+                            <select
+                                className={`${styles.input} ${touched.categoryId && errors.categoryId ? styles.inputError : ''}`}
+                                name="categoryId"
+                                value={form.categoryId}
+                                onChange={handleCategoryChange}
+                                onBlur={handleBlur}
+                            >
                                 <option value="">Seleccioná</option>
                                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                             </select>
+                            {touched.categoryId && errors.categoryId && <span className={styles.fieldError}>{errors.categoryId}</span>}
                         </div>
+
                         <div className={styles.field}>
                             <label className={styles.label}>SUBCATEGORÍA</label>
-                            <select className={styles.input} name="subcategoryId" value={form.subcategoryId} onChange={handleChange}>
+                            <select
+                                className={`${styles.input} ${touched.subcategoryId && errors.subcategoryId ? styles.inputError : ''}`}
+                                name="subcategoryId"
+                                value={form.subcategoryId}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            >
                                 <option value="">Seleccioná</option>
-                                {subCategories.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                                {subCategories.filter(s => s.state && s.category?.id === form.categoryId).map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
                             </select>
+                                {!form.categoryId && (
+                                <span className={styles.hintText}>Elegí una categoría primero</span>
+                            )}
+                            {touched.subcategoryId && errors.subcategoryId && <span className={styles.fieldError}>{errors.subcategoryId}</span>}
                         </div>
                     </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>MARCA</label>
-                                <select className={styles.input} name="brandId" value={form.brandId} onChange={handleChange}>
+                                <select className={`${styles.input} ${touched.brandId && errors.brandId ? styles.inputError : ''}`}
+                                    name="brandId"
+                                    value={form.brandId}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}>
                                     <option value="">Sin marca</option>
                                     {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                                 </select>
+                                {touched.brandId && errors.brandId && <span className={styles.fieldError}>{errors.brandId}</span>}
                             </div>
+
                         <div className={styles.field}>
                             <label className={styles.label}>TIPO DE PRODUCTO</label>
-                            <select className={styles.input} name="productTypeId" value={form.productTypeId} onChange={handleChange}>
+                            <select className={`${styles.input} ${touched.productTypeId && errors.productTypeId ? styles.inputError : ''}`}
+                                    name="productTypeId" 
+                                    value={form.productTypeId} 
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    >
                                 <option value="">Sin tipo</option>
                                 {productTypes.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                             </select>
+                            {touched.productTypeId && errors.productTypeId && <span className={styles.fieldError}>{errors.productTypeId}</span>}
                             </div>
                         </div>
 
@@ -262,7 +333,7 @@ const EditProductForm = ({ product }) => {
                         </div>
                     </div>
 
-                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData}>
+                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData || !formIsValid}>
                         {savingData ? 'Guardando...' : 'Guardar cambios'}
                     </button>
                 </section>
