@@ -28,6 +28,7 @@ import NewProductsForm from './pages/Admin/NewProducts/NewProductsForm';
 import MyPurchases from './pages/MyPurchases/MyPurchases';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
 import CookieConsentBanner from './components/CookieConsentBanner/CookieConsentBanner';
+import ShopPage from './pages/ShopPage/ShopPage';
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
 
@@ -100,6 +101,7 @@ function App() {
           <OrderDetail />
       </ProtectedRoute>
   } />
+        <Route path="/tienda" element={<ShopPage />} />
         <Route path="/:categoria" element={<CategoryPage />} />
       </Route>
       <Route path="/admin" element={

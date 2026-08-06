@@ -71,6 +71,7 @@ const Navbar = () => {
                 <li><Link to="/mujer">Mujer</Link></li>
                 <li><Link to="/hombre">Hombre</Link></li>
                 <li><Link to="/deportivo">Deportivo</Link></li>
+                <li><Link to="/tienda">Ver todo</Link></li>
             </ul>
 
             <div className={styles.icons}>

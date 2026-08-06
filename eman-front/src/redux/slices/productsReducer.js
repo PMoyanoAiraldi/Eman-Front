@@ -40,6 +40,19 @@ export const fetchProductById = createAsyncThunk(
     }
 )
 
+export const fetchAllProducts = createAsyncThunk(
+    'products/fetchAll',
+    async (filters = {}) => {
+        const params = {}
+        if (filters.categoryId) params.categoryId = filters.categoryId
+        if (filters.subcategoryId) params.subcategoryId = filters.subcategoryId
+
+        const res = await axiosInstance.get('/products',{ params }
+        )
+        return res.data
+    }
+)
+
 const initialState = {
     products: [],           // productos de la categoría activa
     featuredProducts: [],   // productos destacados del home
@@ -103,6 +116,20 @@ export const productsSlice = createSlice({
             .addCase(fetchProductById.rejected, (state, action) => {
                 state.loadingProduct  = false
                 state.error = action.payload
+            })
+
+            // fetchAllProducts — para ShopPage
+            .addCase(fetchAllProducts.pending, (state) => {
+                state.loadingProducts = true;
+                state.error = null;
+            })
+            .addCase(fetchAllProducts.fulfilled, (state, action) => {
+                state.loadingProducts = false;
+                state.products = action.payload;
+            })
+            .addCase(fetchAllProducts.rejected, (state, action) => {
+                state.loadingProducts = false;
+                state.error = action.payload;
             })
         }
 

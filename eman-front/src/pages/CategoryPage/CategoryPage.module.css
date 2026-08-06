@@ -84,6 +84,46 @@
     color: #999;
 }
 
+.subFilters {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px; /* separación respecto a la fila de categoría */
+    margin-bottom: 24px;
+    padding-left: 4px;
+}
+
+.subFilterLabel {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    align-self: center;
+    margin-right: 4px;
+}
+
+.subFilterBtn {
+    padding: 6px 14px;      /* más chico que filterBtn */
+    font-size: 12px;
+    border: 1px solid #ddd;
+    background: transparent;
+    color: #777;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.subFilterBtn:hover {
+    border-color: #aaa;
+    color: #333;
+}
+
+.subFilterBtnActive {
+    background: #f0ede8;    /* tono cálido claro, no negro sólido */
+    border-color: #c9a876;  /* o el acento dorado de tu marca, viste el logo EMAN */
+    color: #333;
+    font-weight: 500;
+}
+
 @media (max-width: 768px) {
     .page { padding: 3rem 5%; }
     .grid { grid-template-columns: repeat(2, 1fr); }
