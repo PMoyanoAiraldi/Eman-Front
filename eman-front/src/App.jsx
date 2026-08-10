@@ -29,6 +29,8 @@ import MyPurchases from './pages/MyPurchases/MyPurchases';
 import OrderDetail from './pages/OrderDetail/OrderDetail';
 import CookieConsentBanner from './components/CookieConsentBanner/CookieConsentBanner';
 import ShopPage from './pages/ShopPage/ShopPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
 
@@ -102,6 +104,8 @@ function App() {
       </ProtectedRoute>
   } />
         <Route path="/tienda" element={<ShopPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/:categoria" element={<CategoryPage />} />
       </Route>
       <Route path="/admin" element={
@@ -115,6 +119,7 @@ function App() {
         <Route path="users" element={<Users />} /> 
         <Route path="products/new" element={<NewProductsForm />} />
         <Route path="products/:id/edit" element={<EditProduct/>} />
+        
       </Route> 
       
       </Routes>

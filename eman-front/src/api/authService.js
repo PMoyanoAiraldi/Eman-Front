@@ -20,4 +20,14 @@ export const authService = {
         const { data } = await axiosInstance.post('/auth/refresh');
         return data; // { accessToken }
     },
+
+    forgotPassword: async (email) => {
+    const { data } = await axiosInstance.patch('/users/forgot-password', { email })
+    return data
+    },
+
+    resetPassword: async (token, newPassword) => {
+        const { data } = await axiosInstance.patch('/users/reset-password', { token, newPassword })
+        return data
+    },
 };
