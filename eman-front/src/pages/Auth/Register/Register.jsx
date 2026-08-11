@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Eye, EyeOff, Check } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { authService } from '../../../api/authService'
 import {
     sanitizeName, sanitizePhone, sanitizeAddress,
@@ -8,16 +8,10 @@ import {
     validateAddress, validateCity, validateProvince,
     PROVINCIAS_ARGENTINAS,
 } from '../../../utils/registerValidation'
+import PasswordChecklist from '../../../components/PasswordChecklist/PasswordChecklist.jsx'
+import { passwordRules } from '../../../components/PasswordChecklist/passwordRules.js'
 import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb'
 import styles from './Register.module.css'
-
-const passwordRules = [
-    { label: '8 caracteres', test: (p) => p.length >= 8 },
-    { label: '1 mayúscula', test: (p) => /[A-Z]/.test(p) },
-    { label: '1 minúscula', test: (p) => /[a-z]/.test(p) },
-    { label: '1 número', test: (p) => /\d/.test(p) },
-    { label: '1 carácter especial', test: (p) => /[=!@#$%^&*]/.test(p) },
-]
 
 
 const RegisterPage = () => {
@@ -187,19 +181,7 @@ const RegisterPage = () => {
                         </div>
 
                         {(passwordFocused || form.password.length > 0) && (
-                                <ul className={styles.checklist}>
-                                    {passwordRules.map((rule) => {
-                                        const ok = rule.test(form.password)
-                                        return (
-                                            <li key={rule.label} className={`${styles.checkItem} ${ok ? styles.checkOk : ''}`}>
-                                                <span className={styles.checkIcon}>
-                                                    {ok ? <Check size={11} strokeWidth={2.5} /> : <span className={styles.checkDot} />}
-                                                </span>
-                                                {rule.label}
-                                            </li>
-                                        )
-                                    })}
-                                </ul>
+                                <PasswordChecklist password={form.password} />
                             )}
                         </div>
 
