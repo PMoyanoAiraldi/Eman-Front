@@ -180,7 +180,11 @@ const prefRes = await axiosInstance.post(
 
 const handleBack = () => setStep(s => s - 1)
 
-const shippingCost = form.shippingType === 'coordinado' ? 0 : 0 // TODO: API Correo Argentino, reemplaza con credenciales
+const CORREO_ARGENTINO_COST_TEMP = 8000 // TODO: reemplazar por cotización real de Correo Argentino cuando estén las credenciales
+
+const shippingCost = form.shippingType === 'correo_argentino'
+    ? CORREO_ARGENTINO_COST_TEMP
+    : 0 // coordinado y retiro en local ya son gratis
 
 if (items.length === 0 && step < 3) {
     return (
