@@ -124,6 +124,12 @@ const handleNext = async () => {
         setTouched({ ...touched, address: true, city: true, zipCode: true, locality: true })
         return
     }
+
+    setStep(s => s + 1)
+        return
+    }
+
+    if (step === 3) {
         setLoading(true)
     try {
         const orderRes = await axiosInstance.post(`/order`,
@@ -149,29 +155,24 @@ const handleNext = async () => {
         setOrderId(order.id)
 
 // 2. Crear preferencia de MercadoPago
-const prefRes = await axiosInstance.post(
-    `/payments/create-preference`,
-        {
+const prefRes = await axiosInstance.post(`/payments/create-preference`,{
             orderId:      order.id,
             shippingCost,
-        }
-    )
+        })
     setPreferenceId(prefRes.data.preferenceId)
-    setStep(s => s + 1)
-
+        setStep(s => s + 1)
     } catch (err) {
-        console.error('Error completo:', err.response?.data || err.message)
-    setToast({
-        type: 'error',
-            message: err.response?.data?.message || err.message || 'Error al procesar',
-    })
-    } finally {
-        setLoading(false)
-    }
+            console.error('Error completo:', err.response?.data || err.message)
+        setToast({
+            type: 'error',
+                message: err.response?.data?.message || err.message || 'Error al procesar',
+        })
+        } finally {
+            setLoading(false)
+        }
         return
     }
-    
-    if (step === 3) {
+    if (step === 4) {
         setStep(s => s + 1)
         return
     }
@@ -186,7 +187,7 @@ const shippingCost = form.shippingType === 'correo_argentino'
     ? CORREO_ARGENTINO_COST_TEMP
     : 0 // coordinado y retiro en local ya son gratis
 
-if (items.length === 0 && step < 3) {
+if (items.length === 0 && step < 4) {
     return (
         <div className={styles.empty}>
             <p>Tu carrito está vacío</p>
@@ -422,8 +423,45 @@ return (
             </div>
         )}
 
-        {/* ── Paso 3: Pago ── */}
-            {step === 3 && (
+
+        {/* ── Paso 3: Resumen ── */}
+{step === 3 && (
+    <div className={styles.form}>
+        <h2 className={styles.stepTitle}>Resumen de tu compra</h2>
+
+        <div className={styles.summaryItems}>
+            {items.map(item => (
+                <div key={item.variantId} className={styles.summaryItem}>
+                    <span>{item.name} · {item.color} · Talle {item.size} · x{item.quantity}</span>
+                    <span>${(item.price * item.quantity).toLocaleString('es-AR')}</span>
+                </div>
+            ))}
+        </div>
+        <div className={styles.summaryRow}>
+            <span>Subtotal</span>
+            <span>${total.toLocaleString('es-AR')}</span>
+        </div>
+        <div className={styles.summaryRow}>
+            <span>Envío ({form.shippingType === 'correo_argentino' ? 'Correo Argentino' : form.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro en local'})</span>
+            <span>{shippingCost === 0 ? 'Gratis' : `$${shippingCost.toLocaleString('es-AR')}`}</span>
+        </div>
+        <div className={`${styles.summaryRow} ${styles.summaryTotal}`}>
+            <span>Total</span>
+            <span>${(total + shippingCost).toLocaleString('es-AR')}</span>
+        </div>
+
+        <div className={styles.btnRow}>
+            <button className={styles.backBtn} onClick={handleBack}>Volver</button>
+            <button className={styles.nextBtn} onClick={handleNext} disabled={loading}>
+                {loading ? 'Procesando...' : 'Confirmar y pagar'}
+            </button>
+        </div>
+    </div>
+)}
+
+
+        {/* ── Paso 4: Pago ── */}
+            {step === 4 && (
                 <div className={styles.form}>
                 
                     {preferenceId && (

@@ -1,6 +1,6 @@
 import styles from './Stepper.module.css'
 
-const DEFAULT_STEPS = ['Datos personales', 'Envío', 'Pago', 'Confirmación']
+const DEFAULT_STEPS = ['Datos personales', 'Envío','Resumen', 'Pago', 'Confirmación']
 
 const Stepper = ({ currentStep, steps = DEFAULT_STEPS }) => {
     return (
