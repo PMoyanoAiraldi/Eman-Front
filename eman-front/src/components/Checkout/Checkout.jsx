@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
@@ -46,6 +46,10 @@ const Checkout = () => {
     const [toast, setToast] = useState(null)
     const [touched, setTouched] = useState({})
 
+    const [shippingQuote, setShippingQuote] = useState(null) // { price, deliveryTimeMin, deliveryTimeMax }
+    const [quotingShipping, setQuotingShipping] = useState(false)
+    const [shippingQuoteError, setShippingQuoteError] = useState(null)
+
     const hideToast = () => setToast(null)
 
     const [step, setStep] = useState(1)
@@ -70,6 +74,12 @@ const handleChange = (e) => {
     const cleanValue = sanitizer ? sanitizer(value) : value
 
     setForm({ ...form, [name]: cleanValue })
+
+    // Invalidamos la cotización anterior apenas cambia el CP
+    if (name === 'zipCode') {
+        setShippingQuote(null)
+        setShippingQuoteError(null)
+    }
 
     const validator = fieldValidators[name]
     if (validator && touched[name]) {
@@ -102,6 +112,10 @@ const handleShippingTypeChange = (e) => {
     })
     setErrors({ ...errors, address: '', city: '', zipCode: '', locality: '' })
     setTouched({ ...touched, address: false, city: false, zipCode: false, locality: false })
+
+    // Nuevo: limpiamos la cotización previa al cambiar el tipo de envío
+    setShippingQuote(null)
+    setShippingQuoteError(null)
 }
 
 const handleNext = async () => {
@@ -123,6 +137,16 @@ const handleNext = async () => {
         if (Object.keys(stepErrors).length > 0) {
         setTouched({ ...touched, address: true, city: true, zipCode: true, locality: true })
         return
+    }
+    if (form.shippingType === 'correo_argentino') {
+        if (quotingShipping) {
+            setToast({ type: 'error', message: 'Aguardá un instante a que se calcule el costo de envío.' })
+            return
+        }
+        if (!shippingQuote) {
+            setToast({ type: 'error', message: 'No pudimos calcular el envío para ese código postal. Verificalo o elegí otra opción de entrega.' })
+            return
+        }
     }
 
     setStep(s => s + 1)
@@ -181,17 +205,62 @@ const prefRes = await axiosInstance.post(`/payments/create-preference`,{
 
 const handleBack = () => setStep(s => s - 1)
 
-const CORREO_ARGENTINO_COST_TEMP = 8000 // TODO: reemplazar por cotización real de Correo Argentino cuando estén las credenciales
+
+useEffect(() => {
+  // Solo cotizamos si eligieron Correo Argentino y el CP tiene 4 dígitos (formato AR)
+    const isValidZip = form.shippingType === 'correo_argentino' && /^\d{4}$/.test(form.zipCode)
+
+    if (!isValidZip) {
+        return // no reseteamos nada acá — eso ya lo hacen los handlers
+    }
+
+    const timer = setTimeout(async () => {
+        setQuotingShipping(true)
+        setShippingQuoteError(null)
+
+        try {
+        const { data } = await axiosInstance.post('/shipping/quote', {
+            postalCodeDestination: form.zipCode,
+            weight: 1000,   // TODO: calcular a partir del carrito cuando tengas peso por producto
+            height: 20,
+            width: 20,
+            length: 30,
+        })
+
+        const domicilio = data.find(r => r.deliveredType === 'D')
+
+        if (domicilio) {
+            setShippingQuote({
+            price: domicilio.price,
+            deliveryTimeMin: domicilio.deliveryTimeMin,
+            deliveryTimeMax: domicilio.deliveryTimeMax,
+            })
+        } else {
+            setShippingQuote(null)
+            setShippingQuoteError('No pudimos cotizar el envío para ese código postal.')
+        }
+        } catch (err) {
+        console.error('Error cotizando envío:', err)
+        setShippingQuote(null)
+        setShippingQuoteError('No pudimos cotizar el envío. Probá de nuevo.')
+        } finally {
+        setQuotingShipping(false)
+        }
+    }, 600) // debounce: espera 600ms sin cambios en el CP antes de cotizar
+
+    return () => clearTimeout(timer) // cancela la cotización anterior si el usuario sigue tipeando
+}, [form.zipCode, form.shippingType])
+
 
 const shippingCost = form.shippingType === 'correo_argentino'
-    ? CORREO_ARGENTINO_COST_TEMP
+    ? (shippingQuote?.price ?? 0)
     : 0 // coordinado y retiro en local ya son gratis
 
 if (items.length === 0 && step < 4) {
     return (
         <div className={styles.empty}>
             <p>Tu carrito está vacío</p>
-            <button className={styles.emptyBtn} onClick={() => navigate('/')}>
+            <button className={styles.emptyBtn} onClick={() => navigate('/tienda')}>
                 Ver productos
             </button>
 
@@ -267,7 +336,7 @@ return (
                 {errors.guestPhone && <span className={styles.error}>{errors.guestPhone}</span>}
             </div>
 
-            <button className={styles.nextBtn} onClick={handleNext}>
+            <button className={styles.nextBtn} onClick={handleNext} >
                 Continuar
             </button>
         </div>
@@ -290,9 +359,17 @@ return (
                             />
                     <div>
                     <p className={styles.shippingName}>Correo Argentino</p>
-                    <p className={styles.shippingDesc}>Todo el país — 2 a 5 días hábiles</p>
+                    <p className={styles.shippingDesc}>Todo el país</p>
                     </div>
-                <span className={styles.shippingPrice}>A calcular</span>
+                <span className={styles.shippingPrice}>
+                    {form.shippingType === 'correo_argentino' && form.zipCode.length === 4
+                        ? quotingShipping
+                        ? 'Calculando...'
+                        : shippingQuote
+                            ? `$${shippingQuote.price.toLocaleString('es-AR')}`
+                            : 'No disponible'
+                        : 'A calcular'}
+                    </span>
             </label>
 
             <label className={`${styles.shippingOption} ${form.shippingType === 'coordinado' ? styles.shippingOptionActive : ''}`}>
@@ -358,9 +435,16 @@ return (
                             value={form.zipCode}
                             onChange={handleChange}
                             onBlur={handleBlur}
-                            placeholder="Ej: 2538"
+                            placeholder="Ej: 2255"
                         />
                     {errors.zipCode && <span className={styles.error}>{errors.zipCode}</span>}
+                    {quotingShipping && <span className={styles.readonlyHint}>Calculando envío...</span>}
+                    {shippingQuote && !quotingShipping && (
+                        <span className={styles.readonlyHint}>
+                            Llega en {shippingQuote.deliveryTimeMin} a {shippingQuote.deliveryTimeMax} días hábiles
+                        </span>
+                    )}
+                    {shippingQuoteError && <span className={styles.error}>{shippingQuoteError}</span>}
                 </div>
             </div>
             </>

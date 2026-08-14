@@ -31,6 +31,7 @@ import CookieConsentBanner from './components/CookieConsentBanner/CookieConsentB
 import ShopPage from './pages/ShopPage/ShopPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
+import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
 
@@ -72,7 +73,7 @@ function App() {
 
   return (
     <>
-    
+      <ErrorBoundary>
       <Routes>
       <Route element={<Layout/>}>
         <Route path="/" element={<Home />} />
@@ -123,6 +124,7 @@ function App() {
       </Route> 
       
       </Routes>
+      </ErrorBoundary>
       <CookieConsentBanner />
     </>
   )
