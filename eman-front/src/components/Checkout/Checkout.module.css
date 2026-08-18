@@ -346,3 +346,74 @@
 .mapsLink:hover {
     text-decoration: underline;
 }
+
+.summaryItems {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.summaryItem {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #ece6da;
+}
+
+.summaryItem:first-child {
+    padding-top: 4px;
+}
+
+.summaryItemImage {
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.summaryItemInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+}
+
+.summaryItemName {
+    font-family: var(--font-serif); 
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2B2B2B;
+    letter-spacing: 0.01em;
+}
+
+.summaryItemDetails {
+    font-size: 0.8rem;
+    color: #a3a3a3;
+    letter-spacing: 0.02em;
+}
+
+.summaryItemPrice {
+    font-size: 0.95rem;
+    color: #2B2B2B;
+    white-space: nowrap;
+}
+
+/* Totales */
+.summaryRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 2px;
+    font-size: 0.9rem;
+    color: #6B6B6B;
+}
+
+.summaryTotal {
+    border-top: 1px solid #ece6da;
+    margin-top: 8px;
+    padding-top: 14px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #2B2B2B;
+}

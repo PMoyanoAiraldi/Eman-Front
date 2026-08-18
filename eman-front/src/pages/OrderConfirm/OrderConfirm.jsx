@@ -48,7 +48,7 @@ const OrderConfirm = () => {
                 { label: 'Checkout' },
             ]} />
 
-            <Stepper currentStep={4} />
+            <Stepper currentStep={5} />
 
             <div className={styles.content}>
                 <h1 className={styles.title}>¡Gracias por tu compra!</h1>

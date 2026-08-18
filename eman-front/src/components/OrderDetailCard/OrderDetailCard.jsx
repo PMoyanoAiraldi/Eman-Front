@@ -30,7 +30,7 @@ const buildWhatsAppLink = (order, orderId) => {
 
 const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
     return (
-        <>
+        <div className={styles.card}>
             {/* Detalle de productos */}
             <div className={styles.summary}>
                 {order.items.map((item, i) => (
@@ -117,7 +117,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <span>${formatCurrency(order.total)}</span>
                 </div>
             </div>
-        </>
+        </div>
     )
 }
 

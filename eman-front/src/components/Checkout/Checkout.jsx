@@ -512,14 +512,26 @@ return (
 {step === 3 && (
     <div className={styles.form}>
         <h2 className={styles.stepTitle}>Resumen de tu compra</h2>
-
+    
         <div className={styles.summaryItems}>
             {items.map(item => (
                 <div key={item.variantId} className={styles.summaryItem}>
-                    <span>{item.name} · {item.color} · Talle {item.size} · x{item.quantity}</span>
-                    <span>${(item.price * item.quantity).toLocaleString('es-AR')}</span>
-                </div>
-            ))}
+                <img
+                    src={item.image}
+                    alt={item.name}
+                    className={styles.summaryItemImage}
+                />
+                <div className={styles.summaryItemInfo}>
+                <span className={styles.summaryItemName}>{item.name}</span>
+                <span className={styles.summaryItemDetails}>
+                    {item.color.name} · Talle {item.size} · x{item.quantity}
+                </span>
+            </div>
+            <span className={styles.summaryItemPrice}>
+                ${(item.price * item.quantity).toLocaleString('es-AR')}
+            </span>
+        </div>
+            ))}    
         </div>
         <div className={styles.summaryRow}>
             <span>Subtotal</span>
