@@ -1,8 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+const loadCartFromStorage = () => {
+    try {
+        const data = localStorage.getItem("cart")
+        return data ? JSON.parse(data) : []
+    } catch {
+        return []
+    }
+}
+
 const initialState = {
-  items: [],        // productos en el carrito
-  isOpen: false,    // para abrir/cerrar el drawer del carrito
+  items: loadCartFromStorage(), // los productos en el carrito permanecen ahi cuando entra de nuevo el user no registrado
+  isOpen: false,                // para abrir/cerrar el drawer del carrito
 }
 
 const cartSlice = createSlice({
