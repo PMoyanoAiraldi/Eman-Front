@@ -56,9 +56,9 @@ console.log("activeColor", activeColor)
     // Devuelve el stock para la variante seleccionada (color + talle)
     // Estructura esperada: product.variants = [{ colorName, size, stock }]
     const getStock = (size) => {
-        if (!selectedColor || !product.variants) return 0;
+        if (!activeColor || !product.variants) return 0;
         const variant = product.variants.find(
-        (v) => v.color.id === selectedColor.id && v.size.id === size.id
+        (v) => v.color.id === activeColor.id && v.size.id === size.id
         );
         return variant?.stock ?? 0;
     };
@@ -155,6 +155,14 @@ return (
         <div className={styles.info}>
         {product.brand && <p className={styles.brand}>{product.brand?.name ?? product.brand}</p>}
         <h1 className={styles.name}>{product.name}</h1>
+
+        {/* Descripción */}
+            {product.description && (
+            <div className={styles.section}>
+                <p className={styles.sectionLabel}>Descripción</p>
+                <p className={styles.description}>{product.description}</p>
+            </div>
+            )}
 
 
         {/* Precio */}
@@ -261,16 +269,13 @@ return (
             >
             {added ? "✓ Agregado al carrito" : "Agregar al carrito"}
             </button>
+            {!selectedSize && (
+                <p className={styles.helperText}>Elegí un talle para continuar</p>
+            )}
     
             <hr className={styles.divider} />
     
-            {/* Descripción */}
-            {product.description && (
-            <div className={styles.section}>
-                <p className={styles.sectionLabel}>Descripción</p>
-                <p className={styles.description}>{product.description}</p>
-            </div>
-            )}
+            
         </div>
         </div>
 

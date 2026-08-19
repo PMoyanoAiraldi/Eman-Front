@@ -9,7 +9,7 @@
 .page {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 2rem 1rem;
+    padding: 1.25rem 1rem;
 }
 
 /* ── Estado ── */
@@ -66,7 +66,7 @@
     border-radius: 12px;
     overflow: hidden;
     background: #f4f4f2;
-    aspect-ratio: 3 / 4;
+    aspect-ratio: 4 / 5;
 }
 .mainImage {
     width: 100%;
@@ -93,7 +93,7 @@
 .info {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
 }
 
 .brand {
@@ -147,7 +147,7 @@
 .section {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
 }
 .sectionLabel {
     font-size: 11px;
@@ -226,7 +226,7 @@
 .stock {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     font-size: 13px;
 }
 .stockDot {
@@ -303,10 +303,12 @@
 .addBtnAdded {
     background: #3b6d11;
 }
+
 .addBtn:disabled {
-    background: #ccc;
-    color: #888;
-    cursor: default;
+    background: #fff;
+    color: #666;
+    border: 1.5px solid #d0d0cc;
+    cursor: not-allowed;
 }
 
 /* ── Descripción ── */
@@ -315,6 +317,13 @@
     line-height: 1.75;
     color: #666;
     margin: 0;
+}
+
+.helperText {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    margin: -8px 0 0;
 }
 
 /* ── Responsive ── */
