@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Plus, Pencil, Eye, EyeOff, Star, Upload, Trash2, ChevronDown } from 'lucide-react'
-import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock, publishProduct, deleteDraftProduct } from '../../../redux/admin/adminProductsReducer'
+import { Plus, Pencil, Eye, EyeOff, Star, Upload, Trash2, ChevronDown, X } from 'lucide-react'
+import { fetchAllProducts, toggleProductState, updateProduct, updateVariantStock, publishProduct, deleteDraftProduct,  createProductVariant, deleteProductVariant } from '../../../redux/admin/adminProductsReducer'
 import { useToast } from '../../../hooks/useToast'
 import { getMissingFields } from '../../../utils/productValidation'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import Toast from '../../../components/Toast/Toast'
 import { GENDER_LABELS } from '../../../constants/gender'
+import axiosInstance from '../../../api/axiosInstance'
 import styles from './Products.module.css'
 import { useNavigate } from 'react-router-dom'
 
@@ -24,6 +25,13 @@ const Products = ()=> {
     const [variantProduct, setVariantProduct] = useState(null)
     const [stockEdits, setStockEdits] = useState({}) // { variantId: nuevoStock }
     const [savingStock, setSavingStock] = useState(false)
+    const [colors, setColors] = useState([])
+    const [sizes, setSizes] = useState([])
+    const [showAddVariant, setShowAddVariant] = useState(false)
+    const [variantForm, setVariantForm] = useState({ colorId: '', sizeId: '', stock: '' })
+    const [addingVariant, setAddingVariant] = useState(false)
+    const [variantToDelete, setVariantToDelete] = useState(null)
+    const [removingVariantId, setRemovingVariantId] = useState(null)
     const { toast, showToast, hideToast } = useToast()
     
     
@@ -52,6 +60,11 @@ const Products = ()=> {
 
         return matchesSearch && matchesCategory && matchesGender && matchesState
 })
+
+    useEffect(() => {
+        axiosInstance.get('/colors/all').then(r => setColors(r.data)).catch(() => {})
+        axiosInstance.get('/sizes/all').then(r => setSizes(r.data)).catch(() => {})
+    }, [])
 
     const handleToggleState = (id, currentState) => {
         dispatch(toggleProductState({ id, state: !currentState }))
@@ -126,6 +139,53 @@ const handlePublish = async (product) => {
     const handleDeleteDraft = (id) => {
         setProductToDelete(id)
     }
+
+    const handleVariantFormChange = (e) => {
+    const { name, value } = e.target
+    if (name === 'stock' && !/^\d*$/.test(value)) return
+    setVariantForm(prev => ({ ...prev, [name]: value }))
+}
+
+const handleAddVariant = async () => {
+    if (!variantForm.colorId || !variantForm.sizeId || variantForm.stock === '') {
+        showToast('Completá color, talle y stock', 'error')
+        return
+    }
+    setAddingVariant(true)
+    try {
+        const result = await dispatch(createProductVariant({
+            productId: variantProduct.id,
+            colorId: variantForm.colorId,
+            sizeId: variantForm.sizeId,
+            stock: Number(variantForm.stock),
+        })).unwrap()
+        setVariantProduct(prev => ({ ...prev, variants: [...prev.variants, result] }))
+        setVariantForm({ colorId: '', sizeId: '', stock: '' })
+        setShowAddVariant(false)
+        dispatch(fetchAllProducts())
+        showToast('Variante agregada')
+        } catch (err) {
+        showToast(err || 'Error al agregar la variante', 'error')
+    } finally {
+        setAddingVariant(false)
+    }
+}
+
+const handleDeleteVariant = async () => {
+    if (!variantToDelete) return
+    setRemovingVariantId(variantToDelete.id)
+    try {
+        await dispatch(deleteProductVariant(variantToDelete.id)).unwrap()
+        setVariantProduct(prev => ({ ...prev, variants: prev.variants.filter(v => v.id !== variantToDelete.id) }))
+        dispatch(fetchAllProducts())
+        showToast('Variante eliminada')
+    } catch (err) {
+        showToast(err || 'Error al eliminar la variante', 'error')
+    } finally {
+        setRemovingVariantId(null)
+        setVariantToDelete(null)
+    }
+}
 
     const confirmDeleteDraft = async () => {
         const id = productToDelete
@@ -324,7 +384,7 @@ const handlePublish = async (product) => {
             )}
 
             {variantProduct && (
-        <div className={styles.modalOverlay} onClick={() => { setVariantProduct(null); setStockEdits({}) }}>
+        <div className={styles.modalOverlay} onClick={() => { setVariantProduct(null); setStockEdits({}) ; setShowAddVariant(false); setVariantForm({ colorId: '', sizeId: '', stock: '' }) }}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>{variantProduct.name}</h2>
@@ -360,10 +420,84 @@ const handlePublish = async (product) => {
                                         onChange={e => handleStockChange(v.id, e.target.value)}
                                     />
                                 </td>
+                                <td>
+                                    <button
+                                        className={styles.variantDeleteBtn}
+                                        onClick={() => setVariantToDelete(v)}
+                                        disabled={removingVariantId === v.id}
+                                        title="Eliminar variante"
+                                    >
+                                        {removingVariantId === v.id ? '...' : <Trash2 size={13} strokeWidth={1.5} />}
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
+
+                {!showAddVariant ? (
+                    <button className={styles.addVariantToggleBtn} onClick={() => setShowAddVariant(true)}>
+                        <Plus size={14} strokeWidth={2} /> Agregar variante
+                    </button>
+                ) : (
+                    <div className={styles.addVariantPanel}>
+                        <div className={styles.addVariantHeader}>
+                            <span>Nueva variante</span>
+                            <button className={styles.closeBtn} onClick={() => { setShowAddVariant(false); setVariantForm({ colorId: '', sizeId: '', stock: '' }) }}>
+                                <X size={14} strokeWidth={1.5} />
+                            </button>
+                    </div>
+                    <div className={styles.addVariantRow}>
+                    <div>
+                    <label className={styles.miniLabel}>Color</label>
+                        <div className={styles.colorSwatches}>
+                            {colors.filter(c => c.state).map(c => (
+                                <button
+                                    key={c.id}
+                                    type="button"
+                                    className={`${styles.colorSwatch} ${variantForm.colorId === c.id ? styles.colorSwatchSelected : ''}`}
+                                    style={{ background: c.hex || '#ccc' }}
+                                    onClick={() => setVariantForm(prev => ({ ...prev, colorId: c.id }))}
+                                    title={c.name}
+                                />
+                            ))}
+                        </div>
+                        </div>
+                        
+                        <div>
+                            <label className={styles.miniLabel}>Talle</label>
+                            <div className={styles.sizeChips}>
+                            {sizes.filter(s => s.state).map(s => (
+                                <button
+                                    key={s.id}
+                                    type="button"
+                                    className={`${styles.sizeChip} ${variantForm.sizeId === s.id ? styles.sizeChipSelected : ''}`}
+                                    onClick={() => setVariantForm(prev => ({ ...prev, sizeId: s.id }))}
+                                >
+                                    {s.name}
+                                </button>
+                            ))}
+                        </div>    
+                        </div>
+
+                <div className={styles.addVariantBottomRow}>
+                    <input
+                        className={styles.addVariantStockInput}
+                        type="text"
+                        placeholder="Stock"
+                        name="stock"
+                        value={variantForm.stock}
+                        onChange={handleVariantFormChange}
+                    />
+                    <button className={styles.addVariantConfirmBtn} onClick={handleAddVariant} disabled={addingVariant}>
+                        {addingVariant ? '...' : 'Agregar'}
+                    </button>
+                </div>
+                </div>
+                </div>
+                )}
+
+
                 <div className={styles.modalFooter}>
                     <div className={styles.modalTotal}>
                         <span>Stock total</span>
@@ -383,7 +517,7 @@ const handlePublish = async (product) => {
                     </button>
                 </div>
             </div>
-        </div>
+            </div>
         )}
         <ConfirmModal
             isOpen={!!productToDelete}
@@ -394,6 +528,16 @@ const handlePublish = async (product) => {
             onConfirm={confirmDeleteDraft}
             onCancel={() => setProductToDelete(null)}
         />
+        <ConfirmModal
+            isOpen={!!variantToDelete}
+            title="Eliminar variante"
+            message={variantToDelete ? `¿Eliminar ${variantToDelete.color?.name} / ${variantToDelete.size?.name} (stock: ${variantToDelete.stock})?` : ''}
+            confirmLabel="Eliminar"
+            danger
+            onConfirm={handleDeleteVariant}
+            onCancel={() => setVariantToDelete(null)}
+        />
+
         <Toast toast={toast} onHide={hideToast} />
 
         </div>
