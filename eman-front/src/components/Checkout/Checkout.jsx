@@ -221,10 +221,10 @@ useEffect(() => {
         try {
         const { data } = await axiosInstance.post('/shipping/quote', {
             postalCodeDestination: form.zipCode,
-            weight: 1000,   // TODO: calcular a partir del carrito cuando tengas peso por producto
-            height: 20,
-            width: 20,
-            length: 30,
+            items: items.map(item => ({
+                productId: item.id,
+                quantity:  item.quantity,
+            })),
         })
 
         const domicilio = data.find(r => r.deliveredType === 'D')
