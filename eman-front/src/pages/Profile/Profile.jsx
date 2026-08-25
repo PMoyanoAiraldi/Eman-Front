@@ -5,10 +5,11 @@ import { setCredentials } from '../../redux/slices/authReducer'
 import { userService } from '../../api/userService'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import {
-    sanitizeName, sanitizeAddress, sanitizePhone,
-    validateName, validateAddress, validateCity, validateProvince, validatePhone,
-    PROVINCIAS_ARGENTINAS, PHONE_LENGTH
+    sanitizeName, sanitizePhone,
+    validateName, validateCity, validatePhone,PHONE_LENGTH
 } from '../../utils/registerValidation'
+import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../utils/provinces'
+import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
 import styles from './Profile.module.css'
 
 const passwordRules = [
@@ -21,15 +22,17 @@ const passwordRules = [
 
 const profileFieldSanitizers = {
     name:    sanitizeName,
-    address: sanitizeAddress,
+    streetName:   sanitizeStreetName,
+    streetNumber: sanitizeStreetNumber,
     phone:   sanitizePhone,
 }
 
 const profileFieldValidators = {
     name:     validateName,
-    address:  validateAddress,
+    streetName:   validateStreetName,
+    streetNumber: validateStreetNumber,
     city:     validateCity,
-    province: validateProvince,
+    provinceCode: validateProvince,
     phone:    validatePhone,
 }
 
@@ -41,9 +44,12 @@ const ProfilePage = () => {
     // --- Datos personales ---
     const [profileForm, setProfileForm] = useState({
         name: user?.name || '',
-        address: user?.address || '',
+        streetName:   user?.streetName   || '',
+        streetNumber: user?.streetNumber || '',
+        floor:        user?.floor        || '',
+        apartment:    user?.apartment    || '',
         city: user?.city || '',
-        province: user?.province || '',
+        provinceCode: user?.provinceCode || '',
         phone: user?.phone || '',
     })
     const [profileErrors, setProfileErrors] = useState({})
@@ -109,7 +115,14 @@ const ProfilePage = () => {
         setProfileErrors(stepErrors)
 
         if (Object.keys(stepErrors).length > 0) {
-            setProfileTouched({ name: true, address: true, city: true, province: true, phone: true })
+            setProfileTouched({ 
+                name: true, 
+                streetName: true,
+                streetNumber: true, 
+                city: true, 
+                provinceCode: true, 
+                phone: true
+            })
             return
         }
 
@@ -203,18 +216,59 @@ const ProfilePage = () => {
                         {profileErrors.name && <span className={styles.error}>{profileErrors.name}</span>}
                     </div>
 
-                    <div className={styles.field}>
-                        <label className={styles.label}>DIRECCIÓN</label>
-                        <input
-                            className={`${styles.input} ${profileErrors.address ? styles.inputError : ''}`}
-                            type="text"
-                            name="address"
-                            value={profileForm.address}
-                            onChange={handleProfileChange}
-                            onBlur={handleProfileBlur}
-                            required
-                        />
-                        {profileErrors.address && <span className={styles.error}>{profileErrors.address}</span>}
+                    <div className={styles.row}>
+                        <div className={styles.field} style={{ flex: 3 }}>
+                            <label className={styles.label}>CALLE</label>
+                            <input
+                                className={`${styles.input} ${profileErrors.streetName ? styles.inputError : ''}`}
+                                type="text"
+                                name="streetName"
+                                placeholder="Ej: San Martín"
+                                value={profileForm.streetName}
+                                onChange={handleProfileChange}
+                                onBlur={handleProfileBlur}
+                                required
+                            />
+                            {profileErrors.streetName && <span className={styles.error}>{profileErrors.streetName}</span>}
+                        </div>
+
+                        <div className={styles.field} style={{ flex: 1 }}>
+                            <label className={styles.label}>NÚMERO</label>
+                            <input
+                                className={`${styles.input} ${profileErrors.streetNumber ? styles.inputError : ''}`}
+                                type="text"
+                                name="streetNumber"
+                                placeholder="123"
+                                value={profileForm.streetNumber}
+                                onChange={handleProfileChange}
+                                onBlur={handleProfileBlur}
+                                required
+                            />
+                            {profileErrors.streetNumber && <span className={styles.error}>{profileErrors.streetNumber}</span>}
+                        </div>
+                    </div>
+
+                    <div className={styles.row}>
+                        <div className={styles.field}>
+                            <label className={styles.label}>PISO (opcional)</label>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                name="floor"
+                                value={profileForm.floor}
+                                onChange={handleProfileChange}
+                            />
+                        </div>
+                        <div className={styles.field}>
+                            <label className={styles.label}>DEPTO (opcional)</label>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                name="apartment"
+                                value={profileForm.apartment}
+                                onChange={handleProfileChange}
+                            />
+                        </div>
                     </div>
 
                     <div className={styles.row}>
@@ -234,19 +288,19 @@ const ProfilePage = () => {
                         <div className={styles.field}>
                             <label className={styles.label}>PROVINCIA</label>
                             <select
-                                className={`${styles.input} ${profileErrors.province ? styles.inputError : ''}`}
-                                name="province"
-                                value={profileForm.province}
+                                className={`${styles.input} ${profileErrors.provinceCode ? styles.inputError : ''}`}
+                                name="provinceCode"
+                                value={profileForm.provinceCode}
                                 onChange={handleProfileChange}
                                 onBlur={handleProfileBlur}
                                 required
                             >
                             <option value="">Seleccioná tu provincia</option>
-                                {PROVINCIAS_ARGENTINAS.map((prov) => (
-                                    <option key={prov} value={prov}>{prov}</option>
+                                {PROVINCIAS_ARGENTINAS.map((p) => (
+                                    <option key={p.code} value={p.code}>{p.name}</option>
                                 ))}
                             </select>
-                            {profileErrors.province && <span className={styles.error}>{profileErrors.province}</span>}
+                            {profileErrors.provinceCode && <span className={styles.error}>{profileErrors.provinceCode}</span>}
                         
                         </div>
                     </div>

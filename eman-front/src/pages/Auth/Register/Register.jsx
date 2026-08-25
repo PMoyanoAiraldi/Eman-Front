@@ -3,11 +3,10 @@ import { useNavigate, Link } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import { authService } from '../../../api/authService'
 import {
-    sanitizeName, sanitizePhone, sanitizeAddress,
-    validateName, validateEmail, validatePhone,
-    validateAddress, validateCity, validateProvince,
-    PROVINCIAS_ARGENTINAS,
+    sanitizeName, sanitizePhone, validateName, validateEmail, validatePhone,validateCity
 } from '../../../utils/registerValidation'
+import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../../utils/addressValidation'
+import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../../utils/provinces'
 import PasswordChecklist from '../../../components/PasswordChecklist/PasswordChecklist.jsx'
 import { passwordRules } from '../../../components/PasswordChecklist/passwordRules.js'
 import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb'
@@ -22,9 +21,12 @@ const RegisterPage = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        address: '',
+        streetName: '',
+        streetNumber: '',
+        floor: '',
+        apartment: '',
         city: '',
-        province: '',
+        provinceCode: '',
         phone: '',
     })
 
@@ -39,9 +41,10 @@ const RegisterPage = () => {
     const validators = {
         name: validateName,
         email: validateEmail,
-        address: validateAddress,
+        streetName:   validateStreetName,
+        streetNumber: validateStreetNumber,
         city: validateCity,
-        province: validateProvince,
+        provinceCode: validateProvince,
         phone: validatePhone,
     }
 
@@ -57,7 +60,8 @@ const RegisterPage = () => {
         let cleanValue = value
 
         if (name === 'name') cleanValue = sanitizeName(value)
-        if (name === 'address') cleanValue = sanitizeAddress(value)
+        if (name === 'streetName')   cleanValue = sanitizeStreetName(value)
+        if (name === 'streetNumber') cleanValue = sanitizeStreetNumber(value)
         if (name === 'phone') cleanValue = sanitizePhone(value)
 
         setForm({ ...form, [name]: cleanValue })
@@ -76,9 +80,10 @@ const RegisterPage = () => {
         const newErrors = {
             name: validateName(form.name),
             email: validateEmail(form.email),
-            address: validateAddress(form.address),
+            streetName:   validateStreetName(form.streetName),
+            streetNumber: validateStreetNumber(form.streetNumber),
             city: validateCity(form.city),
-            province: validateProvince(form.province),
+            provinceCode: validateProvince(form.provinceCode),
             phone: validatePhone(form.phone),
         }
 
@@ -217,20 +222,62 @@ const RegisterPage = () => {
 
                     <p className={styles.sectionLabel}>Datos de envío</p>
 
+                    <div className={styles.row}>
+                        <div className={styles.field} style={{ flex: 3 }}>
+                            <label className={styles.label}>CALLE</label>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                name="streetName"
+                                placeholder="Ej: San Martín"
+                                value={form.streetName}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                required
+                            />
+                            {errors.streetName && <p className={styles.error}>{errors.streetName}</p>}
+                        </div>
+
+                        <div className={styles.field} style={{ flex: 1 }}>
+                            <label className={styles.label}>NÚMERO</label>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                name="streetNumber"
+                                placeholder="123"
+                                value={form.streetNumber}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                required
+                            />
+                            {errors.streetNumber && <p className={styles.error}>{errors.streetNumber}</p>}
+                        </div>
+                    </div>
+
+                    <div className={styles.row}>
+                        <div className={styles.field}>
+                            <label className={styles.label}>PISO (opcional)</label>
+                            <input
+                                className={styles.input}
+                                type="text"
+                                name="floor"
+                                placeholder="Ej: 2"
+                                value={form.floor}
+                                onChange={handleChange}
+                            />
+                        </div>
                     <div className={styles.field}>
-                        <label className={styles.label}>DIRECCIÓN</label>
+                        <label className={styles.label}>DEPTO (opcional)</label>
                         <input
                             className={styles.input}
                             type="text"
-                            name="address"
-                            placeholder="Ej: Av. Corrientes 1234"
-                            value={form.address}
+                            name="apartment"
+                            placeholder="Ej: B"
+                            value={form.apartment}
                             onChange={handleChange}
-                            onBlur={handleBlur}
-                            required
                         />
-                        {errors.address && <p className={styles.error}>{errors.address}</p>}
                     </div>
+                </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
@@ -251,18 +298,18 @@ const RegisterPage = () => {
                             <label className={styles.label}>PROVINCIA</label>
                             <select
                                 className={styles.input}
-                                name="province"
-                                value={form.province}
+                                name="provinceCode"
+                                value={form.provinceCode }
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 required
                             >
                             <option value="">Seleccioná...</option>
                                 {PROVINCIAS_ARGENTINAS.map((p) => (
-                                    <option key={p} value={p}>{p}</option>
+                                    <option key={p.code} value={p.code}>{p.name}</option>
                                 ))}
                             </select>
-                            {errors.province && <p className={styles.error}>{errors.province}</p>}
+                            {errors.provinceCode  && <p className={styles.error}>{errors.provinceCode }</p>}
                         </div>
                         </div>
                         <div className={styles.field}>

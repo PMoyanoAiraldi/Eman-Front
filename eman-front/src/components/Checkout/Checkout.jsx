@@ -3,7 +3,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
-import { sanitizeName, sanitizePhone, sanitizeAddress, sanitizeZipCode, validateName, validateEmail, validatePhone, validateAddress, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
+import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
+import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
+import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../utils/provinces'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
@@ -16,16 +18,19 @@ import { Payment } from '@mercadopago/sdk-react'
         guestName:  validateName,
         guestEmail: validateEmail,
         guestPhone: validatePhone,
-        address:    validateAddress,
+        streetName:   validateStreetName,
+        streetNumber: validateStreetNumber,
         city:       validateCity,
         zipCode:    validateZipCode,
+        provinceCode: validateProvince,
         locality:   validateLocality,
     }
 
     const fieldSanitizers = {
         guestName:  sanitizeName,
         guestPhone: sanitizePhone,
-        address:    sanitizeAddress,
+        streetName:   sanitizeStreetName,
+        treetNumber: sanitizeStreetNumber,
         zipCode:    sanitizeZipCode,
 }
 
@@ -60,9 +65,13 @@ const Checkout = () => {
         guestEmail: user?.email || '',
         guestPhone: user?.phone || '',
         // Paso 2
-        address:  user?.address  || '',
-        city:     user?.city     || '',
+        streetName:   user?.streetName   || '',
+        streetNumber: user?.streetNumber || '',
+        floor:        user?.floor        || '',
+        apartment:    user?.apartment    || '',
+        city:         user?.city     || '',
         zipCode:      '',
+        provinceCode: user?.provinceCode || '',
         shippingType: 'correo_argentino',
         locality: ''
     })
@@ -105,15 +114,19 @@ const handleShippingTypeChange = (e) => {
     setForm({
         ...form,
         shippingType: value,
-        address:  '',
+        streetName:   '',
+        streetNumber: '',
+        floor:        '',
+        apartment:    '',
         city:     '',
         zipCode:  '',
+        provinceCode: '',
         locality: '',
     })
-    setErrors({ ...errors, address: '', city: '', zipCode: '', locality: '' })
-    setTouched({ ...touched, address: false, city: false, zipCode: false, locality: false })
+    setErrors({ ...errors, streetName: '', streetNumber: '', city: '', zipCode: '',provinceCode: '', locality: '' })
+    setTouched({ ...touched, streetName: false, streetNumber: false, city: false, zipCode: false, provinceCode: false, locality: false })
 
-    // Nuevo: limpiamos la cotización previa al cambiar el tipo de envío
+    // Limpiamos la cotización previa al cambiar el tipo de envío
     setShippingQuote(null)
     setShippingQuoteError(null)
 }
@@ -161,8 +174,12 @@ const handleNext = async () => {
                 guestName:    form.guestName,
                 guestEmail:   form.guestEmail,
                 guestPhone:   form.guestPhone,
-                address:      form.address || 'Retiro en local',
+                streetName:   form.shippingType !== 'retiro' ? form.streetName   : undefined,
+                streetNumber: form.shippingType !== 'retiro' ? form.streetNumber : undefined,
+                floor:        form.floor     || undefined,
+                apartment:    form.apartment || undefined,
                 city:         form.city || form.locality || 'Gálvez',
+                provinceCode: form.shippingType === 'correo_argentino' ? form.provinceCode : undefined,
                 zipCode:      form.shippingType === 'correo_argentino' ? form.zipCode : undefined,
                 shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
                 shippingCost,
@@ -400,17 +417,58 @@ return (
     {/* Correo Argentino → dirección completa */}
         {form.shippingType === 'correo_argentino' && (
             <>
-        <div className={styles.field}>
-                <label className={styles.label}>Dirección</label>
-                    <input
-                        className={`${styles.input} ${errors.address ? styles.inputError : ''}`}
-                        name="address"
-                        value={form.address}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        placeholder="Ej: San Martín 123"
-                    />
-                {errors.address && <span className={styles.error}>{errors.address}</span>}
+        <div className={styles.row}>
+            <div className={styles.field} style={{ flex: 3 }}>
+                <label className={styles.label}>Calle</label>
+                <input
+                    className={`${styles.input} ${errors.streetName ? styles.inputError : ''}`}
+                    name="streetName"
+                    value={form.streetName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="Ej: San Martín"
+                />
+                {errors.streetName && <span className={styles.error}>{errors.streetName}</span>}
+            </div>
+            <div className={styles.field} style={{ flex: 1 }}>
+                <label className={styles.label}>Número</label>
+                <input
+                    className={`${styles.input} ${errors.streetNumber ? styles.inputError : ''}`}
+                    name="streetNumber"
+                    value={form.streetNumber}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="123"
+                />
+                {errors.streetNumber && <span className={styles.error}>{errors.streetNumber}</span>}
+            </div>
+        </div>
+            <div className={styles.row}>
+                <div className={styles.field}>
+                    <label className={styles.label}>Piso (opcional)</label>
+                    <input className={styles.input} name="floor" value={form.floor} onChange={handleChange} />
+                </div>
+                <div className={styles.field}>
+                    <label className={styles.label}>Depto (opcional)</label>
+                    <input className={styles.input} name="apartment" value={form.apartment} onChange={handleChange} />
+                </div>
+            </div>
+
+            <div className={styles.field}>
+                <label className={styles.label}>Provincia</label>
+                <select
+                    className={`${styles.input} ${errors.provinceCode ? styles.inputError : ''}`}
+                    name="provinceCode"
+                    value={form.provinceCode}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                >
+                    <option value="">Seleccioná tu provincia</option>
+                    {PROVINCIAS_ARGENTINAS.map(p => (
+                        <option key={p.code} value={p.code}>{p.name}</option>
+                    ))}
+                </select>
+                {errors.provinceCode && <span className={styles.error}>{errors.provinceCode}</span>}
             </div>
 
             <div className={styles.row}>
@@ -468,19 +526,33 @@ return (
                     {errors.locality && <span className={styles.error}>{errors.locality}</span>}
                 </div>
 
-                <div className={styles.field}>
-                    <label className={styles.label}>Dirección</label>
+                <div className={styles.row}>
+                <div className={styles.field} style={{ flex: 3 }}>
+                    <label className={styles.label}>Calle</label>
                     <input
-                        className={`${styles.input} ${errors.address ? styles.inputError : ''}`}
-                        name="address"
-                        value={form.address}
+                        className={`${styles.input} ${errors.streetName ? styles.inputError : ''}`}
+                        name="streetName"
+                        value={form.streetName}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        placeholder="Ej: San Martín 123"
+                        placeholder="Ej: San Martín"
                     />
-                    {errors.address && <span className={styles.error}>{errors.address}</span>}
+                    {errors.streetName && <span className={styles.error}>{errors.streetName}</span>}
                 </div>
-            </>
+                <div className={styles.field} style={{ flex: 1 }}>
+                <label className={styles.label}>Número</label>
+                <input
+                    className={`${styles.input} ${errors.streetNumber ? styles.inputError : ''}`}
+                    name="streetNumber"
+                    value={form.streetNumber}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    placeholder="123"
+                />
+                {errors.streetNumber && <span className={styles.error}>{errors.streetNumber}</span>}
+            </div>
+        </div>
+                </>
         )}
 
         {/* Retiro en local → info del local */}

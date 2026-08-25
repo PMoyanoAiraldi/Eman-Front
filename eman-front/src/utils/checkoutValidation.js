@@ -1,5 +1,7 @@
+import { validateStreetName, validateStreetNumber } from './addressValidation'
+import { validateProvince } from './provinces'
+
 const NAME_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü' -]*$/
-const ADDRESS_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü0-9°.,#º -]*$/
 const ZIPCODE_REGEX = /^[A-Za-z0-9]*$/
 const EMAIL_REGEX = /\S+@\S+\.\S+/
 const PHONE_MAX_LENGTH = 10
@@ -11,14 +13,6 @@ export const sanitizeName = (value) => {
     return value
         .split('')
         .filter((char) => NAME_REGEX.test(char))
-        .join('')
-}
-
-export const sanitizeAddress = (value) => {
-  // letras, números, espacios y algunos signos típicos de direcciones (Av. Corrientes 1234, 2° B)
-    return value
-        .split('')
-        .filter((char) => ADDRESS_REGEX.test(char))
         .join('')
 }
 
@@ -58,14 +52,6 @@ export const validatePhone = (value) => {
     if (v.startsWith('0')) return 'No incluyas el 0 de área'
     if (v.startsWith('15')) return 'No incluyas el 15'
     if (v.length < PHONE_MAX_LENGTH) return `Faltan ${PHONE_MAX_LENGTH - v.length} dígitos`
-    return ''
-}
-
-export const validateAddress = (value) => {
-    const v = value.trim()
-    if (!v) return 'La dirección es requerida'
-    if (v.length < 5) return 'Ingresá una dirección completa'
-    if (!/\d/.test(v)) return 'Incluí el número de la dirección'
     return ''
 }
 
@@ -109,21 +95,27 @@ export const validateStep2 = (form) => {
     const errors = {}
 
     if (form.shippingType === 'correo_argentino') {
-        const addressError = validateAddress(form.address)
-        if (addressError) errors.address = addressError
+        const streetNameError = validateStreetName(form.streetName)
+        if (streetNameError) errors.streetName = streetNameError
 
-        const cityError = validateCity(form.city)
-        if (cityError) errors.city = cityError
+        const streetNumberError = validateStreetNumber(form.streetNumber)
+        if (streetNumberError) errors.streetNumber = streetNumberError
 
         const zipError = validateZipCode(form.zipCode)
         if (zipError) errors.zipCode = zipError
+
+        const provinceError = validateProvince(form.provinceCode)
+        if (provinceError) errors.provinceCode = provinceError
     }
     if (form.shippingType === 'coordinado') {
         const localityError = validateLocality(form.locality)
         if (localityError) errors.locality = localityError
 
-        const addressError = validateAddress(form.address)
-        if (addressError) errors.address = addressError
+        const streetNameError = validateStreetName(form.streetName)
+        if (streetNameError) errors.streetName = streetNameError
+
+        const streetNumberError = validateStreetNumber(form.streetNumber)
+        if (streetNumberError) errors.streetNumber = streetNumberError
     }
 
     return errors

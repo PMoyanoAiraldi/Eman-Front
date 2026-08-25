@@ -1,5 +1,4 @@
 const NAME_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü' -]*$/
-const ADDRESS_REGEX = /^[A-Za-zÁÉÍÓÚÑÜáéíóúñü0-9°.,#º -]*$/
 const EMAIL_REGEX = /\S+@\S+\.\S+/
 const PHONE_MAX_LENGTH = 10
 
@@ -13,13 +12,6 @@ export const sanitizeName = (value) => {
         .join('')
 }
 
-export const sanitizeAddress = (value) => {
-  // letras, números, espacios y algunos signos típicos de direcciones (Av. Corrientes 1234, 2° B)
-    return value
-        .split('')
-        .filter((char) => ADDRESS_REGEX.test(char))
-        .join('')
-}
 
 export const sanitizePhone = (value) => {
   // solo dígitos, tope de 10
@@ -51,13 +43,6 @@ export const validatePhone = (value) => {
     return ''
 }
 
-export const validateAddress = (value) => {
-    const v = value.trim()
-    if (!v) return 'La dirección es requerida'
-    if (v.length < 5) return 'Ingresá una dirección completa'
-    if (!/\d/.test(v)) return 'Incluí el número de la dirección'
-    return ''
-}
 
 export const validateCity = (value) => {
     const v = value.trim()
@@ -66,38 +51,6 @@ export const validateCity = (value) => {
     return ''
 }
 
-
-export const PROVINCIAS_ARGENTINAS = [
-    'Buenos Aires',
-    'Catamarca',
-    'Chaco',
-    'Chubut',
-    'Ciudad Autónoma de Buenos Aires',
-    'Córdoba',
-    'Corrientes',
-    'Entre Ríos',
-    'Formosa',
-    'Jujuy',
-    'La Pampa',
-    'La Rioja',
-    'Mendoza',
-    'Misiones',
-    'Neuquén',
-    'Río Negro',
-    'Salta',
-    'San Juan',
-    'San Luis',
-    'Santa Cruz',
-    'Santa Fe',
-    'Santiago del Estero',
-    'Tierra del Fuego',
-    'Tucumán',
-]
-
-export const validateProvince = (value) => {
-    if (!value) return 'Seleccioná una provincia'
-    return ''
-}
 
 
 export const PHONE_LENGTH = PHONE_MAX_LENGTH
