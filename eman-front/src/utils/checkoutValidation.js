@@ -91,21 +91,33 @@ export const validateStep1 = (form) => {
     return errors
 }
 
+export const validateAgency = (value) => {
+    if (!value) return 'Seleccioná una sucursal'
+    return ''
+}
+
+
 export const validateStep2 = (form) => {
     const errors = {}
 
     if (form.shippingType === 'correo_argentino') {
-        const streetNameError = validateStreetName(form.streetName)
-        if (streetNameError) errors.streetName = streetNameError
-
-        const streetNumberError = validateStreetNumber(form.streetNumber)
-        if (streetNumberError) errors.streetNumber = streetNumberError
-
-        const zipError = validateZipCode(form.zipCode)
-        if (zipError) errors.zipCode = zipError
-
         const provinceError = validateProvince(form.provinceCode)
         if (provinceError) errors.provinceCode = provinceError
+
+        if (form.deliveryType === 'sucursal') {
+            const agencyError = validateAgency(form.agencyCode)
+            if (agencyError) errors.agencyCode = agencyError
+        } else {
+            // domicilio: se valida todo lo de siempre
+            const streetNameError = validateStreetName(form.streetName)
+            if (streetNameError) errors.streetName = streetNameError
+
+            const streetNumberError = validateStreetNumber(form.streetNumber)
+            if (streetNumberError) errors.streetNumber = streetNumberError
+
+            const zipError = validateZipCode(form.zipCode)
+            if (zipError) errors.zipCode = zipError
+        }
     }
     if (form.shippingType === 'coordinado') {
         const localityError = validateLocality(form.locality)

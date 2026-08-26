@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart } from '../../redux/slices/cartReducer'
@@ -55,6 +55,12 @@ const Checkout = () => {
     const [quotingShipping, setQuotingShipping] = useState(false)
     const [shippingQuoteError, setShippingQuoteError] = useState(null)
 
+    const [agencies, setAgencies] = useState([])
+    const [loadingAgencies, setLoadingAgencies] = useState(false)
+
+    const [agencyFilter, setAgencyFilter] = useState('')
+    
+
     const hideToast = () => setToast(null)
 
     const [step, setStep] = useState(1)
@@ -73,9 +79,29 @@ const Checkout = () => {
         zipCode:      '',
         provinceCode: user?.provinceCode || '',
         shippingType: 'correo_argentino',
-        locality: ''
+        locality: '',
+        deliveryType: 'domicilio',
+        agencyCode: '',
+        agencyName: '',
+        agencyAddress: '',
+        agencyCity: '',
     })
 
+    const agenciesRequestId = useRef(0)
+
+    const fetchAgencies = async (provinceCode) => {
+        const requestId = ++agenciesRequestId.current
+        setLoadingAgencies(true)
+
+        try {
+            const { data } = await axiosInstance.get('/shipping/agencies', { params: { provinceCode } })
+            if (requestId === agenciesRequestId.current) setAgencies(data)
+        } catch {
+            if (requestId === agenciesRequestId.current) setAgencies([])
+        } finally {
+            if (requestId === agenciesRequestId.current) setLoadingAgencies(false)
+        }
+    }
 
 const handleChange = (e) => {
     const { name, value } = e.target
@@ -88,6 +114,14 @@ const handleChange = (e) => {
     if (name === 'zipCode') {
         setShippingQuote(null)
         setShippingQuoteError(null)
+    }
+
+    if (name === 'provinceCode') {
+        setAgencies([])
+        setAgencyFilter('')
+        if (form.deliveryType === 'sucursal' && cleanValue) {
+            fetchAgencies(cleanValue)
+        }
     }
 
     const validator = fieldValidators[name]
@@ -114,6 +148,7 @@ const handleShippingTypeChange = (e) => {
     setForm({
         ...form,
         shippingType: value,
+        deliveryType: 'domicilio',
         streetName:   '',
         streetNumber: '',
         floor:        '',
@@ -122,13 +157,44 @@ const handleShippingTypeChange = (e) => {
         zipCode:  '',
         provinceCode: '',
         locality: '',
+        agencyCode: '', 
+        agencyName: '', 
+        agencyAddress: '', 
+        agencyCity: '',
     })
-    setErrors({ ...errors, streetName: '', streetNumber: '', city: '', zipCode: '',provinceCode: '', locality: '' })
+    setErrors({ ...errors, streetName: '', streetNumber: '', city: '', zipCode: '', provinceCode: '', locality: '', agencyCode: '' })
     setTouched({ ...touched, streetName: false, streetNumber: false, city: false, zipCode: false, provinceCode: false, locality: false })
 
     // Limpiamos la cotización previa al cambiar el tipo de envío
     setShippingQuote(null)
     setShippingQuoteError(null)
+    setAgencies([])
+    setAgencyFilter('')
+}
+
+const handleDeliveryTypeChange = (value) => {
+    setForm({
+        ...form,
+        deliveryType: value,
+        agencyCode: '', 
+        agencyName: '', 
+        agencyAddress: '', 
+        agencyCity: '',
+        streetName: '', 
+        streetNumber: '', 
+        city: '', 
+        zipCode: '',
+    })
+    setErrors({ ...errors, agencyCode: '', streetName: '', streetNumber: '', city: '', zipCode: '' })
+    setShippingQuote(null)
+    setShippingQuoteError(null)
+    setAgencyFilter('')
+
+    if (value === 'sucursal' && form.provinceCode) {
+        fetchAgencies(form.provinceCode)
+    } else {
+        setAgencies([])
+    }
 }
 
 const handleNext = async () => {
@@ -178,7 +244,12 @@ const handleNext = async () => {
                 streetNumber: form.shippingType !== 'retiro' ? form.streetNumber : undefined,
                 floor:        form.floor     || undefined,
                 apartment:    form.apartment || undefined,
-                city:         form.city || form.locality || 'Gálvez',
+                deliveryType: form.shippingType === 'correo_argentino' ? form.deliveryType : undefined,
+                agencyCode:    form.deliveryType === 'sucursal' ? form.agencyCode    : undefined,
+                agencyName:    form.deliveryType === 'sucursal' ? form.agencyName    : undefined,
+                agencyAddress: form.deliveryType === 'sucursal' ? form.agencyAddress : undefined,
+                agencyCity:    form.deliveryType === 'sucursal' ? form.agencyCity    : undefined,
+                city: form.deliveryType === 'sucursal' ? form.agencyCity : (form.city || form.locality || 'Gálvez'),
                 provinceCode: form.shippingType === 'correo_argentino' ? form.provinceCode : undefined,
                 zipCode:      form.shippingType === 'correo_argentino' ? form.zipCode : undefined,
                 shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
@@ -220,6 +291,23 @@ const prefRes = await axiosInstance.post(`/payments/create-preference`,{
     
 }
 
+const handleAgencySelect = (e) => {
+    const agency = agencies.find(a => a.code === e.target.value)
+    if (!agency) return
+    const fullPostalCode = agency.location.address.postalCode // ej: "S2151IPD"
+    const numericZip = fullPostalCode.match(/\d{4}/)?.[0] ?? '' // extrae "2151"
+
+    setForm({
+        ...form,
+        agencyCode: agency.code,
+        agencyName: agency.name,
+        agencyAddress: `${agency.location.address.streetName} ${agency.location.address.streetNumber}`,
+        agencyCity: agency.location.address.city,
+        zipCode: numericZip
+    })
+}
+
+
 const handleBack = () => setStep(s => s - 1)
 
 
@@ -238,13 +326,14 @@ useEffect(() => {
         try {
         const { data } = await axiosInstance.post('/shipping/quote', {
             postalCodeDestination: form.zipCode,
+            deliveredType: form.deliveryType === 'sucursal' ? 'S' : 'D',
             items: items.map(item => ({
                 productId: item.id,
                 quantity:  item.quantity,
             })),
         })
 
-        const domicilio = data.find(r => r.deliveredType === 'D')
+        const domicilio = data.find(r => r.deliveredType === (form.deliveryType === 'sucursal' ? 'S' : 'D'))
 
         if (domicilio) {
             setShippingQuote({
@@ -266,7 +355,18 @@ useEffect(() => {
     }, 600) // debounce: espera 600ms sin cambios en el CP antes de cotizar
 
     return () => clearTimeout(timer) // cancela la cotización anterior si el usuario sigue tipeando
-}, [form.zipCode, form.shippingType])
+}, [form.zipCode, form.shippingType, form.deliveryType])
+
+
+const normalize = (str) => str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+
+const filteredAgencies = agencies.filter(a =>
+    normalize(a.location.address.city).includes(normalize(agencyFilter)) ||
+    normalize(a.name).includes(normalize(agencyFilter))
+)
 
 
 const shippingCost = form.shippingType === 'correo_argentino'
@@ -417,6 +517,73 @@ return (
     {/* Correo Argentino → dirección completa */}
         {form.shippingType === 'correo_argentino' && (
             <>
+            <div className={styles.field}>
+            <label className={styles.label}>¿Cómo lo recibís?</label>
+            <div className={styles.shippingOptions}>
+                <label className={`${styles.shippingOption} ${form.deliveryType === 'domicilio' ? styles.shippingOptionActive : ''}`}>
+                    <input type="radio" checked={form.deliveryType === 'domicilio'} onChange={() => handleDeliveryTypeChange('domicilio')} />
+                    <div>
+                        <p className={styles.shippingName}>Envío a domicilio</p>
+                    </div>
+                </label>
+                <label className={`${styles.shippingOption} ${form.deliveryType === 'sucursal' ? styles.shippingOptionActive : ''}`}>
+                    <input type="radio" checked={form.deliveryType === 'sucursal'} onChange={() => handleDeliveryTypeChange('sucursal')} />
+                    <div>
+                        <p className={styles.shippingName}>Retiro en sucursal de Correo</p>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div className={styles.field}>
+            <label className={styles.label}>Provincia</label>
+            <select className={styles.input} name="provinceCode" value={form.provinceCode} onChange={handleChange}>
+                <option value="">Seleccioná tu provincia</option>
+                {PROVINCIAS_ARGENTINAS.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
+            </select>
+        </div>
+
+        {form.deliveryType === 'sucursal' ? (
+            <div className={styles.field}>
+                <label className={styles.label}>Sucursal</label>
+
+                <label className={styles.label}>Localidad</label>
+                <input
+                    className={styles.input}
+                    placeholder="Filtrá por ciudad (ej: Rosario)"
+                    value={agencyFilter}
+                    onChange={(e) => setAgencyFilter(e.target.value)}
+                    disabled={!form.provinceCode || loadingAgencies}
+                />
+                <label className={`${styles.label} ${styles.fieldSpaced}`}>Sucursal</label>
+                <select
+                    className={`${styles.input} ${errors.agencyCode ? styles.inputError : ''}`}
+                    value={form.agencyCode}
+                    onChange={handleAgencySelect}
+                    disabled={!form.provinceCode || loadingAgencies}
+                >
+                    <option value="">
+                        {loadingAgencies
+                            ? 'Cargando sucursales...'
+                            : filteredAgencies.length === 0 && agencyFilter
+                                ? 'Sin resultados para esa localidad'
+                                : 'Seleccioná una sucursal'}
+                    </option>
+                    {filteredAgencies.map(a => (
+                        <option key={a.code} value={a.code}>
+                            {a.name} — {a.location.address.streetName} {a.location.address.streetNumber}
+                        </option>
+                    ))}
+            </select>
+            {errors.agencyCode && <span className={styles.error}>{errors.agencyCode}</span>}
+            {shippingQuote && !quotingShipping && (
+                <p className={styles.shippingDesc}>
+                    Llega en {shippingQuote.deliveryTimeMin} a {shippingQuote.deliveryTimeMax} días hábiles
+                </p>
+            )}
+        </div>
+    ) : (
+            <>
         <div className={styles.row}>
             <div className={styles.field} style={{ flex: 3 }}>
                 <label className={styles.label}>Calle</label>
@@ -446,29 +613,12 @@ return (
             <div className={styles.row}>
                 <div className={styles.field}>
                     <label className={styles.label}>Piso (opcional)</label>
-                    <input className={styles.input} name="floor" value={form.floor} onChange={handleChange} />
+                    <input className={styles.input} name="floor" placeholder="Ej: 2" value={form.floor} onChange={handleChange} />
                 </div>
                 <div className={styles.field}>
                     <label className={styles.label}>Depto (opcional)</label>
-                    <input className={styles.input} name="apartment" value={form.apartment} onChange={handleChange} />
+                    <input className={styles.input} name="apartment" placeholder="Ej: B" value={form.apartment} onChange={handleChange} />
                 </div>
-            </div>
-
-            <div className={styles.field}>
-                <label className={styles.label}>Provincia</label>
-                <select
-                    className={`${styles.input} ${errors.provinceCode ? styles.inputError : ''}`}
-                    name="provinceCode"
-                    value={form.provinceCode}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                >
-                    <option value="">Seleccioná tu provincia</option>
-                    {PROVINCIAS_ARGENTINAS.map(p => (
-                        <option key={p.code} value={p.code}>{p.name}</option>
-                    ))}
-                </select>
-                {errors.provinceCode && <span className={styles.error}>{errors.provinceCode}</span>}
             </div>
 
             <div className={styles.row}>
@@ -506,6 +656,8 @@ return (
                 </div>
             </div>
             </>
+        )}
+        </>
         )}
 
         {/* Coordinado → select de localidad + dirección */}

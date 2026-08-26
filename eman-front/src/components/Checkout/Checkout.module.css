@@ -417,3 +417,7 @@
     font-weight: 600;
     color: #2B2B2B;
 }
+
+.fieldSpaced {
+    margin-top: 8px;
+}
