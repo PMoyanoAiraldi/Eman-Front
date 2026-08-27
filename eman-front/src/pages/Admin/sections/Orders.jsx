@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Eye } from 'lucide-react'
+import { Eye, Package, PackageCheck } from 'lucide-react'
 import { fetchAllOrders, updateOrderState } from '../../../redux/admin/adminOrdersReducer'
+import axiosInstance from '../../../api/axiosInstance'
+import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import styles from './Orders.module.css'
 
 const STATE_OPTIONS = ['pendiente', 'confirmado', 'enviado', 'entregado', 'cancelado']
@@ -18,6 +20,9 @@ const Orders = () => {
     const dispatch = useDispatch()
     const { orders, loading, error } = useSelector(state => state.adminOrders)
     const [selectedOrder, setSelectedOrder] = useState(null)
+    const [generatingLabelId, setGeneratingLabelId] = useState(false)
+    const [labelError, setLabelError] = useState(null)
+    const [orderToConfirm, setOrderToConfirm] = useState(null)
 
     useEffect(() => {
         dispatch(fetchAllOrders())
@@ -25,6 +30,35 @@ const Orders = () => {
 
     const handleStateChange = (id, state) => {
         dispatch(updateOrderState({ id, state }))
+    }
+
+    const requestGenerateLabel = (order) => {
+        setOrderToConfirm(order)
+    }
+
+    const confirmGenerateLabel = async () => {
+        const order = orderToConfirm
+        setOrderToConfirm(null)
+        if (!order) return
+
+        setGeneratingLabelId(order.id)
+        setLabelError(null)
+        try {
+            const { data } = await axiosInstance.post(`/order/${order.id}/shipping-label`)
+            if (selectedOrder?.id === order.id) setSelectedOrder(data)
+            dispatch(fetchAllOrders())
+        } catch (err) {
+            setLabelError(err.response?.data?.message || 'Error al generar la etiqueta')
+        } finally {
+            setGeneratingLabelId(null)
+        }
+    }
+
+    const addressLine = (order) => {
+        if (order.deliveryType === 'sucursal') {
+            return `${order.agencyName} — ${order.agencyAddress}, ${order.agencyCity}`
+        }
+        return `${order.streetName} ${order.streetNumber}${order.floor ? ` piso ${order.floor}` : ''}${order.apartment ? ` depto ${order.apartment}` : ''}, ${order.city}`
     }
 
     return (
@@ -38,6 +72,7 @@ const Orders = () => {
 
             {loading && <p className={styles.loading}>Cargando órdenes...</p>}
             {error && <p className={styles.error}>{error}</p>}
+            {labelError && <p className={styles.error}>{labelError}</p>}
 
             {!loading && (
                 <div className={styles.tableWrapper}>
@@ -55,6 +90,10 @@ const Orders = () => {
                         <tbody>
                             {orders.map(order => {
                                 const stateInfo = STATE_LABELS[order.state] || { label: order.state, cls: 'pending' }
+                                const isCorreoArgentino = order.shippingType === 'correo_argentino'
+                                const isGenerated = !!order.shippingImportedAt
+                                const isGenerating = generatingLabelId === order.id
+
                                 return (
                                     <tr key={order.id}>
                                         <td>
@@ -92,6 +131,27 @@ const Orders = () => {
                                             >
                                                 <Eye size={15} strokeWidth={1.5} />
                                             </button>
+                                            {isCorreoArgentino && (
+                                                isGenerated ? (
+                                                    <button
+                                                        className={styles.iconBtn}
+                                                        title="Etiqueta ya generada en MiCorreo"
+                                                        style={{ color: '#2f9e44', cursor: 'default' }}
+                                                        disabled
+                                                    >
+                                                        <PackageCheck size={15} strokeWidth={1.5} />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className={styles.iconBtn}
+                                                        title="Generar etiqueta"
+                                                        onClick={() => requestGenerateLabel(order)}
+                                                        disabled={isGenerating}
+                                                    >
+                                                        <Package size={15} strokeWidth={1.5} />
+                                                    </button>
+                                                )
+                                            )}
                                         </td>
                                     </tr>
                                 )
@@ -143,6 +203,21 @@ const Orders = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmModal
+                isOpen={!!orderToConfirm}
+                title="Generar etiqueta en MiCorreo"
+                message={
+                    orderToConfirm
+                        ? `Se va a importar este envío a MiCorreo a nombre de ${orderToConfirm.guestName} (${orderToConfirm.guestEmail} · ${orderToConfirm.guestPhone}), con destino: ${addressLine(orderToConfirm)}. Esta acción no se puede deshacer desde la app.`
+                        : ''
+                }
+                onConfirm={confirmGenerateLabel}
+                onCancel={() => setOrderToConfirm(null)}
+                confirmLabel="Generar etiqueta"
+                cancelLabel="Cancelar"
+                danger
+            />
         </div>
     )
 }

@@ -6,6 +6,7 @@ import { selectCartTotal } from '../../redux/slices/cartReducer'
 import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
 import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../utils/provinces'
+import { ChevronDown } from 'lucide-react'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
@@ -537,16 +538,22 @@ return (
 
         <div className={styles.field}>
             <label className={styles.label}>Provincia</label>
-            <select className={styles.input} name="provinceCode" value={form.provinceCode} onChange={handleChange}>
+            <div className={styles.selectWrapper}>
+            <select
+                className={styles.filterSelect}
+                name="provinceCode"
+                value={form.provinceCode}
+                onChange={handleChange}
+            >
                 <option value="">Seleccioná tu provincia</option>
                 {PROVINCIAS_ARGENTINAS.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
             </select>
-        </div>
+            <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+            </div>
+            </div>
 
         {form.deliveryType === 'sucursal' ? (
             <div className={styles.field}>
-                <label className={styles.label}>Sucursal</label>
-
                 <label className={styles.label}>Localidad</label>
                 <input
                     className={styles.input}
@@ -556,8 +563,9 @@ return (
                     disabled={!form.provinceCode || loadingAgencies}
                 />
                 <label className={`${styles.label} ${styles.fieldSpaced}`}>Sucursal</label>
+                <div className={styles.selectWrapper}>
                 <select
-                    className={`${styles.input} ${errors.agencyCode ? styles.inputError : ''}`}
+                    className={`${styles.filterSelect} ${errors.agencyCode ? styles.inputError : ''}`}
                     value={form.agencyCode}
                     onChange={handleAgencySelect}
                     disabled={!form.provinceCode || loadingAgencies}
@@ -574,7 +582,9 @@ return (
                             {a.name} — {a.location.address.streetName} {a.location.address.streetNumber}
                         </option>
                     ))}
-            </select>
+                </select>
+                <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+            </div>
             {errors.agencyCode && <span className={styles.error}>{errors.agencyCode}</span>}
             {shippingQuote && !quotingShipping && (
                 <p className={styles.shippingDesc}>
