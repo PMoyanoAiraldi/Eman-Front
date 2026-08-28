@@ -250,7 +250,7 @@ const handleNext = async () => {
                 agencyName:    form.deliveryType === 'sucursal' ? form.agencyName    : undefined,
                 agencyAddress: form.deliveryType === 'sucursal' ? form.agencyAddress : undefined,
                 agencyCity:    form.deliveryType === 'sucursal' ? form.agencyCity    : undefined,
-                city: form.deliveryType === 'sucursal' ? form.agencyCity : (form.city || form.locality || 'Gálvez'),
+                city:         form.deliveryType === 'sucursal' ? form.agencyCity : (form.city || form.locality || 'Gálvez'),
                 provinceCode: form.shippingType === 'correo_argentino' ? form.provinceCode : undefined,
                 zipCode:      form.shippingType === 'correo_argentino' ? form.zipCode : undefined,
                 shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
@@ -303,7 +303,8 @@ const handleAgencySelect = (e) => {
         agencyCode: agency.code,
         agencyName: agency.name,
         agencyAddress: `${agency.location.address.streetName} ${agency.location.address.streetNumber}`,
-        agencyCity: agency.location.address.city,
+        agencyCity: agency.location.address.locality,
+        agencyDepartment: agency.location.address.city,
         zipCode: numericZip
     })
 }
