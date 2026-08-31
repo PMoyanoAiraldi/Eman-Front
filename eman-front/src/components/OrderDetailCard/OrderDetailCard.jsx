@@ -14,6 +14,19 @@ const PAYMENT_METHOD_LABELS = {
     transferencia: 'Transferencia / MP',
 }
 
+const CARD_BRAND_LABELS = {
+    visa: 'Visa',
+    master: 'Mastercard',
+    amex: 'American Express',
+    naranja: 'Naranja',
+    cabal: 'Cabal',
+    cencosud: 'Cencosud',
+    tarshop: 'Tarjeta Shopping',
+    diners: 'Diners Club',
+    maestro: 'Maestro',
+    argencard: 'Argencard',
+}
+
 const buildWhatsAppLink = (order, orderId) => {
     const phone = import.meta.env.VITE_WHATSAPP_NUMBER
     const itemsList = order.items.map(i => `${i.productName} (${i.color}, talle ${i.size}) x${i.quantity}`).join('\n')
@@ -25,6 +38,11 @@ const buildWhatsAppLink = (order, orderId) => {
         Tipo de entrega: ${order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro en local'}`
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
+
+const formatCardBrand = (brand) => {
+    if (!brand) return null
+    return CARD_BRAND_LABELS[brand] ?? brand.charAt(0).toUpperCase() + brand.slice(1)
 }
 
 
@@ -56,7 +74,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <p className={styles.infoValue}>{SHIPPING_LABELS[order.shippingType]}</p>
 
                     {order.shippingType === 'coordinado' && (
-                        <p className={styles.infoValue}>{order.address}, {order.city}</p>
+                        <p className={styles.infoValue}>{order.streetName} {order.streetNumber}, {order.city}</p>
                     )}
                     {order.shippingType === 'retiro_en_local' && (
                         <p className={styles.infoValue}>Entre Ríos 1529, López, Santa Fe</p>
@@ -84,7 +102,23 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <p className={styles.infoLabel}>Envío</p>
                     <p className={styles.infoValue}>{SHIPPING_LABELS[order.shippingType] || order.shippingType}</p>
                     {order.shippingType === 'correo_argentino' && (
-                        <p className={styles.infoValue}>{order.address}, {order.city} ({order.zipCode})</p>
+                        order.deliveryType === 'sucursal' ? (
+                            <>
+                                <p className={styles.infoValue}>
+                                    Sucursal {order.agencyName} — {order.agencyAddress}
+                                </p>
+                                <p className={styles.infoSub}>{order.city} · CP {order.zipCode}</p>
+                            </>
+                        ) : (
+                            <>
+                                <p className={styles.infoValue}>
+                                    {order.streetName} {order.streetNumber}
+                                    {order.floor ? `, piso ${order.floor}` : ''}
+                                    {order.apartment ? ` dpto ${order.apartment}` : ''}
+                                </p>
+                                <p className={styles.infoSub}>{order.city} · CP {order.zipCode}</p>
+                            </>
+                        )
                     )}
                 </div>
             )}
@@ -95,6 +129,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <p className={styles.infoLabel}>Pago</p>
                     <p className={styles.infoValue}>
                         {PAYMENT_METHOD_LABELS[order.payment.method] || order.payment.method}
+                        {order.payment.cardBrand && ` · ${formatCardBrand(order.payment.cardBrand)}`}
                         {order.payment.installments > 1 && (
                             <> · {order.payment.installments} cuotas de ${formatCurrency(order.payment.installmentsAmount)}</>
                         )}
