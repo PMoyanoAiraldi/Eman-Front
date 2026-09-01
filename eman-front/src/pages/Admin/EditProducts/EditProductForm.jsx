@@ -40,6 +40,7 @@ const EditProductForm = ({ product }) => {
         description: product.description || '',
         price: product.price || '',
         gender: product.gender || '',
+        weightGrams: product.weightGrams || '', 
         isFeatured: product.isFeatured || false,
         brandId: product.brand?.id || '',
         categoryId: product.category?.id || '',
@@ -121,6 +122,7 @@ const EditProductForm = ({ product }) => {
             const payload = {
             ...form,
             price: Number(form.price),
+            weightGrams: form.weightGrams ? Number(form.weightGrams) : undefined,
             brandId: form.brandId || null,
             productTypeId: form.productTypeId || null,
         }
@@ -230,6 +232,21 @@ const EditProductForm = ({ product }) => {
                             <label className={styles.label}>PRECIO</label>
                             <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
                         {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
+                        </div>
+
+                        <div className={styles.field}>
+                            <label className={styles.label}>PESO (g)</label>
+                            <input
+                                className={styles.input}
+                                name="weightGrams"
+                                type="number"
+                                min="1"
+                                max="25000"
+                                value={form.weightGrams}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            />
+                            {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
                         </div>
 
                         <div className={styles.field}>

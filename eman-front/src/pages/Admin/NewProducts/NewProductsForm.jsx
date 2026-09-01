@@ -224,6 +224,7 @@ const NewProductsForm = () => {
         description: '',
         price: '',
         gender: '',
+        weightGrams: '',
         isFeatured: false,
         brandId: '',
         categoryId: '',
@@ -341,6 +342,7 @@ const NewProductsForm = () => {
             const result = await dispatch(createProduct({
                 ...form,
                 price: Number(form.price),
+                weightGrams: form.weightGrams ? Number(form.weightGrams) : undefined,
                 brandId: form.brandId || undefined,
                 productTypeId: form.productTypeId || undefined,
             })).unwrap()
@@ -592,6 +594,21 @@ const NewProductsForm = () => {
                         onBlur={handleBlur}
                         />
                     {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
+                    </div>
+                    <div className={styles.field}>
+                        <label className={styles.label}>PESO (g)</label>
+                        <input
+                            className={`${styles.input} ${touched.weightGrams && errors.weightGrams ? styles.inputError : ''}`}
+                            name="weightGrams"
+                            type="number"
+                            min="1"
+                            max="25000"
+                            placeholder="200"
+                            value={form.weightGrams}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                        />
+                        {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
                     </div>
                     <div className={styles.field}>
                         <label className={styles.label}>GÉNERO</label>

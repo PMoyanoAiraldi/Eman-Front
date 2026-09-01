@@ -19,6 +19,13 @@ export const validateProductField = (name, value) => {
             return ''
         }
 
+        case 'weightGrams': {
+            if (value === '' || value === null || value === undefined) return '' // opcional, cae al default 200
+            const num = Number(value)
+            if (isNaN(num) || num < 1 || num > 25000) return 'El peso debe estar entre 1 y 25000 gramos'
+            return ''
+        }
+
         case 'gender':
             if (!value) return 'Seleccioná un género'
             return ''
