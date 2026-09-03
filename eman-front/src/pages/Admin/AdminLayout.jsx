@@ -1,17 +1,21 @@
 import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Package, ShoppingBag, Users, LogOut, Menu } from 'lucide-react'
+import { Package, ShoppingBag, Users, LogOut, Menu, Image } from 'lucide-react'
 import { logoutUser } from '../../redux/slices/authReducer'
 import { authService } from '../../api/authService'
 import { ExternalLink } from 'lucide-react'
 import MaintenanceToggle from '../../components/MaintenanceToggle/MaintenanceToggle'
 import styles from './AdminLayout.module.css'
 
-const navItems = [
+const baseNavItems = [
     { to: '/admin/products', icon: Package, label: 'Productos' },
     { to: '/admin/orders', icon: ShoppingBag, label: 'Órdenes' },
     { to: '/admin/users', icon: Users, label: 'Usuarios' },
+]
+
+const devNavItems = [
+    { to: '/admin/hero', icon: Image, label: 'Gestión del Hero' },
 ]
 
 const AdminLayout = () => {
@@ -19,6 +23,10 @@ const AdminLayout = () => {
     const navigate = useNavigate()
     const user = useSelector(state => state.auth.user)
     const [sidebarOpen, setSidebarOpen] = useState(false)
+
+    const navItems = user?.rol === 'developer'
+        ? [...baseNavItems, ...devNavItems]
+        : baseNavItems
 
     const handleLogout = async () => {
         try {

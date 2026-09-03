@@ -1,0 +1,344 @@
+.page {
+    background: #f6f3ec;
+    min-height: 100vh;
+    padding: 2.5rem 1.5rem;
+}
+
+.topBar {
+    margin-bottom: 1.5rem;
+}
+
+.backBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: #999;
+    padding: 0;
+    transition: color 0.2s;
+}
+
+.backBtn:hover { color: #1a1a1a; }
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+    font-weight: 400;
+    color: #1a1a1a;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: #999;
+}
+
+.loading {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #999;
+    padding: 2rem;
+    text-align: center;
+}
+
+/* ---------- Grid de slides existentes ---------- */
+.slidesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.slideCard {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    transition: opacity 0.2s;
+}
+
+.slideCardInactive {
+    opacity: 0.55;
+}
+
+/* ---------- Preview con click-to-set foco ---------- */
+.imagePreview {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: #fafafa;
+    cursor: crosshair;
+}
+
+.imagePreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none; /* el click lo captura el contenedor, no la img */
+}
+
+.imageOverlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+}
+
+.focalHint {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.03em;
+    padding: 0.25rem 0.5rem;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    pointer-events: none;
+}
+
+/* ---------- Acciones sobre la imagen (reemplazar / activar / borrar) ---------- */
+.imageActions {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.imageBtn {
+    background: transparent;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.imageBtn:hover { border-color: var(--color-gold); color: var(--color-gold); }
+
+.imageBtnDelete:hover {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.fileInputHidden {
+    display: none;
+}
+
+/* ---------- Info de texto (vista) ---------- */
+.slideInfo {
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.slideInfo:hover {
+    background: #fdfaf3;
+}
+
+.slideTag {
+    font-family: var(--font-sans);
+    font-size: 0.66rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+}
+
+.slideTitle {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: #1a1a1a;
+}
+
+.slideSubtitle {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: #666;
+}
+
+.slideMeta {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    color: #aaa;
+    margin-top: 0.2rem;
+}
+
+/* ---------- Form de edición inline ---------- */
+.editForm {
+    padding: 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.cancelBtn {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    color: #666;
+    background: transparent;
+    border: 1px solid #d0d0d0;
+    padding: 0.65rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    flex: 1;
+}
+
+.cancelBtn:hover { border-color: #999; color: #333; }
+
+/* ---------- Card genérica (form nuevo slide) ---------- */
+.card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    padding: 1.75rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    max-width: 500px;
+}
+
+.sectionLabel {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--color-gold);
+    text-transform: uppercase;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 0.25rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.label {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: #999;
+}
+
+.input {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: #1a1a1a;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+    padding: 0.65rem 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background: transparent;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input:focus { border-color: var(--color-gold); }
+
+.saveBtn {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: #1a1a1a;
+    border: none;
+    padding: 0.8rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    flex: 1;
+}
+
+.saveBtn:hover:not(:disabled) { background: #333; }
+.saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---------- Área de upload (nuevo slide) ---------- */
+.uploadArea {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px dashed #d0d0d0;
+    border-radius: 4px;
+    aspect-ratio: 16 / 9;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    color: #aaa;
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    overflow: hidden;
+    background: #fafafa;
+}
+
+.uploadArea:hover {
+    border-color: var(--color-gold);
+    background: #fdf8ec;
+}
+
+.uploadPreview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+@media (max-width: 900px) {
+    .slidesGrid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+
+    .card {
+        padding: 1rem;
+        max-width: 100%;
+    }
+}

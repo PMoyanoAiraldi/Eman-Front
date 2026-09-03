@@ -31,6 +31,7 @@ import CookieConsentBanner from './components/CookieConsentBanner/CookieConsentB
 import ShopPage from './pages/ShopPage/ShopPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
+import HeroManager from './pages/Admin/HeroManager/HeroManager';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 
@@ -110,7 +111,7 @@ function App() {
         <Route path="/:categoria" element={<CategoryPage />} />
       </Route>
       <Route path="/admin" element={
-          <ProtectedRoute requiredRole="admin">
+          <ProtectedRoute allowedRoles={['admin', 'developer']}>
               <AdminLayout />
           </ProtectedRoute>
         }>
@@ -120,7 +121,11 @@ function App() {
         <Route path="users" element={<Users />} /> 
         <Route path="products/new" element={<NewProductsForm />} />
         <Route path="products/:id/edit" element={<EditProduct/>} />
-        
+        <Route path="hero" element={
+        <ProtectedRoute allowedRoles={['developer']}>
+              <HeroManager />
+          </ProtectedRoute>
+        } />
       </Route> 
       
       </Routes>

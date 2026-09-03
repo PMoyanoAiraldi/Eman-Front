@@ -91,14 +91,24 @@ const Navbar = () => {
                         Mi perfil
                     </button>
 
-                    {user?.rol === 'admin' ? (
-                    <button
+                    {user?.rol === 'admin' && (
+                        <button
                             className={styles.dropdownItem}
                             onClick={() => { navigate('/admin'); setDropdownOpen(false) }}
                         >
                             Panel admin
                         </button>
-                    ) : (
+                    )}
+                    {user?.rol === 'developer' && (
+                        <button
+                            className={styles.dropdownItem}
+                            onClick={() => { navigate('/admin'); setDropdownOpen(false) }}
+                        >
+                            Panel dev
+                        </button>
+                    )}
+
+                    {(user?.rol === 'cliente' || !user?.rol) && (
                         <button
                             className={styles.dropdownItem}
                             onClick={() => { navigate('/mis-compras'); setDropdownOpen(false) }}
