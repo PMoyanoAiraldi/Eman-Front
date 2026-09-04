@@ -24,12 +24,33 @@ const Orders = () => {
     const [labelError, setLabelError] = useState(null)
     const [orderToConfirm, setOrderToConfirm] = useState(null)
 
+    // Estado pendiente para el pedido de tracking
+    const [trackingRequest, setTrackingRequest] = useState(null) // { orderId, pendingState }
+    const [trackingInput, setTrackingInput] = useState('')
+
     useEffect(() => {
         dispatch(fetchAllOrders())
     }, [dispatch])
 
-    const handleStateChange = (id, state) => {
-        dispatch(updateOrderState({ id, state }))
+    const handleStateChange = (order, newState) => {
+        // Solo pedimos tracking si pasa a "enviado" y es Correo Argentino
+        if (newState === 'enviado' && order.shippingType === 'correo_argentino' && !order.trackingNumber) {
+            setTrackingRequest({ orderId: order.id, pendingState: newState })
+            setTrackingInput('')
+            return
+        }
+        dispatch(updateOrderState({ id: order.id, state: newState }))
+    }
+
+    const confirmTrackingSubmit = () => {
+        if (!trackingRequest) return
+        dispatch(updateOrderState({
+            id: trackingRequest.orderId,
+            state: trackingRequest.pendingState,
+            trackingNumber: trackingInput.trim() || undefined,
+        }))
+        setTrackingRequest(null)
+        setTrackingInput('')
     }
 
     const requestGenerateLabel = (order) => {
@@ -217,6 +238,29 @@ const Orders = () => {
                 confirmLabel="Generar etiqueta"
                 cancelLabel="Cancelar"
                 danger
+            />
+
+            <ConfirmModal
+                isOpen={!!trackingRequest}
+                title="Marcar como enviado"
+                message={
+                    <>
+                        <p>Pegá el número de seguimiento que te dio MiCorreo al pagar el envío. Se va a incluir en el email que recibe el cliente.</p>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            placeholder="Ej: 000500076393019A3G0C701"
+                            value={trackingInput}
+                            onChange={e => setTrackingInput(e.target.value)}
+                            autoFocus
+                        />
+                    </>
+                }
+                onConfirm={confirmTrackingSubmit}
+                onCancel={() => setTrackingRequest(null)}
+                confirmLabel="Confirmar envío"
+                cancelLabel="Cancelar"
+                confirmDisabled={!trackingInput.trim()}
             />
         </div>
     )

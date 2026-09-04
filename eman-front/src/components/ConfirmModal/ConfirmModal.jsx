@@ -1,6 +1,6 @@
 import styles from './ConfirmModal.module.css'
 
-const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmLabel = 'Confirmar', cancelLabel = 'Cancelar', danger = false }) => {
+const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmLabel = 'Confirmar', cancelLabel = 'Cancelar', danger = false, confirmDisabled = false }) => {
     if (!isOpen) return null
 
     return (
@@ -15,6 +15,7 @@ const ConfirmModal = ({ isOpen, title, message, onConfirm, onCancel, confirmLabe
                     <button
                         className={`${styles.confirmBtn} ${danger ? styles.confirmBtnDanger : ''}`}
                         onClick={onConfirm}
+                        disabled={confirmDisabled}
                     >
                         {confirmLabel}
                     </button>

@@ -15,9 +15,9 @@ export const fetchAllOrders = createAsyncThunk(
 
 export const updateOrderState = createAsyncThunk(
     'adminOrders/updateState',
-    async ({ id, state }, { rejectWithValue }) => {
+    async ({ id, state, trackingNumber }, { rejectWithValue }) => {
         try {
-            const res = await axiosInstance.patch(`/order/${id}/state`, { state })
+            const res = await axiosInstance.patch(`/order/${id}/state`, { state, trackingNumber })
             return res.data
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Error')
