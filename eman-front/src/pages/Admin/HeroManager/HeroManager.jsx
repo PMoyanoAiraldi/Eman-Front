@@ -103,6 +103,7 @@ const HeroManager = () => {
             ctaText: slide.ctaText || '',
             ctaUrl: slide.ctaUrl || '',
             order: slide.order ?? 0,
+            focalPoint: slide.focalPoint || 'center center',
         })
     }
 
@@ -114,16 +115,22 @@ const HeroManager = () => {
     const handleSaveEdit = async (id) => {
         setSavingId(id)
         try {
+            const { focalPoint, ...textFields } = editForm
+            
             const formData = new FormData()
-            Object.entries(editForm).forEach(([key, value]) => {
+            Object.entries(textFields).forEach(([key, value]) => {
                 formData.append(key, value)
             })
             await axiosInstance.patch(`/media_content/${id}`, formData)
+            //foco aparte porque tiene su propio endpoint
+            await axiosInstance.patch(`/media_content/${id}/focal-point`, { focalPoint })
+
             showToast('Slide actualizado')
             setEditingId(null)
             fetchSlides()
         } catch (err) {
-            showToast(err.response?.data?.message || 'Error al actualizar', 'error')
+            console.error(err)
+            showToast('Error al actualizar', 'error')
         } finally {
             setSavingId(null)
         }
@@ -217,8 +224,7 @@ const HeroManager = () => {
                     <div key={slide.id} className={`${styles.slideCard} ${!slide.isActive ? styles.slideCardInactive : ''}`}>
                         <div
                             className={styles.imagePreview}
-                            style={{ objectPosition: slide.focalPoint || 'center center' }}
-                            onClick={(e) => handleImageClick(e, slide)}
+                            onClick={(e) => editingId !== slide.id && handleImageClick(e, slide)}
                             title="Click para marcar el punto de foco"
                         >
                             <img
@@ -265,14 +271,45 @@ const HeroManager = () => {
 
                         {editingId === slide.id ? (
                             <div className={styles.editForm}>
-                                <input className={styles.input} name="tag" placeholder="Tag" value={editForm.tag} onChange={handleEditFormChange} />
-                                <input className={styles.input} name="title" placeholder="Título" value={editForm.title} onChange={handleEditFormChange} />
-                                <input className={styles.input} name="subtitle" placeholder="Subtítulo" value={editForm.subtitle} onChange={handleEditFormChange} />
+                                <div className={styles.field}>
+                            <label className={styles.label}>TAG</label>
+                            <input className={styles.input} name="tag" placeholder="Tag" value={editForm.tag} onChange={handleEditFormChange} />
+                        </div>
+
+                        <div className={styles.field}>
+                            <label className={styles.label}>TÍTULO</label>
+                            <input className={styles.input} name="title" placeholder="Título" value={editForm.title} onChange={handleEditFormChange} />
+                        </div>
+
+                        <div className={styles.field}>
+                            <label className={styles.label}>SUBTÍTULO</label>
+                            <input className={styles.input} name="subtitle" placeholder="Subtítulo" value={editForm.subtitle} onChange={handleEditFormChange} />
+                        </div>
                                 <div className={styles.row}>
-                                    <input className={styles.input} name="ctaText" placeholder="Texto botón" value={editForm.ctaText} onChange={handleEditFormChange} />
-                                    <input className={styles.input} name="ctaUrl" placeholder="URL botón" value={editForm.ctaUrl} onChange={handleEditFormChange} />
-                                </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>TEXTO BOTÓN</label>
+                                <input className={styles.input} name="ctaText" placeholder="Texto botón" value={editForm.ctaText} onChange={handleEditFormChange} />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>URL BOTÓN</label>
+                                <input className={styles.input} name="ctaUrl" placeholder="URL botón" value={editForm.ctaUrl} onChange={handleEditFormChange} />
+                            </div>
+                        </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>ORDEN (posición en el carrusel, empieza en 0)</label>
                                 <input className={styles.input} name="order" type="number" placeholder="Orden" value={editForm.order} onChange={handleEditFormChange} />
+                            </div>
+
+                            <div className={styles.field}>
+                                <label className={styles.label}>PUNTO DE FOCO (o click en la imagen de arriba)</label>
+                                <input
+                                    className={styles.input}
+                                    name="focalPoint"
+                                    placeholder="ej: center 15%"
+                                    value={editForm.focalPoint}
+                                    onChange={handleEditFormChange}
+                                />
+                            </div>
                                 <div className={styles.row}>
                                     <button className={styles.saveBtn} onClick={() => handleSaveEdit(slide.id)} disabled={savingId === slide.id}>
                                         {savingId === slide.id ? 'Guardando...' : 'Guardar'}
