@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Eye, Package, PackageCheck } from 'lucide-react'
+import { Eye, Package, Check, Clock, Filter } from 'lucide-react'
 import { fetchAllOrders, updateOrderState } from '../../../redux/admin/adminOrdersReducer'
 import axiosInstance from '../../../api/axiosInstance'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
@@ -16,6 +16,82 @@ const STATE_LABELS = {
     cancelado:  { label: 'Cancelado',  cls: 'cancelled' },
 }
 
+const SHIPPING_OPTIONS = [
+    { value: 'correo_argentino', label: 'Correo Arg.' },
+    { value: 'coordinado',       label: 'Coordinado' },
+    { value: 'retiro_en_local',  label: 'Retiro' },
+]
+
+const LABEL_STATUS_OPTIONS = [
+    { value: 'generated', label: 'Generada' },
+    { value: 'pending',   label: 'Pendiente' },
+    { value: 'na',        label: 'No aplica' },
+]
+
+// Dropdown de filtro por columna, tipo Excel
+const ColumnFilter = ({ options, selected, onChange }) => {
+    const [open, setOpen] = useState(false)
+    const [position, setPosition] = useState({ top: 0, left: 0 })
+    const btnRef = useRef(null)
+
+    const toggleOpen = () => {
+        if (!open && btnRef.current) {
+            const rect = btnRef.current.getBoundingClientRect()
+            setPosition({ top: rect.bottom + 4, left: rect.left })
+        }
+        setOpen(o => !o)
+    }
+
+    const toggleValue = (value) => {
+        if (selected.includes(value)) {
+            onChange(selected.filter(v => v !== value))
+        } else {
+            onChange([...selected, value])
+        }
+    }
+
+    return (
+        <span className={styles.filterWrapper}>
+            <button
+                ref={btnRef}
+                type="button"
+                className={`${styles.filterBtn} ${selected.length ? styles.filterActive : ''}`}
+                onClick={toggleOpen}
+            >
+                <Filter size={12} strokeWidth={2} />
+            </button>
+            {open && (
+                <>
+                    <div className={styles.filterBackdrop} onClick={() => setOpen(false)} />
+                    <div className={styles.filterDropdown}
+                        style={{ position: 'fixed', top: position.top, left: position.left }}
+                    >
+                        {options.map(opt => (
+                            <label key={opt.value} className={styles.filterOption}>
+                                <input
+                                    type="checkbox"
+                                    checked={selected.includes(opt.value)}
+                                    onChange={() => toggleValue(opt.value)}
+                                />
+                                {opt.label}
+                            </label>
+                        ))}
+                        {selected.length > 0 && (
+                            <button
+                                type="button"
+                                className={styles.filterClear}
+                                onClick={() => onChange([])}
+                            >
+                                Limpiar
+                            </button>
+                        )}
+                    </div>
+                </>
+            )}
+        </span>
+    )
+}
+
 const Orders = () => {
     const dispatch = useDispatch()
     const { orders, loading, error } = useSelector(state => state.adminOrders)
@@ -28,9 +104,20 @@ const Orders = () => {
     const [trackingRequest, setTrackingRequest] = useState(null) // { orderId, pendingState }
     const [trackingInput, setTrackingInput] = useState('')
 
+     // Filtros activos
+    const [filters, setFilters] = useState({
+        states: [],
+        shippingTypes: [],
+        labelStatuses: [],
+    })
+
     useEffect(() => {
-        dispatch(fetchAllOrders())
-    }, [dispatch])
+        dispatch(fetchAllOrders(filters))
+    }, [dispatch, filters])
+
+    const updateFilter = (key, value) => {
+        setFilters(prev => ({ ...prev, [key]: value }))
+    }
 
     const handleStateChange = (order, newState) => {
         // Solo pedimos tracking si pasa a "enviado" y es Correo Argentino
@@ -102,9 +189,28 @@ const Orders = () => {
                             <tr>
                                 <th>Cliente</th>
                                 <th>Fecha</th>
-                                <th>Envío</th>
+                                <th>Envío
+                                <ColumnFilter
+                                        options={SHIPPING_OPTIONS}
+                                        selected={filters.shippingTypes}
+                                        onChange={v => updateFilter('shippingTypes', v)}
+                                    />                                
+                                </th>
+                                <th>Etiqueta
+                                <ColumnFilter
+                                        options={LABEL_STATUS_OPTIONS}
+                                        selected={filters.labelStatuses}
+                                        onChange={v => updateFilter('labelStatuses', v)}
+                                    />
+                                </th>
                                 <th>Total</th>
-                                <th>Estado</th>
+                                <th>Estado
+                                <ColumnFilter
+                                        options={STATE_OPTIONS.map(s => ({ value: s, label: STATE_LABELS[s].label }))}
+                                        selected={filters.states}
+                                        onChange={v => updateFilter('states', v)}
+                                    />
+                                </th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -128,6 +234,23 @@ const Orders = () => {
                                             {order.shippingType === 'correo_argentino' ? 'Correo Arg.' :
                                             order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro'}
                                         </td>
+
+                                        <td className={styles.cell}>
+                                            {isCorreoArgentino && order.state !== 'cancelado' ? (
+                                                isGenerated ? (
+                                                    <span className={styles.labelYes} title="Etiqueta generada en MiCorreo">
+                                                        <Check size={14} strokeWidth={2.5} /> Generada
+                                                    </span>
+                                                ) : (
+                                                    <span className={styles.labelNo} title="Todavía no se generó la etiqueta">
+                                                        <Clock size={14} strokeWidth={1.8} /> Pendiente
+                                                    </span>
+                                                )
+                                            ) : (
+                                                <span className={styles.labelNA}>—</span>
+                                            )}
+                                        </td>
+
                                         <td className={styles.cell}>
                                             ${Number(order.total).toLocaleString('es-AR')}
                                         </td>
@@ -135,7 +258,7 @@ const Orders = () => {
                                             <select
                                                 className={`${styles.stateSelect} ${styles[stateInfo.cls]}`}
                                                 value={order.state}
-                                                onChange={e => handleStateChange(order.id, e.target.value)}
+                                                onChange={e => handleStateChange(order, e.target.value)}
                                             >
                                                 {STATE_OPTIONS.map(s => (
                                                     <option key={s} value={s}>
@@ -144,35 +267,24 @@ const Orders = () => {
                                                 ))}
                                             </select>
                                         </td>
-                                        <td className={styles.cell}>
+                                        <td className={`${styles.cell} ${styles.actionsCell}`}>
                                             <button
                                                 className={styles.iconBtn}
                                                 onClick={() => setSelectedOrder(order)}
                                                 title="Ver detalle"
                                             >
-                                                <Eye size={15} strokeWidth={1.5} />
+                                                <Eye size={17} strokeWidth={1.5} />
                                             </button>
-                                            {isCorreoArgentino && (
-                                                isGenerated ? (
-                                                    <button
-                                                        className={styles.iconBtn}
-                                                        title="Etiqueta ya generada en MiCorreo"
-                                                        style={{ color: '#2f9e44', cursor: 'default' }}
-                                                        disabled
-                                                    >
-                                                        <PackageCheck size={15} strokeWidth={1.5} />
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        className={styles.iconBtn}
-                                                        title="Generar etiqueta"
-                                                        onClick={() => requestGenerateLabel(order)}
-                                                        disabled={isGenerating}
-                                                    >
-                                                        <Package size={15} strokeWidth={1.5} />
-                                                    </button>
-                                                )
-                                            )}
+                                            {isCorreoArgentino && !isGenerated && (
+                                            <button
+                                                className={styles.iconBtn}
+                                                title="Generar etiqueta"
+                                                onClick={() => requestGenerateLabel(order)}
+                                                disabled={isGenerating}
+                                            >
+                                                <Package size={17} strokeWidth={1.5} />
+                                            </button>
+                                        )}
                                         </td>
                                     </tr>
                                 )
@@ -181,7 +293,7 @@ const Orders = () => {
                     </table>
 
                     {orders.length === 0 && !loading && (
-                        <p className={styles.empty}>No hay órdenes todavía</p>
+                        <p className={styles.empty}>No hay órdenes con esos filtros</p>
                     )}
                 </div>
             )}
@@ -247,7 +359,7 @@ const Orders = () => {
                     <>
                         <p>Pegá el número de seguimiento que te dio MiCorreo al pagar el envío. Se va a incluir en el email que recibe el cliente.</p>
                         <input
-                            className={styles.input}
+                            className={styles.trackingInput}
                             type="text"
                             placeholder="Ej: 000500076393019A3G0C701"
                             value={trackingInput}

@@ -3,9 +3,17 @@ import axiosInstance from '../../api/axiosInstance'
 
 export const fetchAllOrders = createAsyncThunk(
     'adminOrders/fetchAll',
-    async (_, { rejectWithValue }) => {
+    async (filters = {}, { rejectWithValue }) => {
         try {
-            const res = await axiosInstance.get('/order')
+            const params = {}
+            if (filters.states?.length) params.state = filters.states.join(',')
+            if (filters.shippingTypes?.length) params.shippingType = filters.shippingTypes.join(',')
+            if (filters.labelStatuses?.length) params.labelStatus = filters.labelStatuses.join(',')
+            if (filters.dateFrom) params.dateFrom = filters.dateFrom
+            if (filters.dateTo) params.dateTo = filters.dateTo
+            if (filters.search) params.search = filters.search
+
+            const res = await axiosInstance.get('/order', { params })
             return res.data
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Error')
