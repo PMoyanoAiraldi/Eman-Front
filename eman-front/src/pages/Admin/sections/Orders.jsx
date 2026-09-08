@@ -1,3 +1,5 @@
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Eye, Package, Check, Clock, Filter } from 'lucide-react'
@@ -92,6 +94,107 @@ const ColumnFilter = ({ options, selected, onChange }) => {
     )
 }
 
+const DateRangeFilter = ({ dateFrom, dateTo, onChange }) => {
+    const [open, setOpen] = useState(false)
+    const [position, setPosition] = useState({ top: 0, left: 0 })
+    const [localFrom, setLocalFrom] = useState(dateFrom ? new Date(dateFrom) : null)
+    const [localTo, setLocalTo] = useState(dateTo ? new Date(dateTo) : null)
+    const btnRef = useRef(null)
+    const dropdownRef = useRef(null)
+
+    const toggleOpen = () => {
+        if (!open && btnRef.current) {
+            const rect = btnRef.current.getBoundingClientRect()
+            setPosition({ top: rect.bottom + 4, left: rect.left })
+        }
+        setOpen(o => !o)
+    }
+
+    const toYMD = (date) => date ? date.toISOString().split('T')[0] : ''
+
+    const apply = () => {
+        onChange({ dateFrom: toYMD(localFrom), dateTo: toYMD(localTo) })
+        setOpen(false)
+    }
+
+    const clear = () => {
+        setLocalFrom(null)
+        setLocalTo(null)
+        onChange({ dateFrom: '', dateTo: '' })
+        setOpen(false)
+    }
+
+    // Cierra el dropdown si el click fue afuera de él (backdrop),
+    // pero ignora clicks dentro del propio panel o del calendario emergente
+    const handleBackdropClick = (e) => {
+        if (dropdownRef.current && dropdownRef.current.contains(e.target)) return
+        setOpen(false)
+    }
+
+    const isActive = dateFrom || dateTo
+
+    return (
+        <span className={styles.filterWrapper}>
+            <button
+                ref={btnRef}
+                type="button"
+                className={`${styles.filterBtn} ${isActive ? styles.filterActive : ''}`}
+                onClick={toggleOpen}
+            >
+                <Filter size={12} strokeWidth={2} />
+            </button>
+            {open && (
+                <>
+                    <div className={styles.filterBackdrop} onClick={handleBackdropClick} />
+                    <div
+                        ref={dropdownRef}
+                        className={styles.filterDropdown}
+                        style={{ position: 'fixed', top: position.top, left: position.left }}
+                    >
+                        <label className={styles.filterDateLabel}>
+                            Desde
+                            <DatePicker
+                                selected={localFrom}
+                                onChange={setLocalFrom}
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText="Seleccioná"
+                                locale="es"
+                                className={styles.filterDateInput}
+                                calendarClassName={styles.emanCalendar}
+                                popperClassName={styles.emanPopper}
+                                portalId="eman-datepicker-portal"
+                            />
+                        </label>
+                        <label className={styles.filterDateLabel}>
+                            Hasta
+                            <DatePicker
+                                selected={localTo}
+                                onChange={setLocalTo}
+                                dateFormat="dd/MM/yyyy"
+                                placeholderText="Seleccioná"
+                                locale="es"
+                                className={styles.filterDateInput}
+                                calendarClassName={styles.emanCalendar}
+                                popperClassName={styles.emanPopper}
+                                portalId="eman-datepicker-portal"
+                            />
+                        </label>
+                        <div className={styles.filterDateActions}>
+                            <button type="button" className={styles.filterClear} onClick={clear}>
+                                Limpiar
+                            </button>
+                            <button type="button" className={styles.filterApply} onClick={apply}>
+                                Aplicar
+                            </button>
+                        </div>
+                    </div>
+                </>
+            )}
+        </span>
+    )
+}
+
+
 const Orders = () => {
     const dispatch = useDispatch()
     const { orders, loading, error } = useSelector(state => state.adminOrders)
@@ -104,12 +207,25 @@ const Orders = () => {
     const [trackingRequest, setTrackingRequest] = useState(null) // { orderId, pendingState }
     const [trackingInput, setTrackingInput] = useState('')
 
+    const [searchInput, setSearchInput] = useState('')
+
      // Filtros activos
     const [filters, setFilters] = useState({
         states: [],
         shippingTypes: [],
         labelStatuses: [],
+        dateFrom: '',
+        dateTo: '',
+        search: '',
     })
+
+    // Debounce: espera 500ms sin tipear antes de disparar la búsqueda
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setFilters(prev => ({ ...prev, search: searchInput.trim() }))
+        }, 500)
+        return () => clearTimeout(timer)
+    }, [searchInput])
 
     useEffect(() => {
         dispatch(fetchAllOrders(filters))
@@ -176,6 +292,13 @@ const Orders = () => {
                     <h1 className={styles.title}>Órdenes</h1>
                     <p className={styles.subtitle}>{orders.length} órdenes en total</p>
                 </div>
+                <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Buscar por nombre o email..."
+                    value={searchInput}
+                    onChange={e => setSearchInput(e.target.value)}
+                />
             </div>
 
             {loading && <p className={styles.loading}>Cargando órdenes...</p>}
@@ -188,7 +311,13 @@ const Orders = () => {
                         <thead>
                             <tr>
                                 <th>Cliente</th>
-                                <th>Fecha</th>
+                                <th>Fecha
+                                <DateRangeFilter
+                                    dateFrom={filters.dateFrom}
+                                    dateTo={filters.dateTo}
+                                    onChange={({ dateFrom, dateTo }) => setFilters(prev => ({ ...prev, dateFrom, dateTo }))}
+                                />
+                                </th>
                                 <th>Envío
                                 <ColumnFilter
                                         options={SHIPPING_OPTIONS}

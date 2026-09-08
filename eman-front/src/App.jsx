@@ -34,8 +34,11 @@ import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import HeroManager from './pages/Admin/HeroManager/HeroManager';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
+import { registerLocale, setDefaultLocale } from 'react-datepicker'
+import { es } from 'date-fns/locale/es'
 
-
+registerLocale('es', es)
+setDefaultLocale('es')
 
 function App() {
   const dispatch = useDispatch();

@@ -364,3 +364,92 @@
 .filterClear:hover { 
     color: #c0392b; 
 }
+
+.searchInput {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    width: 260px;
+    outline: none;
+}
+
+.searchInput:focus {
+    border-color: var(--color-gold);
+}
+
+.filterDateLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    font-size: 0.7rem;
+    color: #999;
+    margin-bottom: 0.5rem;
+}
+
+.filterDateInput {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 0.3rem;
+}
+
+.filterDateActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid #f0f0f0;
+}
+
+.filterApply {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+/* DatePicker */
+.emanPopper {
+    z-index: 2000;
+}
+
+.emanCalendar {
+    font-family: var(--font-sans) !important;
+    font-size: 0.72rem !important;
+    border: 1px solid #e8e8e8 !important;
+    border-radius: 4px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+}
+
+.emanCalendar :global(.react-datepicker__header) {
+    background: #faf7f0 !important;
+    border-bottom: 1px solid #f0f0f0 !important;
+    padding-top: 0.4rem !important;
+}
+
+.emanCalendar :global(.react-datepicker__day) {
+    width: 1.5rem !important;
+    line-height: 1.5rem !important;
+    margin: 0.1rem !important;
+}
+
+.emanCalendar :global(.react-datepicker__day--selected),
+.emanCalendar :global(.react-datepicker__day--keyboard-selected) {
+    background: var(--color-gold) !important;
+    color: #fff !important;
+}
+
+.emanCalendar :global(.react-datepicker__day:hover) {
+    background: #f5ecd8 !important;
+}
+
+.emanCalendar :global(.react-datepicker__current-month) {
+    font-family: var(--font-serif) !important;
+    font-size: 0.95rem !important;
+}
