@@ -285,6 +285,19 @@ const Orders = () => {
         return `${order.streetName} ${order.streetNumber}${order.floor ? ` piso ${order.floor}` : ''}${order.apartment ? ` depto ${order.apartment}` : ''}, ${order.city}`
     }
 
+    const REVENUE_STATES = ['confirmado', 'enviado', 'entregado']
+
+    const ordersForTotal = filters.states.length > 0
+        ? orders.filter(o => filters.states.includes(o.state))
+        : orders.filter(o => REVENUE_STATES.includes(o.state))
+
+    const totalSum = ordersForTotal.reduce((sum, o) => sum + Number(o.total), 0)
+
+    const totalLabel = filters.states.length > 0
+        ? `Total (${filters.states.map(s => STATE_LABELS[s]?.label).join(', ')})`
+        : 'Total de ventas confirmadas'
+
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -424,6 +437,13 @@ const Orders = () => {
                     {orders.length === 0 && !loading && (
                         <p className={styles.empty}>No hay órdenes con esos filtros</p>
                     )}
+
+                    {!loading && orders.length > 0 && (
+            <div className={styles.tableFooter}>
+                <span>{totalLabel} ({ordersForTotal.length} órdenes)</span>
+                <span className={styles.tableFooterTotal}>${totalSum.toLocaleString('es-AR')}</span>
+            </div>
+        )}
                 </div>
             )}
 

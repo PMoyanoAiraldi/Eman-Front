@@ -295,6 +295,24 @@
     position: relative; /* para posicionar el dropdown */
 }
 
+.tableFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #e8e8e8;
+    background: #fafafa;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: #666;
+}
+
+.tableFooterTotal {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
 .filterWrapper {
     position: relative;
     display: inline-block;
@@ -453,3 +471,4 @@
     font-family: var(--font-serif) !important;
     font-size: 0.95rem !important;
 }
+
