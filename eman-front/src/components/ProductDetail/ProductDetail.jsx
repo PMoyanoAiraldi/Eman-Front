@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductById, clearSelectedProduct } from "../../redux/slices/productsReducer";
 import { addItem, openCart } from "../../redux/slices/cartReducer";
+import axiosInstance from "../../api/axiosInstance";
+import { useToast } from "../../hooks/useToast"; 
+import Toast from "../Toast/Toast"; 
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import styles from "./ProductDetail.module.css";
 
@@ -21,6 +24,8 @@ export default function ProductDetail() {
     const [quantity, setQuantity]           = useState(1);
     const [added, setAdded]                 = useState(false);
     const { items } = useSelector(state => state.cart)
+
+    const { toast, showToast, hideToast } = useToast();
     
     useEffect(() => {
         dispatch(fetchProductById(id));
@@ -85,12 +90,28 @@ console.log("activeColor", activeColor)
 
 const stockDisponible = (selectedStock ?? 0) - enCarrito
 
-    const handleAddToCart = () => {
+    const handleAddToCart = async () => {
     if (!selectedSize) return;
 
     const selectedVariant = product.variants?.find(
         v => v.color.id === activeColor?.id && v.size.id === selectedSize?.id
     )
+
+    // Revalidamos el stock real antes de agregar — el que tenemos en pantalla
+    // puede estar desactualizado si pasó tiempo desde que se cargó la página
+    let stockReal = stockDisponible;
+    try {
+        const res = await axiosInstance.get(`/product_variants/${product.id}`);
+        const variantActual = res.data.find(v => v.id === selectedVariant?.id);
+        stockReal = (variantActual?.stock ?? 0) - enCarrito;
+    } catch (error) {
+        console.error("No se pudo revalidar el stock, se usa el valor en pantalla", error);
+    }
+
+    if (stockReal <= 0) {
+        showToast("Este talle ya no tiene stock disponible", "error");
+        return;
+    }
 
     dispatch(
         addItem({
@@ -119,6 +140,7 @@ const stockDisponible = (selectedStock ?? 0) - enCarrito
 return (
     <div className={styles.page}>
 
+    <Toast toast={toast} onHide={hideToast} />
     <Breadcrumb items={[
             { label: 'Inicio', path: '/' },
             { label: product.category?.name, path: `/${product.category?.name?.toLowerCase()}` },
