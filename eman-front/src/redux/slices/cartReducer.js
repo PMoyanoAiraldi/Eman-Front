@@ -61,6 +61,18 @@ const cartSlice = createSlice({
         }
     },
 
+    updateItemStock: (state, action) => {
+        const { variantId, stock } = action.payload
+        const item = state.items.find(i => i.variantId === variantId)
+        if (item) {
+            item.stock = stock
+            // Si la cantidad que ya tenía en el carrito superaba el nuevo stock real, la recortamos a la real
+            if (item.quantity > stock) {
+                item.quantity = stock
+            }
+        }
+    },
+
     clearCart: (state) => {
         state.items = []
     },
@@ -99,6 +111,7 @@ export const {
     toggleCart,
     openCart,
     closeCart,
+    updateItemStock
 } = cartSlice.actions
 
 export default cartSlice.reducer

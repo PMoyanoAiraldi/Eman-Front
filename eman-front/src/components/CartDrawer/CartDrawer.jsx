@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
-import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal } from '../../redux/slices/cartReducer'
+import { closeCart, removeItem, increaseQuantity, decreaseQuantity, selectCartTotal, updateItemStock } from '../../redux/slices/cartReducer'
+import axiosInstance from '../../api/axiosInstance'
 import styles from './CartDrawer.module.css'
 import { Trash2 } from 'lucide-react'
 
@@ -9,6 +11,34 @@ export default function CartDrawer() {
     const navigate = useNavigate()
     const { items, isOpen } = useSelector(state => state.cart)
     const total = useSelector(selectCartTotal)
+
+        useEffect(() => {
+        if (!isOpen || items.length === 0) return //solo corre cuando isOpen =  true
+
+        const revalidarStock = async () => {
+            // Agrupamos por producto para no pedir el mismo endpoint varias veces
+            const productIds = [...new Set(items.map(i => i.id))]
+
+            for (const productId of productIds) {
+                try {
+                    const res = await axiosInstance.get(`/product_variants/${productId}`)
+                    const variantesDelProducto = res.data
+
+                    const itemsDeEseProducto = items.filter(i => i.id === productId)
+                    for (const item of itemsDeEseProducto) {
+                        const variantActual = variantesDelProducto.find(v => v.id === item.variantId)
+                        if (variantActual) {
+                            dispatch(updateItemStock({ variantId: item.variantId, stock: variantActual.stock }))
+                        }
+                    }
+                } catch (error) {
+                    console.error(`No se pudo revalidar stock del producto ${productId}`, error)
+                }
+            }
+        }
+
+        revalidarStock()
+    }, [isOpen])
 
     const handleCheckout = () => {
         dispatch(closeCart())
