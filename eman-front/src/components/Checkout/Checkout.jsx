@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { clearCart } from '../../redux/slices/cartReducer'
+import { clearCart, updateItemStock } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
 import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
@@ -235,6 +235,42 @@ const handleNext = async () => {
 
     if (step === 3) {
         setLoading(true)
+
+         // Último control: revalidamos stock real antes de crear la orden
+        try {
+            const productIds = [...new Set(items.map(i => i.id))]
+            const stockInsuficiente = []
+
+            for (const productId of productIds) {
+                const res = await axiosInstance.get(`/product_variants/${productId}`)
+                const variantesDelProducto = res.data
+
+                const itemsDeEseProducto = items.filter(i => i.id === productId)
+                for (const item of itemsDeEseProducto) {
+                    const variantActual = variantesDelProducto.find(v => v.id === item.variantId)
+                    const stockReal = variantActual?.stock ?? 0
+
+                    if (stockReal < item.quantity) {
+                        dispatch(updateItemStock({ variantId: item.variantId, stock: stockReal }))
+                        stockInsuficiente.push({ name: item.name, size: item.size, stockReal })
+                    }
+                }
+            }
+            if (stockInsuficiente.length > 0) {
+                const detalle = stockInsuficiente
+                    .map(i => `${i.name} (talle ${i.size}): quedan ${i.stockReal}`)
+                    .join(', ')
+                setToast({
+                    type: 'error',
+                    message: `Algunos productos ya no tienen el stock pedido — ${detalle}`,
+                })
+                setLoading(false)
+                return
+            }
+        } catch (err) {
+            console.error('No se pudo revalidar stock, se sigue igual', err)
+    }
+
     try {
         const orderRes = await axiosInstance.post(`/order`,
             {
