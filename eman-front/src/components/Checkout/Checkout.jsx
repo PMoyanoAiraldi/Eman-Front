@@ -345,8 +345,22 @@ const handleAgencySelect = (e) => {
     })
 }
 
-
-const handleBack = () => setStep(s => s - 1)
+const handleBack = async () => {
+    // Si ya existe una orden creada (llegamos al paso 4), hay que cancelarla
+    // antes de volver — si no, queda con stock reservado sin que nadie la resuelva
+    if (orderId && step === 4) {
+        try {
+            await axiosInstance.post(`/order/${orderId}/cancel`)
+        } catch (err) {
+            console.error('No se pudo cancelar la orden al volver', err)
+            // seguimos igual — no queremos trabar al cliente por esto,
+            // el cron sigue siendo la red de seguridad si esto falla
+        }
+        setOrderId(null)
+        setPreferenceId(null)
+    }
+    setStep(s => s - 1)
+}
 
 
 useEffect(() => {
@@ -411,7 +425,8 @@ const shippingCost = form.shippingType === 'correo_argentino'
     ? (shippingQuote?.price ?? 0)
     : 0 // coordinado y retiro en local ya son gratis
 
-if (items.length === 0 && step < 4) {
+    console.log('DEBUG — items.length:', items.length, '| step:', step)
+if (items.length === 0 && step < 4 && !orderId) {
     return (
         <div className={styles.empty}>
             <p>Tu carrito está vacío</p>
