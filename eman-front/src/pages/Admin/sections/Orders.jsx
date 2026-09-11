@@ -30,6 +30,8 @@ const LABEL_STATUS_OPTIONS = [
     { value: 'na',        label: 'No aplica' },
 ]
 
+const EMAN_ADDRESS = 'Entre Ríos 1529, López'
+
 // Dropdown de filtro por columna, tipo Excel
 const ColumnFilter = ({ options, selected, onChange }) => {
     const [open, setOpen] = useState(false)
@@ -279,6 +281,9 @@ const Orders = () => {
     }
 
     const addressLine = (order) => {
+        if (order.shippingType === 'retiro_en_local') {
+            return EMAN_ADDRESS
+        }
         if (order.deliveryType === 'sucursal') {
             return `${order.agencyName} — ${order.agencyAddress}, ${order.agencyCity}`
         }
@@ -297,6 +302,15 @@ const Orders = () => {
         ? `Total (${filters.states.map(s => STATE_LABELS[s]?.label).join(', ')})`
         : 'Total de ventas confirmadas'
 
+    const handleViewOrder = async (order) => {
+    try {
+        const { data } = await axiosInstance.get(`/order/${order.id}`)
+        setSelectedOrder(data)
+    } catch (err) {
+        console.error('Error al traer el detalle de la orden:', err)
+        setSelectedOrder(order) // fallback por si falla
+    }
+}
 
     return (
         <div className={styles.page}>
@@ -412,7 +426,7 @@ const Orders = () => {
                                         <td className={`${styles.cell} ${styles.actionsCell}`}>
                                             <button
                                                 className={styles.iconBtn}
-                                                onClick={() => setSelectedOrder(order)}
+                                                onClick={() => handleViewOrder(order)}
                                                 title="Ver detalle"
                                             >
                                                 <Eye size={17} strokeWidth={1.5} />
@@ -452,31 +466,64 @@ const Orders = () => {
                 <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                            <h2 className={styles.modalTitle}>Detalle de orden</h2>
+                        <h2 className={styles.modalTitle}>Detalle de orden</h2>
                             <button className={styles.closeBtn} onClick={() => setSelectedOrder(null)}>✕</button>
                         </div>
+                        <p className={styles.modalOrderMeta}>
+                            {new Date(selectedOrder.createdAt).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                            {' · '}
+                            <span className={styles[`state_${STATE_LABELS[selectedOrder.state]?.cls || 'pending'}`]}>
+                                {STATE_LABELS[selectedOrder.state]?.label || selectedOrder.state}
+                            </span>
+                        </p>
 
                         <div className={styles.modalSection}>
-                            <p className={styles.modalLabel}>CLIENTE</p>
+                            <p className={styles.modalLabel}>Cliente</p>
                             <p className={styles.modalValue}>{selectedOrder.guestName}</p>
-                            <p className={styles.modalSub}>{selectedOrder.guestEmail} · {selectedOrder.guestPhone}</p>
+                            <p className={styles.modalSub}>{selectedOrder.guestEmail} </p>
+                            <p className={styles.modalSub}>{selectedOrder.guestPhone}</p>
                         </div>
 
                         <div className={styles.modalSection}>
-                            <p className={styles.modalLabel}>ENVÍO</p>
-                            <p className={styles.modalValue}>{selectedOrder.address}, {selectedOrder.city}</p>
-                            <p className={styles.modalSub}>{selectedOrder.shippingType}</p>
-                        </div>
+                        <p className={styles.modalLabel}>Envío</p>
+                        <p className={styles.modalValue}>{addressLine(selectedOrder)}</p>
+                        <p className={styles.modalSub}>
+                            {SHIPPING_OPTIONS.find(o => o.value === selectedOrder.shippingType)?.label || selectedOrder.shippingType}
+                            {selectedOrder.trackingNumber && ` · Seguimiento: ${selectedOrder.trackingNumber}`}
+                        </p>
+                    </div>
 
                         <div className={styles.modalSection}>
-                            <p className={styles.modalLabel}>PRODUCTOS</p>
-                            {selectedOrder.orderDetails?.map((detail, i) => (
-                                <div key={i} className={styles.detailItem}>
-                                    <span>{detail.productName}</span>
-                                    <span>x{detail.quantity} · ${Number(detail.unitPrice).toLocaleString('es-AR')}</span>
-                                </div>
-                            ))}
+                        <p className={styles.modalLabel}>Productos</p>
+                        <div className={styles.productList}>
+                            {selectedOrder.orderDetail?.map((detail, i) => (
+                                <div key={i} className={styles.productRow}>
+                                    <div>
+                                        <p className={styles.productName}>{detail.product?.name}</p>
+                                        {(detail.variant?.size || detail.variant?.color) && (
+                                            <p className={styles.productVariant}>
+                                                {detail.variant?.size?.name}
+                                                {detail.variant?.size && detail.variant?.color ? ' · ' : ''}
+                                                {detail.variant?.color?.name}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <span className={styles.productQty}>x{detail.quantity}</span>
+                                <span className={styles.productPrice}>
+                                    ${Number(detail.unitPrice * detail.quantity).toLocaleString('es-AR')}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                    {selectedOrder.shippingCost > 0 && (
+                        <div className={styles.modalSummaryRow}>
+                            <span>Envío</span>
+                            <span>${Number(selectedOrder.shippingCost).toLocaleString('es-AR')}</span>
                         </div>
+                    )}
+
 
                         <div className={styles.modalTotal}>
                             <span>Total</span>
@@ -484,6 +531,7 @@ const Orders = () => {
                         </div>
                     </div>
                 </div>
+                
             )}
 
             <ConfirmModal

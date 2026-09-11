@@ -432,6 +432,115 @@
     cursor: pointer;
 }
 
+
+.modal {
+    padding: 32px;
+    max-width: 460px;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalOrderMeta {
+    font-size: 13px;
+    color: #999;
+    margin: 4px 0 24px;
+}
+
+.state_pending    { color: #b8860b; }
+.state_confirmed  { color: #1e8e4a; }
+.state_shipped    { color: #2563eb; }
+.state_delivered  { color: #6a3fb5; }
+.state_cancelled  { color: #c0392b; }
+
+.modalSection {
+    margin-bottom: 24px;
+}
+
+.modalLabel {
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #b0956a; /* mismo dorado que ya usabas */
+    margin-bottom: 6px;
+}
+
+.modalValue {
+    font-size: 15px;
+    color: #222;
+    margin-bottom: 2px;
+}
+
+.modalSub {
+    font-size: 13px;
+    color: #888;
+}
+
+.productList {
+    margin-top: 4px;
+}
+
+.productRow {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: baseline;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+.productRow:last-child {
+    border-bottom: none;
+}
+
+.productName {
+    font-size: 14px;
+    color: #222;
+}
+
+.productVariant {
+    font-size: 12px;
+    color: #999;
+    margin-top: 2px;
+}
+
+.productQty {
+    font-size: 13px;
+    color: #999;
+    text-align: right;
+}
+
+.productPrice {
+    font-size: 14px;
+    color: #222;
+    text-align: right;
+    min-width: 70px;
+}
+
+.modalDivider {
+    border-top: 1px solid #eee;
+    margin: 8px 0 12px;
+}
+
+.modalSummaryRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.modalTotal {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    margin-top: 8px;
+}
+
 /* DatePicker */
 .emanPopper {
     z-index: 2000;
