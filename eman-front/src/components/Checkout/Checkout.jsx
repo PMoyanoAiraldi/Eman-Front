@@ -306,7 +306,6 @@ const handleNext = async () => {
 // 2. Crear preferencia de MercadoPago
 const prefRes = await axiosInstance.post(`/payments/create-preference`,{
             orderId:      order.id,
-            shippingCost,
         })
     setPreferenceId(prefRes.data.preferenceId)
         setStep(s => s + 1)
