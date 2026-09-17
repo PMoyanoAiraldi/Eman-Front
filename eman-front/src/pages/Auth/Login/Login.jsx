@@ -87,7 +87,8 @@ const LoginPage = () => {
                             type="button"
                             className={styles.eyeBtn}
                             onClick={() => setShowPassword(p => !p)}
-                            tabIndex={-1}
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                            title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                         >
                             {showPassword ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                         </button>
