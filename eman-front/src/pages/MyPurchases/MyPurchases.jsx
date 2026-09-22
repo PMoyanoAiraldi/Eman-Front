@@ -46,7 +46,12 @@ const MyPurchases = () => {
             {loading ? (
                 <div className={styles.loading}>Cargando...</div>
             ) : orders.length === 0 ? (
-                <div className={styles.empty}>Todavía no realizaste ninguna compra.</div>
+                <div className={styles.empty}>
+                    <p>Todavía no realizaste ninguna compra.</p>
+                    <Link to="/tienda" className={styles.emptyBtn}>
+                        Ver productos
+                    </Link>
+                </div>
             ) : (
                 <div className={styles.orderList}>
                     {orders.map(order => {

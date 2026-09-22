@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import Stepper from '../../components/Stepper/Stepper'
 import OrderDetailCard from '../../components/OrderDetailCard/OrderDetailCard'
+import RegisterFromOrderCard from '../../components/RegisterFromOrderCard/RegisterFromOrderCard'
 import axios from 'axios'
 import styles from './OrderConfirm.module.css'
 
@@ -11,7 +12,7 @@ const OrderConfirm = () => {
     const [searchParams] = useSearchParams()
     const orderId = searchParams.get('orderId')
     const navigate = useNavigate()
-
+    
     const [order, setOrder] = useState(null)
     const [loading, setLoading] = useState(!!orderId)// si no hay orderId, ni arrancamos loading
     const [error, setError] = useState(orderId ? null : 'No se encontró el número de orden')
@@ -58,6 +59,14 @@ const OrderConfirm = () => {
                 {orderId && <p className={styles.orderId}>Número de orden: {orderId}</p>}
 
                 <OrderDetailCard order={order} orderId={orderId} showWhatsApp={true} />
+
+                    {!order.hasAccount && order.state === 'confirmado' && (
+                    <RegisterFromOrderCard
+                        orderId={orderId}
+                        order={order}
+                        onRegistered={() => navigate('/mis-compras')}
+                    />
+                )}
 
                 <button className={styles.btn} onClick={() => navigate('/')}>
                     Volver a la tienda

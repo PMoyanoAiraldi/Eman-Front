@@ -116,7 +116,7 @@
     font-size: 0.85rem;
     color: #6B6B6B;
     line-height: 1.5;
-    margin: 12px 0 12px;
+    margin: 8px 0 10px;
 }
 
 .whatsappBtn {
@@ -124,18 +124,20 @@
     align-items: center;
     gap: 8px;
     font-family: var(--font-sans);
-    background-color: #25D366;
-    color: #FFFFFF;
+    background-color: transparent;
+    color: #1DA851;
     text-decoration: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 8px 16px;
+    border: 1px solid #1DA851;
+    border-radius: 6px;
+    font-size: 0.85rem;
     font-weight: 500;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .whatsappBtn:hover {
     background-color: #1DA851;
+    color: #fff;
 }
 
 .whatsappIcon {

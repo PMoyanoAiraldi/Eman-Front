@@ -11,6 +11,11 @@ export const authService = {
         return data;
     },
 
+    registerFromOrder: async (data) => {
+        const { data: response } = await axiosInstance.post('/auth/register-from-order', data);
+        return response; // { user, accessToken }
+    },
+
     logout: async () => {
         await axiosInstance.post('/auth/logout');
     },

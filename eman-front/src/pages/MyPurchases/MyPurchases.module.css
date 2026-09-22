@@ -217,6 +217,35 @@
     color: var(--color-black);
 }
 
+.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    color: #888;
+    text-align: center;
+}
+
+.emptyBtn {
+    display: inline-block;
+    height: 48px;
+    line-height: 48px;
+    padding: 0 2rem;
+    background: #1a1a1a;
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.emptyBtn:hover {
+    background: #444441;
+}
+
 @media (max-width: 480px) {
     .orderHeader { flex-wrap: wrap; }
     .orderDate { margin-left: 0; }

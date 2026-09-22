@@ -60,7 +60,8 @@ const Checkout = () => {
     const [loadingAgencies, setLoadingAgencies] = useState(false)
 
     const [agencyFilter, setAgencyFilter] = useState('')
-    
+
+    const [orderTotal, setOrderTotal] = useState(null)
 
     const hideToast = () => setToast(null)
 
@@ -286,11 +287,10 @@ const handleNext = async () => {
                 agencyName:    form.deliveryType === 'sucursal' ? form.agencyName    : undefined,
                 agencyAddress: form.deliveryType === 'sucursal' ? form.agencyAddress : undefined,
                 agencyCity:    form.deliveryType === 'sucursal' ? form.agencyCity    : undefined,
-                city:         form.deliveryType === 'sucursal' ? form.agencyCity : (form.city || form.locality || 'Gálvez'),
+                city:         form.deliveryType === 'sucursal' ? form.agencyCity : (form.city || form.locality || 'López'),
                 provinceCode: form.shippingType === 'correo_argentino' ? form.provinceCode : undefined,
                 zipCode:      form.shippingType === 'correo_argentino' ? form.zipCode : undefined,
                 shippingType: form.shippingType === 'retiro' ? 'retiro_en_local' : form.shippingType,
-                shippingCost,
                 items: items.map(item => ({
                     productId:   item.id,
                     variantId:   item.variantId,
@@ -302,6 +302,7 @@ const handleNext = async () => {
             )
         const order = orderRes.data
         setOrderId(order.id)
+        setOrderTotal(Number(order.total)) // ← total real, calculado por el backend
 
 // 2. Crear preferencia de MercadoPago
 const prefRes = await axiosInstance.post(`/payments/create-preference`,{
@@ -848,7 +849,7 @@ return (
                     {preferenceId && (
                         <Payment
                             initialization={{
-                                amount: total + shippingCost,
+                                amount: orderTotal,
                                 preferenceId,
                             }}
                             customization={{
