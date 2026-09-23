@@ -1,7 +1,7 @@
 .page {
     max-width: 600px;
     margin: 0 auto;
-    padding: 2rem 1rem 2rem;
+    padding: 1.25rem 1rem 2rem;
 }
 
 .title {
@@ -36,7 +36,7 @@
     font-size: 0.95rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    margin-top: 20px;
+    margin-top: 12px;
 }
 
 .btn:hover {
