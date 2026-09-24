@@ -55,17 +55,26 @@ function App() {
         // Intenta renovar el token al cargar la app
         // Si no hay cookie válida, falla silenciosamente
         authService.refreshToken()
-            .then(({ accessToken }) => {
+            .then(async ({ accessToken }) => {
               if (savedUser) { // Si hay user guardado, restauramos la sesión completa
                 dispatch(setCredentials({
                     user: JSON.parse(savedUser),
                     accessToken,
                 }))
-            } else {
+            return
+            }
+
+            // No hay user en localStorage pero el token es válido:
+            // traemos los datos reales en vez de dejar la sesión sin nombre
+            try {
+                const user = await authService.getMe(accessToken)
+                localStorage.setItem('user', JSON.stringify(user))
+                dispatch(setCredentials({ user, accessToken }))
+            } catch {
                 dispatch(setToken(accessToken))
             }
         })
-          .catch(() => {
+        .catch(() => {
             localStorage.removeItem('user')
         })
     }, [])

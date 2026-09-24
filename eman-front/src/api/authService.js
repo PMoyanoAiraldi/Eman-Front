@@ -35,4 +35,11 @@ export const authService = {
         const { data } = await axiosInstance.patch('/users/reset-password', { token, newPassword })
         return data
     },
+
+    getMe: async (accessToken) => {
+        const { data } = await axiosInstance.get('/auth/me', {
+            headers: { Authorization: `Bearer ${accessToken}` },
+        });
+        return data;
+    },
 };

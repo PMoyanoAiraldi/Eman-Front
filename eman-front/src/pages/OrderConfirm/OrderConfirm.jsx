@@ -4,6 +4,7 @@ import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import Stepper from '../../components/Stepper/Stepper'
 import OrderDetailCard from '../../components/OrderDetailCard/OrderDetailCard'
 import RegisterFromOrderCard from '../../components/RegisterFromOrderCard/RegisterFromOrderCard'
+import { Link } from 'react-router-dom'
 import axios from 'axios'
 import styles from './OrderConfirm.module.css'
 
@@ -61,11 +62,20 @@ const OrderConfirm = () => {
                 <OrderDetailCard order={order} orderId={orderId} showWhatsApp={true} />
 
                     {!order.hasAccount && order.state === 'confirmado' && (
+                        order.guestEmailHasAccount ? (
+                        <div className={styles.loginPrompt}>
+                            <p>Ya tenés una cuenta con {order.guestEmail} — iniciá sesión para ver esta compra en tu panel.</p>
+                            <Link to={`/login?email=${encodeURIComponent(order.guestEmail)}`} className={styles.loginLink}>
+                                Iniciar sesión
+                            </Link>
+                        </div>
+                    ) : (
                     <RegisterFromOrderCard
                         orderId={orderId}
                         order={order}
                         onRegistered={() => navigate('/mis-compras')}
                     />
+                    )
                 )}
 
                 <button className={styles.btn} onClick={() => navigate('/')}>

@@ -42,3 +42,41 @@
 .btn:hover {
     background-color: #B8973E;
 }
+
+.loginPrompt {
+    margin-top: 1.5rem;
+    background: var(--color-bg, #faf8f4);
+    border: 0.5px solid #e0e0dc;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.loginPrompt p {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: #6B6B6B;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.loginLink {
+    display: inline-block;
+    align-self: flex-start;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-gold);
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid var(--color-gold);
+    border-radius: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.loginLink:hover {
+    background-color: var(--color-gold);
+    color: #fff;
+}
