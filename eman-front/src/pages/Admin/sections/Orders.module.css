@@ -581,3 +581,37 @@
     font-size: 0.95rem !important;
 }
 
+/* Aviso de facturas pendientes, al lado del subtítulo del header */
+.invoiceAlert {
+    color: #b8860b;
+    font-weight: 600;
+}
+
+/* Botón de subir factura/NC — estilo "input file" disfrazado de botón */
+.uploadInvoiceBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #fff;
+    border: 1px solid #C9A84C;
+    color: #C9A84C;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+    width: fit-content;
+}
+
+.uploadInvoiceBtn:hover {
+    background: #C9A84C;
+    color: #fff;
+}
+
+.uploadInvoiceBtn:has(input:disabled) {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}

@@ -2,8 +2,9 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Eye, Package, Check, Clock, Filter } from 'lucide-react'
-import { fetchAllOrders, updateOrderState } from '../../../redux/admin/adminOrdersReducer'
+import { Eye, Package, Check, Clock, Filter, Upload } from 'lucide-react'
+import { fetchAllOrders, updateOrderState, uploadInvoice, sendInvoiceManually } from '../../../redux/admin/adminOrdersReducer'
+import InvoicePopover from '../../../components/InvoicePopover/InvoicePopover'
 import axiosInstance from '../../../api/axiosInstance'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import styles from './Orders.module.css'
@@ -29,6 +30,8 @@ const LABEL_STATUS_OPTIONS = [
     { value: 'pending',   label: 'Pendiente' },
     { value: 'na',        label: 'No aplica' },
 ]
+
+
 
 const EMAN_ADDRESS = 'Entre Ríos 1529, López'
 
@@ -221,6 +224,11 @@ const Orders = () => {
         search: '',
     })
 
+    const [invoiceWarning, setInvoiceWarning] = useState(null) // { orderId, pendingState }
+    const [uploadingInvoiceId, setUploadingInvoiceId] = useState(null)
+    const [sendingInvoiceId, setSendingInvoiceId] = useState(null)
+    const [confirmResendInvoice, setConfirmResendInvoice] = useState(null)
+
     // Debounce: espera 500ms sin tipear antes de disparar la búsqueda
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -244,7 +252,19 @@ const Orders = () => {
             setTrackingInput('')
             return
         }
+
+        if (['enviado', 'entregado'].includes(newState) && order.invoiceStatus === 'pendiente') {
+            setInvoiceWarning({ orderId: order.id, pendingState: newState })
+            return
+        }
+
         dispatch(updateOrderState({ id: order.id, state: newState }))
+    }
+
+    const confirmInvoiceWarning = () => {
+        if (!invoiceWarning) return
+        dispatch(updateOrderState({ id: invoiceWarning.orderId, state: invoiceWarning.pendingState }))
+        setInvoiceWarning(null)
     }
 
     const confirmTrackingSubmit = () => {
@@ -280,6 +300,32 @@ const Orders = () => {
         }
     }
 
+    const handleInvoiceUpload = async (orderId, file) => {
+        if (!file) return
+            setUploadingInvoiceId(orderId)
+        try {
+            const result = await dispatch(uploadInvoice({ id: orderId, file })).unwrap()
+            if (selectedOrder?.id === orderId) setSelectedOrder(result)
+        } catch (err) {
+            setLabelError(err)
+        } finally {
+            setUploadingInvoiceId(null)
+        }
+    }
+
+    const handleSendInvoice = async (orderId) => {
+        setSendingInvoiceId(orderId)
+        try {
+            const result = await dispatch(sendInvoiceManually(orderId)).unwrap()
+            if (selectedOrder?.id === orderId) setSelectedOrder(result)
+        } catch (err) {
+            setLabelError(err)
+        } finally {
+            setSendingInvoiceId(null)
+            setConfirmResendInvoice(null)
+        }
+    }
+
     const addressLine = (order) => {
         if (order.shippingType === 'retiro_en_local') {
             return EMAN_ADDRESS
@@ -312,12 +358,20 @@ const Orders = () => {
     }
 }
 
+    const pendingInvoicesCount = orders.filter(
+        o => o.invoiceStatus !== 'enviada' && o.state !== 'cancelado'
+    ).length
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Órdenes</h1>
-                    <p className={styles.subtitle}>{orders.length} órdenes en total</p>
+                    <p className={styles.subtitle}>{orders.length} órdenes en total
+                    {pendingInvoicesCount > 0 && (
+                        <span className={styles.invoiceAlert}> · {pendingInvoicesCount} facturas pendientes de enviar</span>
+                    )}
+                    </p>
                 </div>
                 <input
                     type="text"
@@ -359,6 +413,7 @@ const Orders = () => {
                                         onChange={v => updateFilter('labelStatuses', v)}
                                     />
                                 </th>
+                                <th>Factura</th>
                                 <th>Total</th>
                                 <th>Estado
                                 <ColumnFilter
@@ -431,6 +486,17 @@ const Orders = () => {
                                             >
                                                 <Eye size={17} strokeWidth={1.5} />
                                             </button>
+
+                                            {!(isCorreoArgentino && !isGenerated) && (
+                                                <InvoicePopover
+                                                    order={order}
+                                                    onUpload={handleInvoiceUpload}
+                                                    onRequestSend={setConfirmResendInvoice}
+                                                    uploading={uploadingInvoiceId === order.id}
+                                                    sending={sendingInvoiceId === order.id}
+                                                />
+                                            )}
+
                                             {isCorreoArgentino && !isGenerated && (
                                             <button
                                                 className={styles.iconBtn}
@@ -441,6 +507,16 @@ const Orders = () => {
                                                 <Package size={17} strokeWidth={1.5} />
                                             </button>
                                         )}
+
+                                        {isCorreoArgentino && !isGenerated && (
+                                        <InvoicePopover
+                                            order={order}
+                                            onUpload={handleInvoiceUpload}
+                                            onRequestSend={setConfirmResendInvoice}
+                                            uploading={uploadingInvoiceId === order.id}
+                                            sending={sendingInvoiceId === order.id}
+                                        />
+                                    )} 
                                         </td>
                                     </tr>
                                 )
@@ -524,6 +600,49 @@ const Orders = () => {
                         </div>
                     )}
 
+                    <div className={styles.modalSection}>
+                    <p className={styles.modalLabel}>Factura</p>
+
+                    {selectedOrder.invoiceUrl ? (
+                        <a href={selectedOrder.invoiceUrl} target="_blank" rel="noreferrer" className={styles.modalValue}>
+                            Ver archivo actual
+                        </a>
+                    ) : (
+                        <p className={styles.modalSub}>Todavía no se subió ningún archivo</p>
+                    )}
+
+                    {selectedOrder.invoiceStatus === 'enviada' ? (
+                        <p className={styles.modalSub}>✓ Factura enviada al cliente</p>
+                    ) : selectedOrder.invoiceUrl ? (
+                        <p className={styles.modalSub}>Lista, todavía no se envió</p>
+                    ) : null}
+
+                    <label className={styles.uploadInvoiceBtn}>
+                        <Upload size={14} />
+                        {uploadingInvoiceId === selectedOrder.id
+                            ? 'Subiendo...'
+                            : selectedOrder.invoiceStatus === 'enviada'
+                                ? 'Subir nota de crédito / reemplazo'
+                                : 'Subir factura'}
+                        <input
+                            type="file"
+                            accept="application/pdf"
+                            style={{ display: 'none' }}
+                            onChange={e => handleInvoiceUpload(selectedOrder.id, e.target.files[0])}
+                            disabled={uploadingInvoiceId === selectedOrder.id}
+                        />
+                    </label>
+
+                    {selectedOrder.invoiceUrl && selectedOrder.invoiceStatus !== 'enviada' && (
+                    <button
+                        className={styles.sendInvoiceBtn}
+                        onClick={() => setConfirmResendInvoice(selectedOrder.id)}
+                        disabled={sendingInvoiceId === selectedOrder.id}
+                    >
+                        {sendingInvoiceId === selectedOrder.id ? 'Enviando...' : 'Enviar por mail ahora'}
+                    </button>
+                )}
+                </div>
 
                         <div className={styles.modalTotal}>
                             <span>Total</span>
@@ -571,6 +690,27 @@ const Orders = () => {
                 cancelLabel="Cancelar"
                 confirmDisabled={!trackingInput.trim()}
             />
+            <ConfirmModal
+                isOpen={!!invoiceWarning}
+                title="Factura pendiente"
+                message="Todavía no subiste la factura de este pedido. ¿Marcar igual el estado? Vas a poder subirla y enviarla después desde el detalle."
+                onConfirm={confirmInvoiceWarning}
+                onCancel={() => setInvoiceWarning(null)}
+                confirmLabel="Marcar igual"
+                cancelLabel="Volver"
+            />
+
+            <ConfirmModal
+                isOpen={!!confirmResendInvoice}
+                title="Enviar factura por mail"
+                message="Se le va a mandar este archivo al cliente por mail ahora mismo. ¿Confirmás?"
+                onConfirm={() => handleSendInvoice(confirmResendInvoice)}
+                onCancel={() => setConfirmResendInvoice(null)}
+                confirmLabel="Enviar"
+                cancelLabel="Cancelar"
+            />
+
+
         </div>
     )
 }

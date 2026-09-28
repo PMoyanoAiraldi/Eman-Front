@@ -33,6 +33,34 @@ export const updateOrderState = createAsyncThunk(
     }
 )
 
+export const uploadInvoice = createAsyncThunk(
+    'adminOrders/uploadInvoice',
+    async ({ id, file }, { rejectWithValue }) => {
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+            const res = await axiosInstance.post(`/order/${id}/invoice`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            })
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al subir la factura')
+        }
+    }
+)
+
+export const sendInvoiceManually = createAsyncThunk(
+    'adminOrders/sendInvoiceManually',
+    async (id, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.post(`/order/${id}/invoice/send`)
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al enviar la factura')
+        }
+    }
+)
+
 const initialState = {
     orders: [],
     loading: false,
@@ -53,6 +81,17 @@ const adminOrdersSlice = createSlice({
             const index = state.orders.findIndex(o => o.id === action.payload.id)
             if (index !== -1) state.orders[index] = action.payload
         })
+
+        .addCase(uploadInvoice.fulfilled, (state, action) => {
+            const index = state.orders.findIndex(o => o.id === action.payload.id)
+            if (index !== -1) state.orders[index] = action.payload
+        })
+
+        .addCase(sendInvoiceManually.fulfilled, (state, action) => {
+            const index = state.orders.findIndex(o => o.id === action.payload.id)
+            if (index !== -1) state.orders[index] = action.payload
+        })
+
     }
 })
 
