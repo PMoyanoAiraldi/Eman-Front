@@ -57,7 +57,7 @@ export default function ProductDetail() {
         console.log("sizes", sizes)
     const activeColor = selectedColor ?? colors[0] ?? null;
 
-console.log("activeColor", activeColor)
+    console.log("activeColor", activeColor)
     // Devuelve el stock para la variante seleccionada (color + talle)
     // Estructura esperada: product.variants = [{ colorName, size, stock }]
     const getStock = (size) => {
@@ -69,6 +69,11 @@ console.log("activeColor", activeColor)
     };
 
     const selectedStock = selectedSize ? getStock(selectedSize) : null;
+
+    const colorSinStock = sizes.length > 0 && sizes.every((size) => getStock(size) === 0);
+    
+    const colorTieneStock = (color) =>
+        product.variants.some((v) => v.color.id === color.id && v.stock > 0);
     
     const stockLabel = () => {
         if (!selectedSize) return { text: "Seleccioná un talle", cls: styles.stockNeutral };
@@ -208,23 +213,32 @@ return (
         {colors?.length > 0 && (
             <div className={styles.section}>
                 <p className={styles.sectionLabel}>
-                Color —{" "}
-                <span className={styles.sectionValue}>{activeColor?.name}</span>
+                Color — <span className={styles.sectionValue}>{activeColor?.name}</span>
                 </p>
                 <div className={styles.colors}>
-                {colors.map((color) => (
-                    <button
-                    key={color.id}
-                    className={`${styles.colorBtn} ${
-                        activeColor?.id === color.id ? styles.colorActive : ""
-                    }`}
-                    style={{ backgroundColor: color.hex }}
-                    onClick={() => handleColorSelect(color)}
-                    aria-label={color.name}
-                    title={color.name}
-                    />
-                ))}
+                {colors.map((color) => {
+                        const sinStock = !colorTieneStock(color);
+                        return (
+                            <button
+                                key={color.id}
+                                className={`${styles.colorBtn} ${
+                                    activeColor?.id === color.id ? styles.colorActive : ""
+                                }`}
+                                style={{ backgroundColor: color.hex }}
+                                onClick={() => handleColorSelect(color)}
+                                aria-label={`${color.name}${sinStock ? " sin stock" : ""}`}
+                                title={sinStock ? `${color.name} (sin stock)` : color.name}
+                            />
+                        );
+                    })}
                 </div>
+
+                {colorSinStock && (
+                    <div className={`${styles.stock} ${styles.stockOut}`}>
+                        <span className={styles.stockDot} />
+                        <span>Sin stock en este color</span>
+                    </div>
+                )}
             </div>
         )}
 
@@ -251,10 +265,12 @@ return (
                     );
                 })}
                 </div>
+                {!colorSinStock && (
                 <div className={`${styles.stock} ${stockCls}`}>
-                <span className={styles.stockDot} />
-                <span>{stockText}</span>
+                    <span className={styles.stockDot} />
+                    <span>{stockText}</span>
                 </div>
+                )}
             </div>
         )}
 
@@ -289,9 +305,13 @@ return (
             onClick={handleAddToCart}
             disabled={!selectedSize || stockDisponible === 0}
             >
-            {added ? "✓ Agregado al carrito" : "Agregar al carrito"}
+            {added 
+                ? "✓ Agregado al carrito" 
+                : colorSinStock
+                    ? "Sin stock"
+                    : "Agregar al carrito"}
             </button>
-            {!selectedSize && (
+            {!selectedSize && !colorSinStock &&(
                 <p className={styles.helperText}>Elegí un talle para continuar</p>
             )}
     
