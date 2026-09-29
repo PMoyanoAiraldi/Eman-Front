@@ -70,6 +70,15 @@ export default function ProductDetail() {
 
     const selectedStock = selectedSize ? getStock(selectedSize) : null;
 
+    const enCarrito = items.find(
+        i => i.id === product.id && 
+        i.size === selectedSize?.name && 
+        i.color?.id === activeColor?.id
+    )?.quantity ?? 0
+
+    const stockDisponible = (selectedStock ?? 0) - enCarrito
+    const todoEnCarrito = !!selectedSize && selectedStock > 0 && stockDisponible <= 0;
+
     const colorSinStock = sizes.length > 0 && sizes.every((size) => getStock(size) === 0);
     
     const colorTieneStock = (color) =>
@@ -77,23 +86,19 @@ export default function ProductDetail() {
     
     const stockLabel = () => {
         if (!selectedSize) return { text: "Seleccioná un talle", cls: styles.stockNeutral };
-        if (stockDisponible === 0)  return { text: "Sin stock", cls: styles.stockOut  };
-        if (stockDisponible <= 3)   return { text: `Últimas ${selectedStock} unidades`, cls: styles.stockLow  };
+        if (selectedStock === 0)  return { text: "Sin stock", cls: styles.stockOut  };
+        if (stockDisponible <= 0) return { text: "Ya tenés todas las unidades disponibles en tu carrito", cls: styles.stockLow };
+        if (stockDisponible <= 3)   return { text: `Últimas ${stockDisponible} unidades`, cls: styles.stockLow  };
         return { text: `${stockDisponible} disponibles`, cls: styles.stockHigh };
     };
     
     const handleColorSelect = (color) => {
         setSelectedColor(color);
         setSelectedSize(null); // resetea talle al cambiar color
+        setQuantity(1);
     };
 
-    const enCarrito = items.find(
-    i => i.id === product.id && 
-    i.size === selectedSize?.name && 
-    i.color?.id === activeColor?.id
-    )?.quantity ?? 0
-
-const stockDisponible = (selectedStock ?? 0) - enCarrito
+    
 
     const handleAddToCart = async () => {
     if (!selectedSize) return;
@@ -112,9 +117,9 @@ const stockDisponible = (selectedStock ?? 0) - enCarrito
     } catch (error) {
         console.error("No se pudo revalidar el stock, se usa el valor en pantalla", error);
     }
-
-    if (stockReal <= 0) {
-        showToast("Este talle ya no tiene stock disponible", "error");
+    
+    if (quantity > stockReal) {
+        showToast("No hay stock suficiente para esa cantidad", "error");
         return;
     }
 
@@ -256,7 +261,12 @@ return (
                         className={`${styles.sizeBtn} ${
                         selectedSize?.id === size.id ? styles.sizeBtnActive : ""
                         } ${isOut ? styles.sizeBtnOut : ""}`}
-                        onClick={() => !isOut && setSelectedSize(size)}
+                            onClick={() =>{
+                            if (!isOut) {
+                                setSelectedSize(size);
+                                setQuantity(1);
+                            }
+                        }}
                         disabled={isOut}
                         aria-label={`Talle ${size.name}${isOut ? " sin stock" : ""}`}
                     >
@@ -303,12 +313,14 @@ return (
         <button
             className={`${styles.addBtn} ${added ? styles.addBtnAdded : ""}`}
             onClick={handleAddToCart}
-            disabled={!selectedSize || stockDisponible === 0}
+            disabled={!selectedSize || stockDisponible <= 0}
             >
             {added 
                 ? "✓ Agregado al carrito" 
                 : colorSinStock
                     ? "Sin stock"
+                    : todoEnCarrito
+                    ? "Ya está en tu carrito"
                     : "Agregar al carrito"}
             </button>
             {!selectedSize && !colorSinStock &&(
