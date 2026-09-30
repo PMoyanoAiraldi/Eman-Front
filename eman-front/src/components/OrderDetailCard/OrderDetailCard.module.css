@@ -2,10 +2,10 @@
     background: #fff;
     border: 1px solid #e5e0d8;
     border-radius: 10px;
-    padding: 20px;
+    padding: 20px 24px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 0;
 }
 
 /* Detalle de productos */
@@ -13,7 +13,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     text-align: left;
     
 }
@@ -22,13 +22,13 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding-bottom: 12px;
+    padding-bottom: 14px;
     border-bottom: 1px solid #EDEDED;
 }
 
 .summaryImg {
-    width: 68px;
-    height: 68px;
+    width: 56px;
+    height: 56px;
     object-fit: cover;
     border-radius: 6px;
     flex-shrink: 0;
@@ -43,7 +43,7 @@
     font-family: var(--font-sans);
     font-size: 0.95rem;
     color: #2B2B2B;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .summaryMeta {
@@ -60,12 +60,29 @@
 }
 
 /* Bloques de info (envío, pago) */
-.infoBlock {
+.infoBlock,
+.shippingCard {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    column-gap: 16px;
+    align-items: start;
     width: 100%;
     text-align: left;
-    padding: 12px 0;
-    border-bottom: 1px solid #EDEDED;
+    padding: 0;
+    border-bottom: none;
 }
+
+.infoBlock > .infoLabel,
+.shippingCard > .infoLabel {
+    grid-column: 1;
+    margin: 2px 0 0;
+}
+
+.infoBlock > :not(.infoLabel),
+.shippingCard > :not(.infoLabel) {
+    grid-column: 2;
+}
+
 
 .infoLabel {
     font-family: var(--font-sans);
@@ -73,7 +90,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: #9B9B9B;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .infoValue {
@@ -104,19 +121,13 @@
     font-weight: 500;
 }
 
-.shippingCard {
-    width: 100%;
-    text-align: left;
-    padding: 12px 0;
-    border-bottom: 1px solid #EDEDED;
-}
 
 .shippingNote {
     font-family: var(--font-sans);
     font-size: 0.85rem;
     color: #6B6B6B;
     line-height: 1.5;
-    margin: 6px 0 8px;
+    margin: 6px 0 10px;
 }
 
 .whatsappBtn {
@@ -133,6 +144,7 @@
     font-size: 0.85rem;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease;
+    justify-self: start; 
 }
 
 .whatsappBtn:hover {
@@ -165,7 +177,7 @@
     justify-content: space-between;
     align-items: center;
     margin-top: 8px;
-    padding-top: 8px;
+    padding-top: 10px;
     border-top: 1px solid #E0DBCC;
 }
 
@@ -184,8 +196,10 @@
     font-weight: 600;
 }
 
-.divider {
-    border: none;
-    border-top: 1px solid #EDEDED;
-    margin: 8px 0;
+.infoGrid {
+    display: grid;
+    flex-direction: column;
+    gap: 20px;
+    padding: 18px 0 16px;
+    border-bottom: 1px solid #EDEDED;
 }

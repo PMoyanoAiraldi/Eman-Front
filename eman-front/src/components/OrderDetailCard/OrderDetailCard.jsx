@@ -67,6 +67,7 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                 ))}
             </div>
 
+            <div className={styles.infoGrid}>
             {/* Envío */}
             {(order.shippingType === 'coordinado' || order.shippingType === 'retiro_en_local') ? (
                 <div className={styles.shippingCard}>
@@ -130,15 +131,20 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <p className={styles.infoValue}>
                         {PAYMENT_METHOD_LABELS[order.payment.method] || order.payment.method}
                         {order.payment.cardBrand && ` · ${formatCardBrand(order.payment.cardBrand)}`}
+                        </p>
+                        
                         {order.payment.installments > 1 && (
-                            <> · {order.payment.installments} cuotas de ${formatCurrency(order.payment.installmentsAmount)}</>
+                            <p className={styles.infoValue}>
+                            {order.payment.installments} cuotas de ${formatCurrency(order.payment.installmentsAmount)}
+                        </p>
                         )}
-                    </p>
-                    {order.payment.installments > 1 && order.total !== order.catalogTotal && (
+                    
+                    {/* {order.payment.installments > 1 && order.total !== order.catalogTotal && (
                         <p className={styles.infoNote}>Incluye interés por financiación</p>
-                    )}
+                    )} */}
                 </div>
             )}
+            </div>
 
             {/* Totales */}
             <div className={styles.totals}>
@@ -146,7 +152,6 @@ const OrderDetailCard = ({ order, orderId, showWhatsApp = false }) => {
                     <span>Costo de envío</span>
                     <span>{Number(order.shippingCost) === 0 ? 'Gratis' : `$${formatCurrency(order.shippingCost)}`}</span>
                 </div>
-                <hr className={styles.divider} />
                 <div className={`${styles.totalRow} ${styles.totalFinal}`}>
                     <span>Total</span>
                     <span>${formatCurrency(order.total)}</span>

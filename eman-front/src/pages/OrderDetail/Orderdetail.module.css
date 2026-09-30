@@ -27,12 +27,10 @@
 }
 
 .detailCard {
-    background: #f5f3ef;
-    border: 1px solid #d9d4c7;
-    border-radius: 4px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem 1.75rem;
-    margin-bottom: 1.5rem;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
 }
 
 .orderMeta {
