@@ -4,15 +4,9 @@ import { useSelector } from 'react-redux'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import axiosInstance from '../../api/axiosInstance'
 import { formatCurrency } from '../../utils/formatCurrency'
+import { stateLabels, paymentMethodLabels } from '../../constants/orderLabels'
 import styles from './MyPurchases.module.css'
 
-const stateLabels = {
-    pendiente: 'Pendiente',
-    confirmado: 'Confirmado',
-    enviado: 'Enviado',
-    entregado: 'Entregado',
-    cancelado: 'Cancelado',
-}
 
 const MyPurchases = () => {
     const [orders, setOrders] = useState([])
@@ -101,7 +95,7 @@ const MyPurchases = () => {
                                     <div className={styles.footerLeft}>
                                         {lastPayment && (
                                             <span className={styles.payment}>
-                                                {lastPayment.method}
+                                                {paymentMethodLabels[lastPayment.method] ?? lastPayment.method}
                                                 {lastPayment.installments > 1 && ` · ${lastPayment.installments} cuotas`}
                                             </span>
                                         )}
