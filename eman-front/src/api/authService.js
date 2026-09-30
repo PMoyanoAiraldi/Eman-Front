@@ -42,4 +42,11 @@ export const authService = {
         });
         return data;
     },
+
+    claimOrder: (orderId, accessToken) => 
+        axiosInstance.post(
+            '/auth/claim-order', 
+            { orderId },
+            { headers: { Authorization: `Bearer ${accessToken}` } },
+        ),
 };

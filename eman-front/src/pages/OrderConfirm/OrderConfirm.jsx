@@ -65,7 +65,7 @@ const OrderConfirm = () => {
                         order.guestEmailHasAccount ? (
                         <div className={styles.loginPrompt}>
                             <p>Ya tenés una cuenta con {order.guestEmail} — iniciá sesión para ver esta compra en tu panel.</p>
-                            <Link to={`/login?email=${encodeURIComponent(order.guestEmail)}`} className={styles.loginLink}>
+                            <Link to={`/login?email=${encodeURIComponent(order.guestEmail)}&orderId=${orderId}`} className={styles.loginLink}>
                                 Iniciar sesión
                             </Link>
                         </div>

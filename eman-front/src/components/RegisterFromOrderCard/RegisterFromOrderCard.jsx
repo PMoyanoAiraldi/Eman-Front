@@ -68,7 +68,7 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                 <p className={styles.text}>
                     Ya tenés una cuenta con {order.guestEmail}. Iniciá sesión para ver esta compra en tu panel.
                 </p>
-                <a href={`/login?email=${encodeURIComponent(order.guestEmail)}`} className={styles.link}>
+                <a href={`/login?email=${encodeURIComponent(order.guestEmail)}&orderId=${orderId}`} className={styles.link}>
                     Iniciar sesión
                 </a>
             </div>
