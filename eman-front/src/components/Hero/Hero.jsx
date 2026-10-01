@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axiosInstance from '../../api/axiosInstance'
 import styles from './Hero.module.css'
 
 const Hero = () => {
@@ -10,7 +10,7 @@ const Hero = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        axios.get('http://localhost:3010/media_content/by-type', { 
+        axiosInstance.get('/media_content/by-type', { 
             params: { type: 'hero' } 
         })
             .then(res => {

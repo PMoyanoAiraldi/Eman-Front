@@ -2,8 +2,10 @@ import axios from 'axios';
 import  store  from '../redux/store/store';
 import { setToken, logoutUser } from '../redux/slices/authReducer';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010'
+
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:3010',
+    baseURL: API_URL,
     withCredentials: true, // para que la cookie refresh_token viaje sola
 });
 
@@ -54,7 +56,7 @@ axiosInstance.interceptors.response.use(
             try {
                 // La cookie viaja sola gracias a withCredentials
                 const { data } = await axios.post(
-                    'http://localhost:3010/auth/refresh',
+                    `${API_URL}/auth/refresh`,
                     {},
                     { withCredentials: true }
                 );
