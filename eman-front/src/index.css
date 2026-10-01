@@ -21,4 +21,46 @@ body {
   --color-black: #1A1A1A;                   /* negro del texto EMAN */
   --color-white: #FFFFFF;                   /* fondo */
   --color-bg: #F9F6F1;                      /* blanco cálido para fondos de sección */
+
+
+/* Responsive */
+  --space-page: 16px;
+  --space-gap: 12px;
+  --tap-min: 44px;
+  --radius: 8px;
+  --container-max: 1200px;
+}
+
+@media (min-width: 768px) {
+  :root { --space-page: 24px; --space-gap: 20px; }
+}
+
+@media (min-width: 1024px) {
+  :root { --space-page: 32px; --space-gap: 24px; }
+}
+
+body {
+  background: var(--color-bg);
+  font-family: var(--font-sans);
+  color: var(--color-black);
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: 16px; /* evita el zoom automático en iOS */
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-inline: var(--space-page);
 }
