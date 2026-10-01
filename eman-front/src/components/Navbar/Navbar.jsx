@@ -4,7 +4,7 @@ import { openCart, selectCartCount } from '../../redux/slices/cartReducer'
 import { logoutUser } from '../../redux/slices/authReducer'
 import { authService } from '../../api/authService'
 import { Link, useNavigate} from 'react-router-dom'
-import { ShoppingBag, User } from 'lucide-react'
+import { ShoppingBag, User,  Menu, X  } from 'lucide-react'
 import styles from './Navbar.module.css'
 import emanLogo from '../../assets/eman-logo.png'
 
@@ -17,6 +17,7 @@ const Navbar = () => {
 
     const [scrolled, setScrolled] = useState(false)
     const [dropdownOpen, setDropdownOpen] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false)
     const dropdownRef = useRef(null)
     
     useEffect(() => {
@@ -38,12 +39,32 @@ const Navbar = () => {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
+    // Escape cierra menú y dropdown
+    useEffect(() => {
+        const handleKey = (e) => {
+            if (e.key === 'Escape') {
+                setMenuOpen(false)
+                setDropdownOpen(false)
+            }
+        }
+        document.addEventListener('keydown', handleKey)
+        return () => document.removeEventListener('keydown', handleKey)
+    }, [])
+
+    const closeMenu = () => setMenuOpen(false)
+
     const handleUserClick = () => {
+        closeMenu()
         if (!isAuthenticated) {
             navigate('/login')
         } else {
             setDropdownOpen(prev => !prev)
         }
+    }
+
+    const handleCartClick = () => {
+        closeMenu()
+        dispatch(openCart())
     }
 
     const handleLogout = async () => {
@@ -58,16 +79,32 @@ const Navbar = () => {
         }
     }
 
+    const goTo = (path) => {
+        navigate(path)
+        setDropdownOpen(false)
+    }
+
     // Muestra solo el primer nombre
     const firstName = user?.name?.split(' ')[0] || ''
 
     return (
         <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ''}`}>
-            <Link to="/" className={styles.logo}>
+            <button
+                    className={styles.menuBtn}
+                    aria-label={menuOpen ? 'Cerrar menú' : 'Abrir menú'}
+                    aria-expanded={menuOpen}
+                    aria-controls="nav-links"
+                    onClick={() => setMenuOpen(prev => !prev)}
+                >
+                    {menuOpen ? <X size={22} strokeWidth={1.5} /> : <Menu size={22} strokeWidth={1.5} />}
+            </button>
+
+
+            <Link to="/" className={styles.logo} onClick={closeMenu}>
                 <img src={emanLogo} alt="Eman" className={styles.logoImg} />
             </Link>
 
-            <ul className={styles.links}>
+            <ul id="nav-links" className={`${styles.links} ${menuOpen ? styles.linksOpen : ''}`} onClick={closeMenu}>
                 <li><Link to="/mujer">Mujer</Link></li>
                 <li><Link to="/hombre">Hombre</Link></li>
                 <li><Link to="/deportivo">Deportivo</Link></li>
@@ -82,11 +119,12 @@ const Navbar = () => {
                         <span className={styles.userName}>{firstName}</span>
                     )}
                 </button>
+
             {dropdownOpen && (
                 <div className={styles.dropdown}>
                     <button
                         className={styles.dropdownItem}
-                        onClick={() => { navigate('/perfil'); setDropdownOpen(false) }}
+                        onClick={() => goTo ('/perfil')}
                     >
                         Mi perfil
                     </button>
@@ -94,7 +132,7 @@ const Navbar = () => {
                     {user?.rol === 'admin' && (
                         <button
                             className={styles.dropdownItem}
-                            onClick={() => { navigate('/admin'); setDropdownOpen(false) }}
+                            onClick={() => goTo ('/admin')}
                         >
                             Panel admin
                         </button>
@@ -102,7 +140,7 @@ const Navbar = () => {
                     {user?.rol === 'developer' && (
                         <button
                             className={styles.dropdownItem}
-                            onClick={() => { navigate('/admin'); setDropdownOpen(false) }}
+                            onClick={() => goTo ('/admin')}
                         >
                             Panel dev
                         </button>
@@ -111,7 +149,7 @@ const Navbar = () => {
                     {(user?.rol === 'cliente' || !user?.rol) && (
                         <button
                             className={styles.dropdownItem}
-                            onClick={() => { navigate('/mis-compras'); setDropdownOpen(false) }}
+                            onClick={() => goTo ('/mis-compras')}
                         >
                             Mis compras
                         </button>
@@ -127,7 +165,7 @@ const Navbar = () => {
                 )}
                 </div>  
 
-                <button className={styles.iconBtn} aria-label="Carrito" onClick={() => dispatch(openCart())}>
+                <button className={styles.iconBtn} aria-label="Carrito" onClick={handleCartClick}>
                     <ShoppingBag size={18} strokeWidth={1.5} />
                     {cartCount > 0 && (
                         <span className={styles.cartBadge}>{cartCount}</span>
