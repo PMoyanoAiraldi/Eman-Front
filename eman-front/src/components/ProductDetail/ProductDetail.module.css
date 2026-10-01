@@ -1,15 +1,16 @@
-.wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-    align-items: start;
-}
-
-
+/* ===== Base: mobile ===== */
 .page {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 1.25rem 1rem;
+    padding: 1.25rem var(--space-page) 3rem;
+    font-family: var(--font-sans); /* todo el componente en Montserrat, salvo título y precio */
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
 }
 
 /* ── Estado ── */
@@ -23,21 +24,25 @@
     color: #c0392b;
 }
 
-/* ── Galería ── */
+/* ── Galería: imagen arriba, miniaturas abajo en fila ── */
 .gallery {
     display: flex;
+    flex-direction: column-reverse; /* el JSX tiene las miniaturas primero */
     gap: 12px;
+    min-width: 0;
 }
 
 .thumbs {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
+    overflow-x: auto; /* si hay muchas fotos, se desliza en vez de romper el layout */
+    padding-bottom: 2px;
 }
 
 .thumb {
-    width: 68px;
-    height: 82px;
+    width: 64px;
+    height: 78px;
     border-radius: 8px;
     overflow: hidden;
     border: 2px solid transparent;
@@ -56,13 +61,10 @@
 .thumbActive {
     border-color: #2c2c2a;
 }
-.thumb:hover:not(.thumbActive) {
-    border-color: #bbb;
-}
 
 .mainImageWrap {
-    flex: 1;
     position: relative;
+    width: 100%;
     border-radius: 12px;
     overflow: hidden;
     background: #f4f4f2;
@@ -73,7 +75,6 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: opacity 0.2s;
 }
 .badge {
     position: absolute;
@@ -94,6 +95,7 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    min-width: 0;
 }
 
 .brand {
@@ -104,12 +106,15 @@
     color: #888;
     margin: 0;
 }
+
 .name {
-    font-size: 26px;
-    font-weight: 400;
-    line-height: 1.25;
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 4vw, 2rem); 
+    font-weight: 500;
+    line-height: 1.15;
     margin: 4px 0 0;
     color: #1a1a18;
+    overflow-wrap: break-word;
 }
 
 .priceRow {
@@ -119,8 +124,10 @@
     flex-wrap: wrap;
 }
 .price {
-    font-size: 24px;
-    font-weight: 300;
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-variant-numeric: lining-nums;
     color: #1a1a18;
 }
 .priceOld {
@@ -147,7 +154,7 @@
 .section {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 .sectionLabel {
     font-size: 11px;
@@ -168,12 +175,14 @@
 /* ── Colores ── */
 .colors {
     display: flex;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
+    padding: 4px 0; /* lugar para el outline del seleccionado */
 }
 .colorBtn {
-    width: 30px;
-    height: 30px;
+    position: relative;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: 2px solid #555;
     outline: 2px solid transparent;
@@ -182,11 +191,14 @@
     transition: outline-color 0.15s;
     padding: 0;
 }
+/* Área táctil de 44px sin agrandar el círculo visible */
+.colorBtn::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+}
 .colorActive {
     outline-color: #2c2c2a;
-}
-.colorBtn:hover:not(.colorActive) {
-    outline-color: #bbb;
 }
 
 /* ── Talles ── */
@@ -196,19 +208,16 @@
     flex-wrap: wrap;
 }
 .sizeBtn {
-    min-width: 46px;
-    height: 40px;
-    padding: 0 10px;
+    min-width: 48px;
+    height: 44px;
+    padding: 0 12px;
     border-radius: 8px;
     border: 0.5px solid #ccc;
     background: #fff;
-    font-size: 13px;
+    font-size: 14px;
     color: #1a1a18;
     cursor: pointer;
     transition: all 0.15s;
-}
-.sizeBtn:hover:not(.sizeBtnActive):not(.sizeBtnOut) {
-    background: #f4f4f2;
 }
 .sizeBtnActive {
     background: #2c2c2a;
@@ -226,7 +235,7 @@
 .stock {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     font-size: 13px;
 }
 .stockDot {
@@ -238,7 +247,7 @@
 .stockHigh .stockDot { background: #639922; }
 .stockHigh            { color: #3b6d11; }
 .stockLow  .stockDot  { background: #ba7517; }
-.stockLow             {  color: var(--color-gold) }
+.stockLow             { color: var(--color-gold); }
 .stockOut  .stockDot  { background: #e24b4a; }
 .stockOut             { color: #a32d2d; }
 .stockNeutral .stockDot { background: #bbb; }
@@ -258,8 +267,8 @@
     overflow: hidden;
 }
 .qty button {
-    width: 36px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     border: none;
     background: none;
     cursor: pointer;
@@ -270,8 +279,9 @@
     justify-content: center;
     transition: background 0.1s;
 }
-.qty button:hover {
-    background: #f4f4f2;
+.qty button:disabled {
+    color: #ccc;
+    cursor: not-allowed;
 }
 .qty span {
     min-width: 34px;
@@ -283,7 +293,7 @@
 /* ── Botón agregar ── */
 .addBtn {
     width: 100%;
-    height: 50px;
+    height: 52px;
     background: #2c2c2a;
     color: #f1efe8;
     border: none;
@@ -294,16 +304,12 @@
     letter-spacing: 0.02em;
     transition: background 0.15s, transform 0.1s;
 }
-.addBtn:hover:not(:disabled) {
-    background: #444441;
-}
 .addBtn:active:not(:disabled) {
     transform: scale(0.98);
 }
 .addBtnAdded {
     background: #3b6d11;
 }
-
 .addBtn:disabled {
     background: #fff;
     color: #666;
@@ -311,7 +317,7 @@
     cursor: not-allowed;
 }
 
-/* ── Descripción ── */
+/* ── Descripción y ayudas ── */
 .description {
     font-size: 14px;
     line-height: 1.75;
@@ -326,21 +332,61 @@
     margin: -8px 0 0;
 }
 
+/* Hover solo con mouse */
+@media (hover: hover) {
+    .thumb:hover:not(.thumbActive) {
+        border-color: #bbb;
+    }
+    .colorBtn:hover:not(.colorActive) {
+        outline-color: #bbb;
+    }
+    .sizeBtn:hover:not(.sizeBtnActive):not(.sizeBtnOut) {
+        background: #f4f4f2;
+    }
+    .qty button:hover:not(:disabled) {
+        background: #f4f4f2;
+    }
+    .addBtn:hover:not(:disabled) {
+        background: #444441;
+    }
+}
 
-/* ── Responsive ── */
-@media (max-width: 680px) {
+/* ===== Tablet: dos columnas, miniaturas siguen debajo de la imagen ===== */
+@media (min-width: 768px) {
+    .page {
+        padding-top: 1.5rem;
+        padding-bottom: 4rem;
+    }
+
     .wrapper {
-        grid-template-columns: 1fr;
-        gap: 24px;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
     }
+}
+
+/* ===== Desktop: miniaturas en columna a la izquierda ===== */
+@media (min-width: 1024px) {
+    .wrapper {
+        gap: 3rem;
+    }
+
     .gallery {
-        flex-direction: column-reverse;
-    }
-    .thumbs {
         flex-direction: row;
     }
+
+    .thumbs {
+        flex-direction: column;
+        overflow: visible;
+    }
+
     .thumb {
-        width: 56px;
-        height: 70px;
+        width: 68px;
+        height: 82px;
+    }
+
+    .mainImageWrap {
+        flex: 1;
+        width: auto;
+        min-width: 0;
     }
 }

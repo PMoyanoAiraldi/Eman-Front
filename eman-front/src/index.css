@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap');
-
-
 
 * {
   margin: 0;
@@ -64,3 +61,8 @@ input, select, textarea, button {
   margin: 0 auto;
   padding-inline: var(--space-page);
 }
+
+  h1, h2, h3, h4 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+  }
