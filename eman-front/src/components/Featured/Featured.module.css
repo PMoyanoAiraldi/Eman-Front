@@ -1,6 +1,5 @@
 .section {
-    padding: 5rem 8%;
-    /* background-color: var(--color-white); */
+    padding: 3rem var(--space-page);
 }
 
 .sectionCompact {
@@ -24,7 +23,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
-    margin-bottom: 3.5rem;
+    margin-bottom: 2rem;
     text-align: center;
 }
 
@@ -46,7 +45,24 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-gap);
 }
 
+/* ===== Tablet ===== */
+@media (min-width: 768px) {
+    .section {
+        padding: 5rem 8%;
+    }
+
+    .header {
+        margin-bottom: 3.5rem;
+    }
+}
+
+/* ===== Desktop ===== */
+@media (min-width: 1024px) {
+    .grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}

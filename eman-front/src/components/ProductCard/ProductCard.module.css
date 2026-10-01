@@ -1,17 +1,15 @@
-/* Card */
 .card {
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    min-width: 0; /* evita que un nombre largo ensanche la columna del grid */
 }
 
 .imageWrapper {
     position: relative;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    /* background: var(--color-bg); */
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
 }
 
 .imageWrapper img {
@@ -35,15 +33,15 @@
 
 .soldOut {
     position: absolute;
-    bottom: 12px;
-    left: 12px;
+    bottom: 8px;
+    left: 8px;
     font-family: var(--font-sans);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     background: var(--color-white);
     color: var(--color-black);
-    padding: 4px 10px;
+    padding: 4px 8px;
 }
 
 .info {
@@ -54,7 +52,7 @@
 
 .category {
     font-family: var(--font-sans);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: #999;
@@ -65,11 +63,12 @@
     font-size: 1rem;
     font-weight: 400;
     color: var(--color-black);
+    overflow-wrap: break-word; /*Evita que un texto largo slaga del contenedor*/
 }
 
 .price {
     font-family: var(--font-sans);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 400;
     color: var(--color-black);
     margin-top: 0.2rem;
@@ -84,7 +83,7 @@
 
 .sizeTag {
     font-family: var(--font-sans);
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
     color: #999;
     border: 0.5px solid #ddd;
@@ -110,4 +109,28 @@
 
 .colorDot:hover {
     transform: scale(1.2);
+}
+
+/* Efectos hover solo con mouse (en touch quedan "pegados" después del toque) */
+@media (hover: hover) {
+    .card:hover .imageWrapper img {
+        transform: scale(1.03);
+    }
+
+    .colorDot:hover {
+        transform: scale(1.2);
+    }
+}
+
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .imageWrapper {
+        margin-bottom: 1rem;
+    }
+
+    .soldOut {
+        bottom: 12px;
+        left: 12px;
+        padding: 4px 10px;
+    }
 }

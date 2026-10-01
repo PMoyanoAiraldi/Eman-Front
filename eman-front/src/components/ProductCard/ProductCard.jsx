@@ -23,7 +23,7 @@ const ProductCard = ({ product}) => {
         >
         <div className={styles.imageWrapper}>
             {image
-            ? <img src={image} alt={product.name} />
+            ? <img src={image} alt={product.name} loading="lazy"/>
             : <div className={styles.imagePlaceholder} />
             }
             {!hasStock && <span className={styles.soldOut}>Sin stock</span>}
