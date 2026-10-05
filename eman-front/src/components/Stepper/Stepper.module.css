@@ -1,19 +1,20 @@
-/* ── Stepper ── */
+.wrapper {
+    margin-bottom: 1.5rem;
+}
+
 .stepper {
     display: flex;
     align-items: center;
-    margin-bottom: 2.5rem;
 }
 
 .stepItem {
     display: flex;
     align-items: center;
-    gap: 8px;
     flex: 1;
 }
 
 .stepItem:last-child {
-    flex: 0;
+    flex: 0 0 auto;
 }
 
 .stepCircle {
@@ -42,25 +43,32 @@
     color: #fff;
 }
 
-.stepLabel {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: #aaa;
-    white-space: nowrap;
-}
-
-.stepLabelActive {
-    color: var(--color-gold);
-}
-
 .stepLine {
     flex: 1;
-    height: 0.5px;
+    min-width: 8px;
+    height: 1px;
     background: #e0e0dc;
-    margin: 0 8px;
+    margin: 0 6px;
 }
 
 .stepLineDone {
     background: var(--color-gold);
+}
+
+.currentLabel {
+    margin-top: 0.75rem;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+}
+
+@media (min-width: 768px) {
+    .wrapper {
+        margin-bottom: 2.5rem;
+    }
+
+    .stepLine {
+        margin: 0 10px;
+    }
 }

@@ -40,6 +40,17 @@ export default function CartDrawer() {
         revalidarStock()
     }, [isOpen])
 
+    useEffect(() => {
+        if (!isOpen) return
+        const onKey = (e) => { if (e.key === 'Escape') dispatch(closeCart()) }
+        document.body.style.overflow = 'hidden'
+        document.addEventListener('keydown', onKey)
+        return () => {
+            document.body.style.overflow = ''
+            document.removeEventListener('keydown', onKey)
+        }
+    }, [isOpen, dispatch])
+
     const handleCheckout = () => {
         dispatch(closeCart())
         navigate('/checkout')
@@ -88,9 +99,13 @@ export default function CartDrawer() {
                                 <p className={styles.itemMeta}>{item.color?.name} · Talle {item.size}</p>
                                 <div className={styles.itemBottom}>
                                     <div className={styles.qty}>
-                                        <button onClick={() => dispatch(decreaseQuantity({ id: item.id, size: item.size, color: item.color }))}>−</button>
+                                        <button 
+                                            aria-label="Restar una unidad"
+                                            onClick={() => dispatch(decreaseQuantity({ id: item.id, size: item.size, color: item.color }))}>−</button>
                                         <span>{item.quantity}</span>
-                                        <button className={styles.qtyBtn} onClick={() => dispatch(increaseQuantity({ id: item.id, size: item.size, color: item.color }))}
+                                        <button 
+                                            aria-label="Sumar una unidad"
+                                            className={styles.qtyBtn} onClick={() => dispatch(increaseQuantity({ id: item.id, size: item.size, color: item.color }))}
                                         disabled={item.quantity >= item.stock}
                                         >+</button>
                                     </div>

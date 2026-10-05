@@ -453,7 +453,7 @@ return (
                 { label: 'Checkout' },
             ]} />
 
-            <Stepper currentStep={step} />
+            <Stepper currentStep={step} /> 
             
             <div className={styles.content}>
                 {/* ── Paso 1: Datos personales ── */}
