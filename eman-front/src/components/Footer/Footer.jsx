@@ -1,6 +1,24 @@
 import { Link } from 'react-router-dom'
 import styles from './Footer.module.css'
-import { Instagram } from 'lucide-react'
+
+
+const InstagramIcon = ({ size = 18 }) => (
+    <svg
+        width={size}
+        height={size}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+    >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+)
 
 const Footer = () => {
     const currentYear = new Date().getFullYear();
@@ -9,8 +27,6 @@ const Footer = () => {
         <footer className={styles.footer}>
         <div className={styles.main}>
 
-        <div /> {/* ← spacer vacío para balancear */}
-
             <nav className={styles.links}>
                 <Link to="/nosotros">Nosotros</Link>
                 <Link to="/contact">Contacto</Link>
@@ -18,12 +34,14 @@ const Footer = () => {
                 <Link to="/returns">Devoluciones</Link>
             </nav>
 
-            <a   href="https://instagram.com/eman_acces"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.instagram}
-                    >
-            <Instagram size={16} strokeWidth={1.5} />
+            <a  
+                href="https://instagram.com/eman_acces"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.instagram}
+                aria-label="Instagram de Eman"
+            >
+            <InstagramIcon size={18} strokeWidth={1.5} />
             </a>
             </div>
 
