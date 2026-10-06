@@ -1,21 +1,41 @@
 .strip {
     background-color: var(--color-black);
-    padding: 14px 40px;
+    padding: 12px var(--space-page);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 32px;
+    gap: 6px;
+    text-align: center;
 }
 
 .strip span {
     font-family: var(--font-sans);
     font-size: 0.7rem;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
+    line-height: 1.5;
     color: #d8cfc4;
 }
 
-.dot {
-    color: var(--color-gold) !important;
-    font-size: 0.5rem !important;
+.strip .dot {
+    display: none;
+    color: var(--color-gold);
+    font-size: 0.5rem;
+}
+
+@media (min-width: 1024px) {
+    .strip {
+        flex-direction: row;
+        justify-content: center;
+        gap: 32px;
+        padding: 14px 40px;
+    }
+
+    .strip span {
+        letter-spacing: 0.25em;
+    }
+
+    .strip .dot {
+        display: inline;
+    }
 }
