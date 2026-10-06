@@ -1,10 +1,11 @@
 .btn {
     position: fixed;
-    bottom: 20px;
-    right: 50px;
-    z-index: 9999;
-    width: 60px;
-    height: 60px;
+    right: var(--space-page);
+    /* si hay banner de cookies, sube su alto; si no, respeta la barra de gestos del iPhone */
+    bottom: calc(16px + var(--banner-offset, env(safe-area-inset-bottom, 0px)));
+    z-index: 90; /* debajo del overlay (99) y del drawer (100) */
+    width: 56px;
+    height: 56px;
     background: #25D366;
     border-radius: 50%;
     display: flex;
@@ -12,10 +13,21 @@
     justify-content: center;
     box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4);
     text-decoration: none;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, bottom 0.2s;
 }
 
-.btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+@media (hover: hover) {
+    .btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+    }
+}
+
+@media (min-width: 768px) {
+    .btn {
+        right: 50px;
+        bottom: calc(20px + var(--banner-offset, 0px));
+        width: 60px;
+        height: 60px;
+    }
 }

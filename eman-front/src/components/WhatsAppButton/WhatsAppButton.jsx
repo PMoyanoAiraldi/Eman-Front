@@ -1,3 +1,4 @@
+import whatsappIcon from '../../assets/whatsapp.svg'
 import styles from './WhatsAppButton.module.css'
 
 const WhatsAppButton = () => {
@@ -13,11 +14,11 @@ const WhatsAppButton = () => {
         aria-label="Contactar por WhatsApp"
         >
         <img
-        src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
-        alt="WhatsApp"
-        width="32"
-        height="32"
-        />
+            src={whatsappIcon}
+            alt=""
+            width="32"
+            height="32"
+            />
         </a>
     )
     }
