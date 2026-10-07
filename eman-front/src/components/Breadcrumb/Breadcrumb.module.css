@@ -1,34 +1,60 @@
 .breadcrumb {
-    display: flex;
-    align-items: center;
     font-family: var(--font-sans);
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #bbb;
-    margin-bottom: 2rem;
+    color: #999;
+    margin-bottom: 1.25rem;
     padding-top: 0.5rem;
 }
 
-.separator {
-    margin: 0 0.6rem;
-    color: #ddd;
+.list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* Separador: lo dibuja el CSS entre un ítem y el siguiente */
+.item + .item::before {
+    content: '/';
+    margin: 0 0.5rem;
+    color: #ccc;
     font-size: 0.6rem;
 }
 
 .link {
-    color: #bbb;
-    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    color: #999;
+    text-decoration: none;
     transition: color 0.2s ease;
-    font-weight: 400;
-}
-
-.link:hover {
-    color: var(--color-gold);
 }
 
 .active {
     color: var(--color-gold);
-    font-weight: 400;
     letter-spacing: 0.15em;
+    overflow-wrap: anywhere;
+}
+
+@media (hover: hover) {
+    .link:hover {
+        color: var(--color-gold);
+    }
+}
+
+@media (min-width: 768px) {
+    .breadcrumb {
+        font-size: 0.65rem;
+        margin-bottom: 2rem;
+    }
 }
