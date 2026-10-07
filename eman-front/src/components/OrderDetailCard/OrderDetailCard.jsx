@@ -31,11 +31,13 @@ const buildWhatsAppLink = (order, orderId) => {
     const phone = import.meta.env.VITE_WHATSAPP_NUMBER
     const itemsList = order.items.map(i => `${i.productName} (${i.color}, talle ${i.size}) x${i.quantity}`).join('\n')
 
-    const message = `Hola! Quiero coordinar mi pedido #${orderId.slice(0, 8)}.
-        ${itemsList}
-
-        Total: $${Number(order.total).toLocaleString('es-AR')}
-        Tipo de entrega: ${order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro en local'}`
+    const message = [
+            `Hola! Quiero coordinar mi pedido #${orderId.slice(0, 8)}.`,
+            itemsList,
+            '',
+            `Total: $${Number(order.total).toLocaleString('es-AR')}`,
+            `Tipo de entrega: ${order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro en local'}`,
+        ].join('\n')
 
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 }

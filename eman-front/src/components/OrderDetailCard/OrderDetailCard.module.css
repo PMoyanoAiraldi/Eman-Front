@@ -1,11 +1,13 @@
+/* ===== Base: mobile ===== */
 .card {
     background: #fff;
     border: 1px solid #e5e0d8;
     border-radius: 10px;
-    padding: 20px 24px;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 0;
+    min-width: 0;
 }
 
 /* Detalle de productos */
@@ -15,7 +17,6 @@
     flex-direction: column;
     gap: 8px;
     text-align: left;
-    
 }
 
 .summaryItem {
@@ -37,6 +38,7 @@
 
 .summaryInfo {
     flex: 1;
+    min-width: 0; /* sin esto, un nombre largo empuja el precio fuera de la tarjeta */
 }
 
 .summaryName {
@@ -44,12 +46,13 @@
     font-size: 0.95rem;
     color: #2B2B2B;
     margin-bottom: 2px;
+    overflow-wrap: anywhere;
 }
 
 .summaryMeta {
     font-family: var(--font-sans);
     font-size: 0.85rem;
-    color: #9B9B9B;
+    color: #757575;
 }
 
 .summaryPrice {
@@ -59,37 +62,31 @@
     white-space: nowrap;
 }
 
-/* Bloques de info (envío, pago) */
+/* Bloques de info (envío, pago): en celular la etiqueta va arriba del valor */
+.infoGrid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    padding: 18px 0 16px;
+    border-bottom: 1px solid #EDEDED;
+}
+
 .infoBlock,
 .shippingCard {
-    display: grid;
-    grid-template-columns: 72px 1fr;
-    column-gap: 16px;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     width: 100%;
+    min-width: 0;
     text-align: left;
-    padding: 0;
-    border-bottom: none;
 }
-
-.infoBlock > .infoLabel,
-.shippingCard > .infoLabel {
-    grid-column: 1;
-    margin: 2px 0 0;
-}
-
-.infoBlock > :not(.infoLabel),
-.shippingCard > :not(.infoLabel) {
-    grid-column: 2;
-}
-
 
 .infoLabel {
     font-family: var(--font-sans);
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: #9B9B9B;
+    color: #757575;
     margin-bottom: 2px;
 }
 
@@ -98,17 +95,13 @@
     font-size: 0.95rem;
     color: #2B2B2B;
     line-height: 1.5;
-}
-
-.infoValue a,
-.infoValue:visited {
-    color: inherit; /* por si hay algún <a> anidado o estilo global de link filtrando */
+    overflow-wrap: anywhere; /* direcciones y nombres de sucursal largos */
 }
 
 .infoSub {
     font-family: var(--font-sans);
     font-size: 0.8rem;
-    color: #9B9B9B;
+    color: #757575;
     margin-top: 2px;
 }
 
@@ -117,10 +110,9 @@
     font-size: 0.8rem;
     color: #B8973E;
     margin-top: 4px;
-    font-style: normal; 
+    font-style: normal;
     font-weight: 500;
 }
-
 
 .shippingNote {
     font-family: var(--font-sans);
@@ -130,26 +122,23 @@
     margin: 6px 0 10px;
 }
 
+/* En celular ocupa todo el ancho de la tarjeta, con zona táctil de 44px */
 .whatsappBtn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    min-height: var(--tap-min);
     font-family: var(--font-sans);
     background-color: transparent;
     color: #1DA851;
     text-decoration: none;
-    padding: 8px 16px;
+    padding: 0 16px;
     border: 1px solid #1DA851;
     border-radius: 6px;
     font-size: 0.85rem;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease;
-    justify-self: start; 
-}
-
-.whatsappBtn:hover {
-    background-color: #1DA851;
-    color: #fff;
 }
 
 .whatsappIcon {
@@ -166,9 +155,10 @@
 .totalRow {
     display: flex;
     justify-content: space-between;
+    gap: 12px;
     font-family: var(--font-sans);
     font-size: 0.85rem;
-    color: #9B9B9B;
+    color: #757575;
     padding: 4px 0;
 }
 
@@ -186,7 +176,7 @@
     font-size: 0.75rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: #9B9B9B;
+    color: #757575;
 }
 
 .totalFinal span:last-child {
@@ -196,10 +186,43 @@
     font-weight: 600;
 }
 
-.infoGrid {
-    display: grid;
-    flex-direction: column;
-    gap: 20px;
-    padding: 18px 0 16px;
-    border-bottom: 1px solid #EDEDED;
+/* Hover solo con mouse */
+@media (hover: hover) {
+    .whatsappBtn:hover {
+        background-color: #1DA851;
+        color: #fff;
+    }
+}
+
+/* ===== Tablet y desktop: etiqueta a la izquierda, valor a la derecha ===== */
+@media (min-width: 768px) {
+    .card {
+        padding: 20px 24px;
+    }
+
+    .infoBlock,
+    .shippingCard {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr);
+        column-gap: 16px;
+        row-gap: 0;
+        align-items: start;
+    }
+
+    .infoBlock > .infoLabel,
+    .shippingCard > .infoLabel {
+        grid-column: 1;
+        margin: 2px 0 0;
+    }
+
+    .infoBlock > :not(.infoLabel),
+    .shippingCard > :not(.infoLabel) {
+        grid-column: 2;
+    }
+
+    .whatsappBtn {
+        justify-self: start;
+        padding: 8px 16px;
+        min-height: 0;
+    }
 }
