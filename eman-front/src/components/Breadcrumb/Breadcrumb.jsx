@@ -1,20 +1,21 @@
-import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import styles from './Breadcrumb.module.css'
 
 export default function Breadcrumb({ items }) {
-    const navigate = useNavigate()
+    const visibles = items.filter(item => item.label)
 
     return (
-        <nav className={styles.breadcrumb}>
-            {items.map((item, i) => (
-                <span key={i}>
-                    {i > 0 && <span className={styles.separator}> / </span>}
-                    {item.path
-                        ? <span className={styles.link} onClick={() => navigate(item.path)}>{item.label}</span>
-                        : <span className={styles.active}>{item.label}</span>
-                    }
-                </span>
-            ))}
+        <nav className={styles.breadcrumb} aria-label="Breadcrumb">
+            <ol className={styles.list}>
+                {visibles.map((item, i) => (
+                    <li key={i} className={styles.item}>
+                        {item.path
+                            ? <Link to={item.path} className={styles.link}>{item.label}</Link>
+                            : <span className={styles.active} aria-current="page">{item.label}</span>
+                        }
+                    </li>
+                ))}
+            </ol>
         </nav>
     )
 }
