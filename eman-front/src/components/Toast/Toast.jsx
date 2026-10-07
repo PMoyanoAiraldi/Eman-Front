@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Check, X, AlertCircle } from 'lucide-react'
 import styles from './Toast.module.css'
 
@@ -11,20 +11,28 @@ const icons = {
 }
 
 export default function Toast({ toast, onHide }) {
+    const onHideRef = useRef(onHide) //guardamos la funcion onHide en un ref
+
+    useEffect(() => {
+        onHideRef.current = onHide
+    })
+
     useEffect(() => {
         if (!toast) return
-        const timer = setTimeout(onHide, DURATION)
+        const timer = setTimeout(() => onHideRef.current(), DURATION)
         return () => clearTimeout(timer)
-    }, [toast, onHide])
+    }, [toast])
 
     if (!toast) return null
 
     return (
-        <div className={`${styles.toast} ${styles[toast.type]}`}>
+        <div className={`${styles.toast} ${styles[toast.type]}`}
+            role={toast.type === 'error' ? 'alert' : 'status'}
+        >
             <div className={styles.content}>
                 <span className={styles.icon}>{icons[toast.type]}</span>
                 <span className={styles.message}>{toast.message}</span>
-                <button className={styles.closeBtn} onClick={onHide}>
+                <button className={styles.closeBtn} onClick={onHide} aria-label="Cerrar notificación">
                     <X size={14} strokeWidth={2} />
                 </button>
             </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo  } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { clearCart, updateItemStock } from '../../redux/slices/cartReducer'
@@ -35,6 +35,37 @@ import { Payment } from '@mercadopago/sdk-react'
         zipCode:    sanitizeZipCode,
 }
 
+
+// afuera del componente Checkout
+const paymentCustomization = {
+    visual: {
+        style: {
+            theme: 'default',
+            customVariables: {
+                baseColor: '#C9A84C',
+                baseColorFirstVariant: '#B8973E',
+                baseColorSecondVariant: '#D9C27A',
+                textPrimaryColor: '#2B2B2B',
+                textSecondaryColor: '#6B6B6B',
+                buttonTextColor: '#FFFFFF',
+                inputBackgroundColor: '#FFFFFF',
+                formBackgroundColor: '#FFFFFF',
+                outlinePrimaryColor: '#C9A84C',
+                borderRadiusSmall: '6px',
+                borderRadiusMedium: '8px',
+                borderRadiusLarge: '12px',
+                formPadding: '12px',
+            },
+        },
+    },
+    paymentMethods: {
+        bankTransfer: 'all',
+        creditCard: 'all',
+        debitCard: 'all',
+        mercadoPago: 'all',
+    },
+}
+
 const Checkout = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -62,6 +93,11 @@ const Checkout = () => {
     const [agencyFilter, setAgencyFilter] = useState('')
 
     const [orderTotal, setOrderTotal] = useState(null)
+
+    const paymentInitialization = useMemo(
+        () => ({ amount: orderTotal, preferenceId }),
+        [orderTotal, preferenceId]
+    )
 
     const hideToast = () => setToast(null)
 
@@ -445,6 +481,8 @@ if (items.length === 0 && step < 4 && !orderId) {
         </div>
     )
 }
+
+
 
 return (
         <div className={styles.page}>
@@ -848,39 +886,8 @@ return (
                 
                     {preferenceId && (
                         <Payment
-                            initialization={{
-                                amount: orderTotal,
-                                preferenceId,
-                            }}
-                            customization={{
-                                visual: {
-                                style: {
-                                    theme: 'default', // o 'flat' / 'bootstrap' / 'dark'
-                                    customVariables: {
-                                        baseColor: '#C9A84C',              // color principal (botón, focus, etc.)
-                                        baseColorFirstVariant: '#B8973E',  // hover/variante más oscura
-                                        baseColorSecondVariant: '#D9C27A', // variante más clara
-                                        textPrimaryColor: '#2B2B2B',
-                                        textSecondaryColor: '#6B6B6B',
-                                        buttonTextColor: '#FFFFFF',
-                                        inputBackgroundColor: '#FFFFFF',
-                                        formBackgroundColor: '#FFFFFF',
-                                        outlinePrimaryColor: '#C9A84C',
-                                        borderRadiusSmall: '6px',
-                                        borderRadiusMedium: '8px',
-                                        borderRadiusLarge: '12px',
-                                        formPadding: '12px',
-                                    },
-                                },
-                            },
-                                paymentMethods: {
-                                    //ticket:          'all',
-                                    bankTransfer:    'all',
-                                    creditCard:      'all',
-                                    debitCard:       'all',
-                                    mercadoPago:     'all',
-                                },
-                            }}
+                            initialization={paymentInitialization}
+                            customization={paymentCustomization}
                             onSubmit={async ({ formData }) => {
                                 try {
                                     const { data } = await axiosInstance.post(
