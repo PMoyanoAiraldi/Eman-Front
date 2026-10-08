@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Check, Clock, FileText, Upload } from 'lucide-react'
 import styles from './InvoicePopover.module.css'
 
@@ -8,9 +8,13 @@ const INVOICE_LABELS = {
     enviada:   { label: 'Enviada', icon: Check },
 }
 
+const POPOVER_WIDTH = 220  // tiene que coincidir con el width de .invoicePopover en el CSS
+const POPOVER_HEIGHT = 160 // estimado: solo sirve para decidir si abre hacia arriba
+const MARGIN = 8
+
 const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) => {
     const [open, setOpen] = useState(false)
-    const [position, setPosition] = useState({ top: 0, left: 0 })
+    const [position, setPosition] = useState({ top: 0, left: 0, above: false  })
     const btnRef = useRef(null)
     const fileInputRef = useRef(null)
 
@@ -20,10 +24,28 @@ const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) 
     const toggleOpen = () => {
         if (!open && btnRef.current) {
             const rect = btnRef.current.getBoundingClientRect()
-            setPosition({ top: rect.bottom + 4, left: rect.left })
+            // Nunca más allá de los bordes de la pantalla
+            const left = Math.max(MARGIN, Math.min(rect.left, window.innerWidth - POPOVER_WIDTH - MARGIN))
+            // Si abajo no hay lugar, abre hacia arriba del botón
+            const above = rect.bottom + 4 + POPOVER_HEIGHT > window.innerHeight
+            setPosition({ top: above ? rect.top - 4 : rect.bottom + 4, left, above })
         }
         setOpen(o => !o)
     }
+
+     // El popover es fijo: si se scrollea la página (o la tabla), se cierra en vez de quedar flotando
+    // lejos de su botón. Escape también lo cierra.
+    useEffect(() => {
+        if (!open) return
+        const close = () => setOpen(false)
+        const onKey = (e) => { if (e.key === 'Escape') setOpen(false) }
+        window.addEventListener('scroll', close, true) // true: también captura el scroll de contenedores internos
+        document.addEventListener('keydown', onKey)
+        return () => {
+            window.removeEventListener('scroll', close, true)
+            document.removeEventListener('keydown', onKey)
+        }
+    }, [open])
 
     const colorClass =
         order.invoiceStatus === 'enviada' ? styles.invoiceIconSent :
@@ -38,6 +60,8 @@ const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) 
                 className={`${styles.iconBtn} ${colorClass}`}
                 onClick={toggleOpen}
                 title={`Factura: ${info.label}`}
+                aria-label={`Factura: ${info.label}`}
+                aria-expanded={open}
             >
                 <Icon size={17} strokeWidth={1.8} />
             </button>
@@ -47,13 +71,18 @@ const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) 
                     <div className={styles.filterBackdrop} onClick={() => setOpen(false)} />
                     <div
                         className={styles.invoicePopover}
-                        style={{ position: 'fixed', top: position.top, left: position.left }}
+                        style={{ 
+                            top: position.top, 
+                            left: position.left, 
+                            transform: position.above ? 'translateY(-100%)' : undefined,
+                        }}
                     >
                         <p className={styles.invoicePopoverStatus}>{info.label}</p>
 
                         {order.invoiceUrl && (
                             
-                        <a href={order.invoiceUrl}
+                        <a 
+                            href={order.invoiceUrl}
                                 target="_blank"
                                 rel="noreferrer"
                                 className={styles.invoiceLink}

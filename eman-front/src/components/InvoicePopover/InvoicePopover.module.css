@@ -1,21 +1,50 @@
-/* Colores del ícono de factura según estado — mismo criterio que los badges */
+.filterWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+/* Botón del ícono: 44px de zona táctil en celular */
+.iconBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--tap-min);
+    min-height: var(--tap-min);
+    padding: 0.3rem;
+    border-radius: 4px;
+    transition: color 0.2s, background 0.2s;
+}
+
+/* Colores del ícono según estado: tienen que ir DESPUÉS de .iconBtn para pisar su color */
 .invoiceIconPending { color: #b8860b; }
 .invoiceIconReady   { color: #1d5fa8; }
 .invoiceIconSent    { color: #1e7e42; }
 
-/* Popover, reutilizando el look de filterDropdown pero más angosto */
+/* Capas: por encima del WhatsApp y del banner de cookies (90), debajo del overlay del carrito (99) */
+.filterBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 94;
+}
+
 .invoicePopover {
-    z-index: 50;
+    position: fixed;
+    z-index: 95;
+    width: 220px; /* igual a POPOVER_WIDTH en el .jsx */
+    max-width: calc(100vw - 16px);
     background: #fff;
     border: 1px solid #e5ddc8;
     border-radius: 8px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
     padding: 12px;
-    min-width: 180px;
 }
 
 .invoicePopoverStatus {
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
     color: #555;
     margin-bottom: 6px;
@@ -29,8 +58,10 @@
 }
 
 .invoiceLink {
-    display: block;
-    font-size: 12px;
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    font-size: 13px;
     color: #C9A84C;
     text-decoration: underline;
     margin-bottom: 4px;
@@ -40,9 +71,12 @@
 .sendInvoiceBtnSmall {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
-    font-size: 12px;
-    padding: 5px 9px;
+    min-height: var(--tap-min);
+    padding: 0 12px;
+    font-family: var(--font-sans);
+    font-size: 13px;
     border-radius: 5px;
     cursor: pointer;
 }
@@ -59,28 +93,34 @@
     color: #fff;
 }
 
-.iconBtn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #aaa;
-    display: flex;
-    align-items: center;
-    padding: 0.3rem;
-    border-radius: 4px;
-    transition: color 0.2s, background 0.2s;
+.sendInvoiceBtnSmall:disabled {
+    opacity: 0.6;
+    cursor: default;
 }
 
-.iconBtn:hover { 
-    color: #1a1a1a; background: #f0f0f0; 
+@media (hover: hover) {
+    .iconBtn:hover {
+        color: #1a1a1a;
+        background: #f0f0f0;
+    }
 }
 
-.filterWrapper { 
-    position: relative; 
-    display: inline-block; 
-}
+/* ===== Tablet y desktop: vuelve el tamaño compacto original ===== */
+@media (min-width: 768px) {
+    .iconBtn {
+        min-width: 0;
+        min-height: 0;
+    }
 
-.filterBackdrop { 
-    position: fixed; 
-    inset: 0; z-index: 40; 
+    .invoiceLink {
+        min-height: 0;
+        font-size: 12px;
+    }
+
+    .uploadInvoiceBtnSmall,
+    .sendInvoiceBtnSmall {
+        min-height: 0;
+        padding: 5px 9px;
+        font-size: 12px;
+    }
 }
