@@ -31,7 +31,7 @@ import { Payment } from '@mercadopago/sdk-react'
         guestName:  sanitizeName,
         guestPhone: sanitizePhone,
         streetName:   sanitizeStreetName,
-        treetNumber: sanitizeStreetNumber,
+        streetNumber: sanitizeStreetNumber,
         zipCode:    sanitizeZipCode,
 }
 
@@ -249,10 +249,10 @@ const handleNext = async () => {
 
     if (step === 2){
         const stepErrors = validateStep2(form)
-        console.log('stepErrors:', stepErrors)
+        
         setErrors(stepErrors)
         if (Object.keys(stepErrors).length > 0) {
-        setTouched({ ...touched, address: true, city: true, zipCode: true, locality: true })
+        setTouched({ ...touched, streetName: true, streetNumber: true, city: true, zipCode: true, locality: true, provinceCode: true  })
         return
     }
     if (form.shippingType === 'correo_argentino') {
@@ -394,6 +394,7 @@ const handleBack = async () => {
         }
         setOrderId(null)
         setPreferenceId(null)
+        setOrderTotal(null)
     }
     setStep(s => s - 1)
 }
@@ -461,7 +462,7 @@ const shippingCost = form.shippingType === 'correo_argentino'
     ? (shippingQuote?.price ?? 0)
     : 0 // coordinado y retiro en local ya son gratis
 
-    console.log('DEBUG — items.length:', items.length, '| step:', step)
+    
 if (items.length === 0 && step < 4 && !orderId) {
     return (
         <div className={styles.empty}>
@@ -630,16 +631,19 @@ return (
             <label className={styles.label}>Provincia</label>
             <div className={styles.selectWrapper}>
             <select
-                className={styles.filterSelect}
+                className={`${styles.filterSelect} ${errors.provinceCode ? styles.inputError : ''}`}
                 name="provinceCode"
                 value={form.provinceCode}
                 onChange={handleChange}
+                onBlur={handleBlur}
             >
                 <option value="">Seleccioná tu provincia</option>
                 {PROVINCIAS_ARGENTINAS.map(p => <option key={p.code} value={p.code}>{p.name}</option>)}
             </select>
+            
             <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
             </div>
+            {errors.provinceCode && <span className={styles.error}>{errors.provinceCode}</span>}
             </div>
 
         {form.deliveryType === 'sucursal' ? (
@@ -765,16 +769,20 @@ return (
             <>
                 <div className={styles.field}>
                     <label className={styles.label}>Localidad</label>
+                    <div className={styles.selectWrapper}>
                     <select
-                        className={`${styles.input} ${errors.locality ? styles.inputError : ''}`}
+                        className={`${styles.filterSelect} ${errors.locality ? styles.inputError : ''}`}
                         name="locality"
                         value={form.locality}
                         onChange={handleChange}
+                        onBlur={handleBlur}
                     >
                         <option value="">Seleccioná tu localidad</option>
                         <option value="Galvez">Gálvez</option>
                         <option value="Belgrano">Belgrano</option>
                     </select>
+                    <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
+                    </div>
                     {errors.locality && <span className={styles.error}>{errors.locality}</span>}
                 </div>
 

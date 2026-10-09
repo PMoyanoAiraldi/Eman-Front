@@ -469,4 +469,13 @@
     .localInfo {
         padding: 1rem 1.25rem;
     }
+
+    .btnRow {
+    justify-content: center;
+    }
+
+    .btnRow .nextBtn,
+    .btnRow .backBtn {
+        flex: 0 0 180px; /* mismo ancho para los dos */
+    }
 }

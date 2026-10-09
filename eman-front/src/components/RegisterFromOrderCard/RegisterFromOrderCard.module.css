@@ -1,16 +1,16 @@
-/* RegisterFromOrderCard.module.css */
-
+/* ===== Base: mobile ===== */
 .card {
     margin-top: 1.5rem;
     background: var(--color-bg, #faf8f4);
     border: 0.5px solid #e0e0dc;
     border-radius: 10px;
-    padding: 1.5rem;
+    padding: 1.25rem;
+    min-width: 0;
 }
 
 .title {
     font-family: var(--font-serif);
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     font-weight: 500;
     color: #2B2B2B;
     margin: 0 0 6px;
@@ -25,7 +25,8 @@
 
 /* ── Estado colapsado ── */
 .expandBtn {
-    height: 44px;
+    width: 100%;
+    min-height: 48px;
     padding: 0 1.5rem;
     background: #1a1a1a;
     color: #fff;
@@ -37,10 +38,6 @@
     cursor: pointer;
     letter-spacing: 0.04em;
     transition: background 0.2s;
-}
-
-.expandBtn:hover {
-    background: #444441;
 }
 
 /* ── Estado expandido: form ── */
@@ -55,30 +52,35 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0; /* sin esto, un input dentro de un grid ensancha la columna */
 }
 
 .readonlyField {
-    height: 44px;
+    min-height: var(--tap-min);
     display: flex;
     align-items: center;
     border: 0.5px solid #e0e0dc;
     border-radius: 8px;
-    padding: 0 12px;
+    padding: 8px 12px;
     font-size: 14px;
-    color: #888;
+    color: #757575;
     background: #f0efe9;
+    overflow-wrap: anywhere; /* emails largos */
 }
 
 .input {
-    height: 44px;
+    width: 100%;
+    min-width: 0;
+    height: var(--tap-min);
     border: 0.5px solid #ccc;
     border-radius: 8px;
     padding: 0 12px;
-    font-size: 14px;
+    font-size: 16px; /* menos de 16px = zoom automático en iOS */
     color: #1a1a18;
     background: #fff;
     transition: border-color 0.15s;
     font-family: var(--font-sans);
+    text-overflow: ellipsis; /* provincias con nombre largo en el select */
 }
 
 .input:focus {
@@ -86,20 +88,35 @@
     border-color: var(--color-gold);
 }
 
+/* Filas de campos: dos columnas parejas */
 .row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
+.row > * {
+    min-width: 0;
+}
+
+/* Calle ancha, número angosto */
+.rowStreet {
+    grid-template-columns: 2fr 1fr;
+}
+
+/* Ciudad y provincia: apiladas en celular, porque los nombres de provincia son largos */
+.rowStack {
+    grid-template-columns: 1fr;
+}
+
 .error {
-    font-size: 11px;
-    color: #e24b4a;
+    font-size: 12px;
+    color: #c0392b; /* el rojo anterior casi no se leía sobre el beige */
     margin: 0;
 }
 
 .btn {
-    height: 48px;
+    min-height: 48px;
     background: #1a1a1a;
     color: #fff;
     border: none;
@@ -113,26 +130,22 @@
     margin-top: 0.25rem;
 }
 
-.btn:hover:not(:disabled) {
-    background: #444441;
-}
-
 .btn:disabled {
     background: #ccc;
     cursor: default;
 }
 
 .link {
-    color: var(--color-gold);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    color: #8a7233; /* dorado más oscuro: el original tenía poco contraste como texto */
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 500;
 }
 
-.link:hover {
-    text-decoration: underline;
-}
-
+/* ── Campos de contraseña ── */
 .inputWrapper {
     position: relative;
     display: flex;
@@ -140,29 +153,72 @@
 }
 
 .inputWrapper .input {
-    width: 100%;
-    padding-right: 40px;
+    padding-right: var(--tap-min); /* lugar para el botón del ojo */
 }
 
 .eyeBtn {
     position: absolute;
-    right: 12px;
+    top: 0;
+    right: 0;
+    width: var(--tap-min);
+    height: var(--tap-min);
     background: none;
     border: none;
     cursor: pointer;
-    color: #888;
+    color: #757575;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .matchOk {
-    font-size: 11px;
-    color: #4a9b5e;
+    font-size: 12px;
+    color: #2e7d46;
     margin: 4px 0 0;
 }
 
 .matchError {
-    font-size: 11px;
-    color: #e24b4a;
+    font-size: 12px;
+    color: #c0392b;
     margin: 4px 0 0;
+}
+
+/* Hover solo con mouse */
+@media (hover: hover) {
+    .expandBtn:hover,
+    .btn:hover:not(:disabled) {
+        background: #444441;
+    }
+
+    .link:hover {
+        text-decoration: underline;
+    }
+
+    .eyeBtn:hover {
+        color: #1a1a18;
+    }
+}
+
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .card {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 1.05rem;
+    }
+
+    .expandBtn {
+        width: auto;
+        min-height: 44px;
+    }
+
+    .rowStreet {
+        grid-template-columns: 3fr 1fr;
+    }
+
+    .rowStack {
+        grid-template-columns: 1fr 1fr;
+    }
 }

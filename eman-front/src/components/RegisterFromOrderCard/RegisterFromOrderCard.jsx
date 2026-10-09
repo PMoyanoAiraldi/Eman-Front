@@ -108,19 +108,19 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                 </div>
 
                 <div className={styles.field}>
-                    <input className={styles.input} name="phone" placeholder="Teléfono"
+                    <input className={styles.input} name="phone" type="tel" inputMode="tel" autoComplete="tel" placeholder="Teléfono"
                         value={form.phone} onChange={handleChange} onBlur={handleBlur} />
                     {errors.phone && <p className={styles.error}>{errors.phone}</p>}
                 </div>
 
-            <div className={styles.row}>
+            <div className={`${styles.row} ${styles.rowStreet}`}>
                     <div className={styles.field}>
                         <input className={styles.input} name="streetName" placeholder="Calle"
                             value={form.streetName} onChange={handleChange} onBlur={handleBlur} />
                         {errors.streetName && <p className={styles.error}>{errors.streetName}</p>}
                     </div>
                     <div className={styles.field}>
-                        <input className={styles.input} name="streetNumber" placeholder="Número"
+                        <input className={styles.input} name="streetNumber" inputMode="numeric" placeholder="Número"
                             value={form.streetNumber} onChange={handleChange} onBlur={handleBlur} />
                         {errors.streetNumber && <p className={styles.error}>{errors.streetNumber}</p>}
                     </div>
@@ -133,7 +133,7 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                         value={form.apartment} onChange={handleChange} />
                 </div>
 
-                <div className={styles.row}>
+                <div className={`${styles.row} ${styles.rowStack}`}>
                     <div className={styles.field}>
                         <input className={styles.input} name="city" placeholder="Ciudad"
                             value={form.city} onChange={handleChange} onBlur={handleBlur} />
@@ -160,12 +160,14 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                             placeholder="Contraseña"
                             value={form.password}
                             onChange={handleChange}
+                            autoComplete="new-password"
                         />
                         <button
                             type="button"
                             className={styles.eyeBtn}
                             onClick={() => setShowPassword((p) => !p)}
-                            tabIndex={-1}
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+
                         >
                             {showPassword ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                         </button>
@@ -182,12 +184,13 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                             placeholder="Repetir contraseña"
                             value={form.confirmPassword}
                             onChange={handleChange}
+                            autoComplete="new-password"
                         />
                         <button
                             type="button"
                             className={styles.eyeBtn}
                             onClick={() => setShowConfirm((p) => !p)}
-                            tabIndex={-1}
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                         >
                             {showConfirm ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                         </button>
