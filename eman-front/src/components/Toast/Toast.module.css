@@ -6,7 +6,7 @@
     right: var(--space-page);
     margin-left: auto; /* con max-width, queda pegado a la derecha en pantallas medianas */
     max-width: 420px;
-    z-index: 200; /* sobre el drawer (100), que es lo que corresponde para un aviso */
+    z-index: 500; /*  sobre el modal (400), el drawer (100) y el navbar*/
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
