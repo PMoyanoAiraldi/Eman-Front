@@ -1,0 +1,77 @@
+.page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.25rem var(--space-page, 1rem);
+    background: var(--color-bg, #f5f3ef);
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    padding: 1.5rem;
+    text-align: center;
+    background: #fff;
+    border: 1px solid #d9d4c7;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.15;
+    color: #1a1a18;
+    margin: 0 0 0.75rem;
+}
+
+.message {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #666;
+    margin: 0 0 1.5rem;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.primaryBtn,
+.secondaryBtn {
+    min-height: 48px;
+    padding: 0 1.25rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.primaryBtn {
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    font-weight: 500;
+}
+
+.secondaryBtn {
+    background: none;
+    color: #888;
+    border: 0.5px solid #888;
+}
+
+@media (hover: hover) {
+    .primaryBtn:hover { background: #444441; }
+    .secondaryBtn:hover { border-color: #bbb; }
+}
+
+@media (min-width: 768px) {
+    .card { padding: 2rem; }
+    .title { font-size: 1.75rem; }
+}
