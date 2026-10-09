@@ -3,7 +3,7 @@ export const passwordRules = [
     { label: '1 mayúscula', test: (p) => /[A-Z]/.test(p) },
     { label: '1 minúscula', test: (p) => /[a-z]/.test(p) },
     { label: '1 número', test: (p) => /\d/.test(p) },
-    { label: '1 carácter especial (=!@#$%^&*)', test: (p) => /[=!@#$%^&*]/.test(p) },
+    { label: '1 carácter especial', test: (p) => /[=!@#$%^&*]/.test(p) },
     { label: 'Solo letras, números y =!@#$%^&*', test: (p) => /^[A-Za-z\d=!@#$%^&*]*$/.test(p) },
 ]
 
