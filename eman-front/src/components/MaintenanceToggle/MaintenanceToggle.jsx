@@ -20,7 +20,7 @@ const MaintenanceToggle = () => {
         style={{ '--status-color': maintenanceMode ? '#E27D7D' : '#6FCF97' }}
         >
             <div className={styles.statusRow}>
-                <span className={`${styles.dot} ${maintenanceMode ? styles.dotOff : styles.dotOn}`} />
+                <span className={styles.dot} />
                 <span className={styles.statusText}>
                     Tienda {maintenanceMode ? 'inhabilitada' : 'activa'}
                 </span>
@@ -43,6 +43,8 @@ const MaintenanceToggle = () => {
                             ? '¿Confirmás que querés volver a habilitar la tienda? Los visitantes van a poder navegar y comprar de nuevo.'
                             : '¿Confirmás que querés inhabilitar toda la tienda? Nadie va a poder navegar ni comprar hasta que la vuelvas a habilitar desde acá.'
                     }
+                    confirmLabel={maintenanceMode ? 'Habilitar' : 'Inhabilitar'}
+                    danger={!maintenanceMode}
                     onConfirm={handleConfirm}
                     onCancel={() => setShowConfirm(false)}
                 />
