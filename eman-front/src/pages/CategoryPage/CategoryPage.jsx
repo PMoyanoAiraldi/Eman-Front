@@ -6,7 +6,7 @@ import { fetchSubCategories } from '../../redux/slices/subCategoriesReducer'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
 import styles from './CategoryPage.module.css'
-import axios from "axios"
+import axiosInstance from '../../api/axiosInstance'
 
 const CategoryPage = () => {
     const { categoria } = useParams()
@@ -30,8 +30,7 @@ const CategoryPage = () => {
 useEffect(() => {
     const fetchCategoryId = async () => {
         try{
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/categories`)
-        console.log('Categorías recibidas:', res.data)
+        const res = await axiosInstance.get('/categories')
         const match = res.data.find(c => c.name?.toLowerCase() === categoria.toLowerCase())
         if (match) {
         setCategoryId(match.id)
@@ -81,6 +80,7 @@ useEffect(() => {
                 <div className={styles.filters}>
                 <button
                     className={`${styles.filterBtn} ${activeSubCategory === null ? styles.active : ''}`}
+                    aria-pressed={activeSubCategory === null}
                     onClick={() => navigate(`/${categoria.toLowerCase()}`)}
                 >
                     Todos

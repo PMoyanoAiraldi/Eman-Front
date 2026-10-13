@@ -5,7 +5,7 @@ import { fetchAllProducts } from '../../redux/slices/productsReducer'
 import { fetchSubCategories } from '../../redux/slices/subCategoriesReducer'
 import ProductCard from '../../components/ProductCard/ProductCard'
 import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
-import axios from 'axios'
+import axiosInstance from '../../api/axiosInstance'
 import styles from '../CategoryPage/CategoryPage.module.css'
 
 const ShopPage = () => {
@@ -21,7 +21,7 @@ const ShopPage = () => {
 
     // Traer todas las categorías para el filtro
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/categories`)
+        axiosInstance.get('/categories')
             .then(res => setCategories(res.data))
             .catch(err => console.error('Error al cargar categorías:', err))
     }, [])
