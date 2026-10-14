@@ -1,12 +1,12 @@
+/* ===== Base: mobile ===== */
 .page {
-    padding: 2rem 1.5rem 4rem;
+    padding: 1.25rem var(--space-page) 3rem;
     max-width: 480px;
     margin: 0 auto;
 }
 
 .container {
-    margin-top: 2.5rem;
-
+    margin-top: 1.5rem;
 }
 
 .title {
@@ -20,8 +20,8 @@
 .subtitle {
     font-family: var(--font-sans);
     font-size: 0.875rem;
-    color: #888;
-    margin-bottom: 2rem;
+    color: #6B6B6B;
+    margin-bottom: 1.5rem;
     line-height: 1.5;
 }
 
@@ -31,7 +31,7 @@
     gap: 1.25rem;
     background: #f5f3ef;
     border: 1px solid #d9d4c7;
-    padding: 2rem;
+    padding: 1.25rem;
     border-radius: 4px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -40,47 +40,50 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    min-width: 0;
 }
 
 .label {
     font-family: var(--font-sans);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
-    color: #888;
+    color: #6B6B6B;
 }
 
+/* El link tiene 44px de zona táctil; el margen negativo evita que agregue aire de más */
 .labelRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin: -0.5rem 0;
 }
 
 .forgotLink {
-    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap-min);
+    font-size: 0.85rem;
     color: var(--color-primary, #555);
     text-decoration: none;
 }
 
-.forgotLink:hover {
-    text-decoration: underline;
-}
-
 .input {
     font-family: var(--font-sans);
-    font-size: 0.95rem;
+    font-size: 16px; /* menos de 16px = zoom automático en iOS */
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    height: var(--tap-min);
+    padding: 0 2.5rem 0 1rem;
     outline: none;
     transition: border-color 0.2s;
     background: transparent;
     width: 100%;
-    box-sizing: border-box;
+    min-width: 0;
 }
 
 .input::placeholder {
-    color: #bbb;
+    color: #999;
 }
 
 .input:focus {
@@ -93,26 +96,29 @@
     align-items: center;
 }
 
+.inputWrapper .input {
+    padding-right: var(--tap-min); /* lugar para el botón del ojo */
+}
+
 .eyeBtn {
     position: absolute;
-    right: 0.75rem;
+    top: 0;
+    right: 0;
+    width: var(--tap-min);
+    height: var(--tap-min);
     background: none;
     border: none;
     cursor: pointer;
-    color: #aaa;
+    color: #757575;
     display: flex;
     align-items: center;
-    padding: 0;
+    justify-content: center;
     transition: color 0.2s;
-}
-
-.eyeBtn:hover {
-    color: #555;
 }
 
 .error {
     font-family: var(--font-sans);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #c0392b;
     margin: 0;
 }
@@ -124,14 +130,11 @@
     color: #fff;
     background: #1a1a1a;
     border: none;
-    padding: 0.9rem;
+    min-height: 48px;
+    padding: 0 0.9rem;
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 0.5rem;
-}
-
-.button:hover:not(:disabled) {
-    background: #333;
 }
 
 .button:disabled {
@@ -142,17 +145,62 @@
 .footer {
     font-family: var(--font-sans);
     font-size: 0.85rem;
-    color: #888;
+    color: #6B6B6B;
     text-align: center;
-    margin-top: 1.75rem;
+    margin-top: 1.25rem;
 }
 
 .footerLink {
-    color: var(--color-gold);
+    display: inline-block;
+    padding: 10px 4px; /* zona táctil más grande para un link dentro de una frase */
+    color: #8a7233;    /* dorado más oscuro: el original tenía poco contraste como texto */
     text-decoration: none;
     font-weight: 500;
 }
 
-.footerLink:hover {
-    text-decoration: underline;
+@media (hover: hover) {
+    .forgotLink:hover,
+    .footerLink:hover {
+        text-decoration: underline;
+    }
+
+    .eyeBtn:hover {
+        color: #555;
+    }
+
+    .button:hover:not(:disabled) {
+        background: #333;
+    }
+}
+
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .page {
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+    }
+
+    .container {
+        margin-top: 2.5rem;
+    }
+
+    .subtitle {
+        margin-bottom: 2rem;
+    }
+
+    .form {
+        padding: 2rem;
+    }
+
+    .labelRow {
+        margin: 0;
+    }
+
+    .forgotLink {
+        min-height: 0;
+    }
+
+    .footer {
+        margin-top: 1.75rem;
+    }
 }

@@ -222,8 +222,8 @@ const RegisterPage = () => {
 
                     <p className={styles.sectionLabel}>Datos de envío</p>
 
-                    <div className={styles.row}>
-                        <div className={styles.field} style={{ flex: 3 }}>
+                    <div className={`${styles.row} ${styles.rowStreet}`}>
+                        <div className={styles.field}>
                             <label className={styles.label}>CALLE</label>
                             <input
                                 className={styles.input}
@@ -238,7 +238,7 @@ const RegisterPage = () => {
                             {errors.streetName && <p className={styles.error}>{errors.streetName}</p>}
                         </div>
 
-                        <div className={styles.field} style={{ flex: 1 }}>
+                        <div className={styles.field}>
                             <label className={styles.label}>NÚMERO</label>
                             <input
                                 className={styles.input}
@@ -254,7 +254,7 @@ const RegisterPage = () => {
                         </div>
                     </div>
 
-                    <div className={styles.row}>
+                    <div className={`${styles.row} ${styles.rowPair}`}>
                         <div className={styles.field}>
                             <label className={styles.label}>PISO (opcional)</label>
                             <input
