@@ -63,6 +63,10 @@ const RegisterPage = () => {
         if (name === 'streetName')   cleanValue = sanitizeStreetName(value)
         if (name === 'streetNumber') cleanValue = sanitizeStreetNumber(value)
         if (name === 'phone') cleanValue = sanitizePhone(value)
+        
+        if ((name === 'password' || name === 'confirmPassword') && errors[name]) {
+            setErrors((prev) => ({ ...prev, [name]: '' }))
+        }
 
         setForm({ ...form, [name]: cleanValue })
         setError(null)
@@ -132,11 +136,13 @@ const RegisterPage = () => {
                     <p className={styles.sectionLabel}>Datos personales</p>
 
                     <div className={styles.field}>
-                        <label className={styles.label}>NOMBRE Y APELLIDO</label>
+                        <label className={styles.label} htmlFor="register-name">NOMBRE Y APELLIDO</label>
                         <input
+                            id='register-name'
                             className={styles.input}
                             type="text"
                             name="name"
+                            autoComplete="name"
                             placeholder="Ej: Juan Pérez"
                             value={form.name}
                             onChange={handleChange}
@@ -147,11 +153,14 @@ const RegisterPage = () => {
                     </div>
 
                     <div className={styles.field}>
-                        <label className={styles.label}>EMAIL</label>
+                        <label className={styles.label} htmlFor="register-email">EMAIL</label>
                         <input
+                            id="register-email"
                             className={styles.input}
                             type="email"
                             name="email"
+                            autoComplete="email" 
+                            autoCapitalize="none"
                             placeholder="Ej: juan@gmail.com"
                             value={form.email}
                             onChange={handleChange}
@@ -168,6 +177,7 @@ const RegisterPage = () => {
                                 className={styles.input}
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
+                                autoComplete="new-password"
                                 placeholder="Tu contraseña"
                                 value={form.password}
                                 onChange={handleChange}
@@ -179,7 +189,7 @@ const RegisterPage = () => {
                                     type="button"
                                     className={styles.eyeBtn}
                                     onClick={() => setShowPassword(p => !p)}
-                                    tabIndex={-1}
+                                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                 >
                                     {showPassword ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                             </button>
@@ -188,6 +198,7 @@ const RegisterPage = () => {
                         {(passwordFocused || form.password.length > 0) && (
                                 <PasswordChecklist password={form.password} />
                             )}
+                            {errors.password && <p className={styles.error}>{errors.password}</p>}
                         </div>
 
                         <div className={styles.field}>
@@ -197,6 +208,7 @@ const RegisterPage = () => {
                                 className={styles.input}
                                 type={showConfirm ? 'text' : 'password'}
                                 name="confirmPassword"
+                                autoComplete="new-password"
                                 placeholder="Repetí tu contraseña"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
@@ -206,7 +218,7 @@ const RegisterPage = () => {
                                     type="button"
                                     className={styles.eyeBtn}
                                     onClick={() => setShowConfirm(p => !p)}
-                                    tabIndex={-1}
+                                    aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                 >
                                     {showConfirm ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                 </button>
@@ -215,6 +227,9 @@ const RegisterPage = () => {
                                 <p className={form.password === form.confirmPassword ? styles.matchOk : styles.matchError}>
                                     {form.password === form.confirmPassword ? 'Las contraseñas coinciden' : 'Las contraseñas no coinciden'}
                                 </p>
+                            )}
+                            {errors.confirmPassword && form.confirmPassword.length === 0 && (
+                                <p className={styles.error}>{errors.confirmPassword}</p>
                             )}
 
                         </div>
@@ -244,6 +259,7 @@ const RegisterPage = () => {
                                 className={styles.input}
                                 type="text"
                                 name="streetNumber"
+                                inputMode="numeric" 
                                 placeholder="123"
                                 value={form.streetNumber}
                                 onChange={handleChange}
@@ -318,6 +334,8 @@ const RegisterPage = () => {
                                 className={styles.input}
                                 type="tel"
                                 name="phone"
+                                inputMode="tel"
+                                autoComplete="tel"
                                 placeholder="Ej: 3404123456"
                                 value={form.phone}
                                 onChange={handleChange}
@@ -331,6 +349,9 @@ const RegisterPage = () => {
 
                     {error && <p className={styles.error}>{error}</p>}
 
+                    {Object.values(errors).some(Boolean) && (
+                        <p className={styles.error}>Revisá los errores indicados en el formulario.</p>
+                    )}
                     <button
                         className={styles.button}
                         type="submit"

@@ -75,6 +75,8 @@ const LoginPage = () => {
                             className={styles.input}
                             type="email"
                             name="email"
+                            autoComplete="email" 
+                            autoCapitalize="none"
                             placeholder="Ej: juan@gmail.com"
                             value={form.email}
                             onChange={handleChange}
@@ -92,6 +94,7 @@ const LoginPage = () => {
                             className={styles.input}
                             type={showPassword ? 'text' : 'password'}
                             name="password"
+                            autoComplete="current-password"
                             placeholder="Tu contraseña"
                             value={form.password}
                             onChange={handleChange}
