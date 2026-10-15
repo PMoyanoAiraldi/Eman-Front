@@ -161,6 +161,7 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                             value={form.password}
                             onChange={handleChange}
                             autoComplete="new-password"
+                            passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                         />
                         <button
                             type="button"
@@ -185,6 +186,7 @@ const RegisterFromOrderCard = ({ orderId, order, onRegistered }) => {
                             value={form.confirmPassword}
                             onChange={handleChange}
                             autoComplete="new-password"
+                            passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                         />
                         <button
                             type="button"

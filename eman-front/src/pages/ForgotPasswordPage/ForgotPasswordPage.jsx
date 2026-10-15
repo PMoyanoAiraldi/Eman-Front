@@ -51,10 +51,13 @@ const ForgotPasswordPage = () => {
                         </p>
                         <form className={styles.form} onSubmit={handleSubmit}>
                             <div className={styles.field}>
-                                <label className={styles.label}>EMAIL</label>
+                                <label className={styles.label} htmlFor="forgot-email">EMAIL</label>
                                 <input
+                                    id="forgot-email"
                                     className={styles.input}
                                     type="email"
+                                    autoComplete="email"
+                                    autoCapitalize="none"
                                     placeholder="Ej: juan@gmail.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}

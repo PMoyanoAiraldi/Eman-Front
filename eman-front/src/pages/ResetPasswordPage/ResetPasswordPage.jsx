@@ -74,10 +74,13 @@ const ResetPasswordPage = () => {
                 ) : (
                     <form className={styles.form} onSubmit={handleSubmit}>
                         <div className={styles.field}>
-                            <label className={styles.label}>NUEVA CONTRASEÑA</label>
+                            <label className={styles.label} htmlFor="reset-new">NUEVA CONTRASEÑA</label>
                             <div className={styles.inputWrapper}>
                                 <input
+                                    id="reset-new" 
+                                    autoComplete="new-password"
                                     className={styles.input}
+                                    passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                                     type={showPassword ? 'text' : 'password'}
                                     name="newPassword"
                                     value={form.newPassword}
@@ -90,7 +93,7 @@ const ResetPasswordPage = () => {
                                     type="button"
                                     className={styles.eyeBtn}
                                     onClick={() => setShowPassword(p => !p)}
-                                    tabIndex={-1}
+                                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                 >
                                     {showPassword ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                 </button>
@@ -101,9 +104,12 @@ const ResetPasswordPage = () => {
                         </div>
 
                         <div className={styles.field}>
-                            <label className={styles.label}>CONFIRMAR CONTRASEÑA</label>
+                            <label className={styles.label} htmlFor="reset-confirm">CONFIRMAR CONTRASEÑA</label>
                             <div className={styles.inputWrapper}>
                                 <input
+                                    id="reset-confirm" 
+                                    autoComplete="new-password"
+                                    passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                                     className={styles.input}
                                     type={showConfirm ? 'text' : 'password'}
                                     name="confirmPassword"
@@ -115,7 +121,7 @@ const ResetPasswordPage = () => {
                                     type="button"
                                     className={styles.eyeBtn}
                                     onClick={() => setShowConfirm(p => !p)}
-                                    tabIndex={-1}
+                                    aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                                 >
                                     {showConfirm ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                 </button>

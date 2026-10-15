@@ -178,6 +178,7 @@ const RegisterPage = () => {
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
                                 autoComplete="new-password"
+                                passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                                 placeholder="Tu contraseña"
                                 value={form.password}
                                 onChange={handleChange}
@@ -209,6 +210,7 @@ const RegisterPage = () => {
                                 type={showConfirm ? 'text' : 'password'}
                                 name="confirmPassword"
                                 autoComplete="new-password"
+                                passwordrules="minlength: 8; maxlength: 15; required: lower; required: upper; required: digit; required: [=!@#$%^&*]; allowed: lower, upper, digit, [=!@#$%^&*]"
                                 placeholder="Repetí tu contraseña"
                                 value={form.confirmPassword}
                                 onChange={handleChange}
