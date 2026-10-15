@@ -505,6 +505,7 @@ return (
                             <input
                                 className={`${styles.input} ${errors.guestName ? styles.inputError : ''}`}
                                 name="guestName"
+                                autoComplete="name"
                                 value={form.guestName}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
@@ -519,6 +520,8 @@ return (
                         className={`${styles.input} ${errors.guestEmail ? styles.inputError : ''}`}
                         name="guestEmail"
                         type="email"
+                        autoComplete="email" 
+                        autoCapitalize="none"
                         value={form.guestEmail}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -537,6 +540,9 @@ return (
                     <input
                         className={`${styles.input} ${errors.guestPhone ? styles.inputError : ''}`}
                         name="guestPhone"
+                        type="tel" 
+                        inputMode="tel" 
+                        autoComplete="tel"
                         value={form.guestPhone}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -689,7 +695,7 @@ return (
     ) : (
             <>
         <div className={styles.row}>
-            <div className={styles.field} style={{ flex: 3 }}>
+            <div className={styles.field}>
                 <label className={styles.label}>Calle</label>
                 <input
                     className={`${styles.input} ${errors.streetName ? styles.inputError : ''}`}
@@ -701,7 +707,7 @@ return (
                 />
                 {errors.streetName && <span className={styles.error}>{errors.streetName}</span>}
             </div>
-            <div className={styles.field} style={{ flex: 1 }}>
+            <div className={styles.field}>
                 <label className={styles.label}>Número</label>
                 <input
                     className={`${styles.input} ${errors.streetNumber ? styles.inputError : ''}`}
