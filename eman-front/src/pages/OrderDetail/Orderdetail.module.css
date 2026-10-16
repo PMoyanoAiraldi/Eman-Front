@@ -1,14 +1,21 @@
+/* ===== Base: mobile ===== */
 .page {
     max-width: 600px;
     margin: 0 auto;
-    padding: 2rem 1rem 2rem;
+    padding: 1.25rem var(--space-page) 2.5rem;
+}
+
+.content {
+    min-width: 0;
 }
 
 .title {
     font-family: var(--font-serif);
-    font-size: 2.25rem;
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.15;
     color: #2B2B2B;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .text {
@@ -19,37 +26,30 @@
     margin-bottom: 8px;
 }
 
-.orderId {
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    color: #9B9B9B;
-    
-}
-
-.detailCard {
-    padding: 0;
-    background: none;
-    border: none;
-    box-shadow: none;
-}
-
+/* Número de orden + fecha, y estado */
 .orderMeta {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.orderId {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: #757575;
 }
 
 .orderState {
     font-family: var(--font-sans);
-    font-size: 0.62rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     padding: 3px 10px;
     border: 1px solid #d9d4c7;
-    color: #888;
+    color: #757575;
     border-radius: 2px;
     background: #fff;
 }
@@ -71,19 +71,53 @@
     border-color: #e5b3b3;
 }
 
+.detailCard {
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
 .btn {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 1.25rem;
     font-family: var(--font-sans);
     background-color: var(--color-gold);
     color: #FFFFFF;
     border: none;
-    padding: 14px 32px;
+    padding: 0 32px;
     border-radius: 6px;
     font-size: 0.95rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }
 
-.btn:hover {
-    background-color: #B8973E;
+@media (hover: hover) {
+    .btn:hover {
+        background-color: #B8973E;
+    }
 }
 
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .page {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.25rem;
+        margin-bottom: 16px;
+    }
+
+    .orderId {
+        font-size: 0.9rem;
+    }
+
+    .btn {
+        width: auto;
+        min-height: 0;
+        padding: 14px 32px;
+    }
+}

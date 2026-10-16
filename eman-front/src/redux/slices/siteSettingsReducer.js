@@ -27,6 +27,10 @@ const siteSettingsSlice = createSlice({
             state.maintenanceMode = action.payload;
             state.loading = false;
         })
+        .addCase(fetchMaintenanceStatus.rejected, (state) => {
+            state.maintenanceMode = false; // si falla, asumimos sin mantenimiento
+            state.loading = false;
+        })
         .addCase(toggleMaintenanceMode.fulfilled, (state, action) => {
             state.maintenanceMode = action.payload;
         });

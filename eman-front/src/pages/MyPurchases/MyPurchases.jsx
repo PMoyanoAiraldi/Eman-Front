@@ -11,12 +11,14 @@ import styles from './MyPurchases.module.css'
 const MyPurchases = () => {
     const [orders, setOrders] = useState([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
     const user = useSelector(state => state.auth.user)
 
     useEffect(() => {
         if (!user?.id) return
         axiosInstance.get(`/order/user/${user.id}`)
             .then(res => setOrders(res.data))
+            .catch(() => setError(true))
             .finally(() => setLoading(false))
     }, [user])
 
@@ -32,13 +34,22 @@ const MyPurchases = () => {
 
             <div className={styles.header}>
                 <h1 className={styles.title}>Mis Compras</h1>
+                {!loading && !error && (
                 <span className={styles.count}>
                     {orders.length} {orders.length === 1 ? 'compra' : 'compras'}
                 </span>
+                )}
             </div>
 
             {loading ? (
                 <div className={styles.loading}>Cargando...</div>
+            ) : error ? (
+                <div className={styles.empty}>
+                    <p>No pudimos cargar tus compras, intentá nuevamente.</p>
+                    <Link to="/tienda" className={styles.emptyBtn}>
+                        Ver productos
+                    </Link>
+                </div>
             ) : orders.length === 0 ? (
                 <div className={styles.empty}>
                     <p>Todavía no realizaste ninguna compra.</p>
