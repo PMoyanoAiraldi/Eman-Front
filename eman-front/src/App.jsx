@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { authService } from './api/authService';
 import { setToken, setCredentials } from './redux/slices/authReducer';
@@ -43,11 +43,12 @@ setDefaultLocale('es')
 function App() {
   const dispatch = useDispatch();
   const { loading } = useSelector(s => s.siteSettings);
+  const [authReady, setAuthReady] = useState(false);
 
   // 1. Chequeo de mantenimiento
   useEffect(() => {
     dispatch(fetchMaintenanceStatus());
-  }, []);
+  }, [dispatch]);
 
   // 2. Restaurar sesión
   useEffect(() => {
@@ -77,10 +78,11 @@ function App() {
         .catch(() => {
             localStorage.removeItem('user')
         })
-    }, [])
+        .finally(() => setAuthReady(true))
+    }, [dispatch])
 
     // Después de declarar todos los hooks, cortamos el render
-    if (loading) {
+    if (loading || !authReady) {
       return <div style={{ minHeight: '100vh' }} />; // vacío momentáneo, sin parpadeo de contenido
     }
 
