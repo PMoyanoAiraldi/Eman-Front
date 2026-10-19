@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import { MapPin } from "lucide-react";
 import styles from "./Shipping.module.css";
 
@@ -6,12 +6,10 @@ const Shipping = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <nav className={styles.breadcrumb}>
-                    <Link to="/">Inicio</Link>
-                    <span> / </span>
-                    <span>Envíos</span>
-                </nav>
-
+                <Breadcrumb items={[
+                    { label: 'Inicio', path: '/' }, 
+                    { label: 'Envios' }]} 
+                />
                 <h1 className={styles.title}>Envíos</h1>
 
                 <div className={styles.card}>

@@ -1,6 +1,7 @@
+/* ===== Base: mobile ===== */
 .container {
-    margin-top: 2.5rem;
-    padding: 0 1.5rem 6rem;
+    margin-top: 1.25rem;
+    padding: 0 var(--space-page) 3rem;
 }
 
 .containerContact {
@@ -10,7 +11,7 @@
 
 .titleContact {
     font-family: var(--font-serif);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 5vw, 1.75rem);
     font-weight: 400;
     color: #1a1a1a;
     margin-bottom: 1.25rem;
@@ -22,32 +23,36 @@
     gap: 1rem;
     background: #f5f3ef;
     border: 1px solid #d9d4c7;
-    padding: 2rem;
+    padding: 1.25rem;
     border-radius: 4px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
 .input {
     font-family: var(--font-sans);
-    font-size: 0.95rem;
+    font-size: 16px; /* menos de 16px = zoom automático en iOS */
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.75rem 1rem;
+    height: var(--tap-min);
+    padding: 0 1rem;
     outline: none;
     transition: border-color 0.2s;
     background: #fff;
     width: 100%;
-    box-sizing: border-box;
+    min-width: 0;
 }
-/* textarea específico */
+
+/* El textarea no lleva altura fija */
 textarea.input {
-    min-height: 130px;
+    height: auto;
+    min-height: 140px;
+    padding: 0.75rem 1rem;
     resize: vertical;
 }
 
 .input::placeholder {
-    color: #bbb;
+    color: #757575; /* son la única etiqueta de cada campo */
 }
 
 .input:focus {
@@ -61,14 +66,11 @@ textarea.input {
     color: #fff;
     background: #1a1a1a;
     border: none;
-    padding: 0.9rem;
+    min-height: 48px;
+    padding: 0 0.9rem;
     cursor: pointer;
     transition: background 0.2s;
     margin-top: 0.5rem;
-}
-
-.button:hover:not(:disabled) {
-    background: #333;
 }
 
 .button:disabled {
@@ -76,23 +78,28 @@ textarea.input {
     cursor: not-allowed;
 }
 
-.breadcrumb {
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: #999;
-    margin-bottom: 1rem;
+@media (hover: hover) {
+    .breadcrumb a:hover {
+        color: var(--color-gold);
+    }
+
+    .button:hover:not(:disabled) {
+        background: #333;
+    }
 }
 
-.breadcrumb a {
-    color: #999;
-    text-decoration: none;
-    transition: color 0.2s;
-}
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .container {
+        margin-top: 2.5rem;
+        padding-bottom: 4rem;
+    }
 
-.breadcrumb a:hover {
-    color: var(--color-gold);
-}
+    .titleContact {
+        font-size: 1.75rem;
+    }
 
-.breadcrumb span {
-    margin: 0 0.3rem;
+    .form {
+        padding: 2rem;
+    }
 }

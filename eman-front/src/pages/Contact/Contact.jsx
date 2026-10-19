@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
-import { Link } from 'react-router-dom'
 import emailjs from "@emailjs/browser";
 import Toast from "../../components/Toast/Toast";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import styles from "./Contact.module.css";
 
 const Contact = () => {
@@ -64,17 +64,18 @@ const Contact = () => {
             <>
             <div className={styles.container}>
             <div className={styles.containerContact}>
-            <nav className={styles.breadcrumb}>
-                <Link to="/">Inicio</Link>
-                <span> / </span>
-                <span>Contacto</span>
-            </nav>
+            <Breadcrumb items={[
+                { label: 'Inicio', path: '/' }, 
+                { label: 'Contacto' }]} 
+                />
             <h1 className={styles.titleContact}>Envianos tu consulta</h1>
             <form ref={form} onSubmit={sendEmail} className={styles.form}>
             <input
                 className={styles.input}
                 type="text"
                 name="name"
+                aria-label="Nombre y apellido" 
+                autoComplete="name"
                 placeholder="Nombre y Apellido"
                 required
             />
@@ -82,6 +83,9 @@ const Contact = () => {
                 className={styles.input}
                 type="email"
                 name="email"
+                aria-label="Email" 
+                autoComplete="email" 
+                autoCapitalize="none"
                 placeholder="Tu email"
                 required
             />
@@ -89,6 +93,7 @@ const Contact = () => {
                 className={styles.input}
                 type="text"
                 name="locality"
+                aria-label="Localidad"
                 placeholder="Localidad"
                 required
             />
@@ -99,11 +104,13 @@ const Contact = () => {
                 style={{ display: "none" }}
                 tabIndex={-1}
                 autoComplete="off"
+                aria-hidden="true"
             />
 
             <textarea
                 className={styles.input}
                 name="message"
+                aria-label="Mensaje"
                 placeholder="Escribí tu mensaje..."
                 required
             />
