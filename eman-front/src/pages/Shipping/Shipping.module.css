@@ -1,5 +1,6 @@
+/* ===== Base: mobile ===== */
 .container {
-    padding: 2.5rem 1.5rem 6rem;
+    padding: 1.25rem var(--space-page) 3rem;
 }
 
 .content {
@@ -10,18 +11,14 @@
 .breadcrumb {
     font-family: var(--font-sans);
     font-size: 0.8rem;
-    color: #999;
+    color: #757575;
     margin-bottom: 1rem;
 }
 
 .breadcrumb a {
-    color: #999;
+    color: #757575;
     text-decoration: none;
     transition: color 0.2s;
-}
-
-.breadcrumb a:hover {
-    color: var(--color-gold);
 }
 
 .breadcrumb span {
@@ -30,17 +27,17 @@
 
 .title {
     font-family: var(--font-serif);
-    font-size: 1.75rem;
+    font-size: clamp(1.5rem, 5vw, 1.75rem);
     font-weight: 400;
     color: #1a1a1a;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
 }
 
 .card {
     background: #f5f3ef;
     border: 1px solid #d9d4c7;
     border-radius: 4px;
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
 
@@ -51,13 +48,16 @@
 }
 
 .section:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
     border-bottom: none;
 }
 
 .subtitle {
     font-family: var(--font-serif);
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     font-weight: 500;
+    line-height: 1.25;
     color: #1a1a1a;
     margin-bottom: 0.4rem;
     padding-bottom: 0.3rem;
@@ -70,38 +70,51 @@
     line-height: 1.7;
 }
 
+/* Link a Google Maps: 44px de zona táctil */
 .address {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    margin-top: 0.5rem;
+    min-height: var(--tap-min);
+    margin-top: 0.25rem;
     color: #1a1a1a;
     font-weight: 500;
-    text-decoration: none;  
+    text-decoration: none;
     transition: color 0.2s;
 }
 
-.address:hover {
-    color: var(--color-gold);
+@media (hover: hover) {
+    .breadcrumb a:hover,
+    .address:hover {
+        color: var(--color-gold);
+    }
 }
-@media (max-width: 768px) {
+
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
     .container {
-        padding: 1.5rem 1rem 4rem;
+        padding: 2.5rem 1.5rem 4rem;
+    }
+
+    .breadcrumb {
+        font-size: 0.8rem;
     }
 
     .title {
-        font-size: 1.4rem;
+        font-size: 1.75rem;
+        margin-bottom: 2rem;
     }
 
     .card {
-        padding: 1rem 0.75rem;
+        padding: 1.5rem;
     }
 
     .subtitle {
-        font-size: 1rem;
+        font-size: 1.15rem;
     }
 
-    .section p {
-        font-size: 0.85rem;
+    .address {
+        min-height: 0;
+        margin-top: 0.5rem;
     }
 }
