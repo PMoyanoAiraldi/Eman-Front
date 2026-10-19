@@ -1,14 +1,21 @@
+/* ===== Base: mobile ===== */
 .page {
     max-width: 600px;
     margin: 0 auto;
-    padding: 1.25rem 1rem 2rem;
+    padding: 1.25rem var(--space-page) 2rem;
+}
+
+.content {
+    min-width: 0;
 }
 
 .title {
     font-family: var(--font-serif);
-    font-size: 2.25rem;
+    font-size: clamp(1.75rem, 6vw, 2.25rem);
+    font-weight: 500;
+    line-height: 1.15;
     color: #2B2B2B;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
 }
 
 .text {
@@ -21,17 +28,21 @@
 
 .orderId {
     font-family: var(--font-sans);
-    font-size: 0.9rem;
-    color: #9B9B9B;
+    font-size: 0.85rem;
+    color: #757575;
+    line-height: 1.5;
     margin-bottom: 16px;
+    overflow-wrap: anywhere; /* el número de orden es un UUID largo */
 }
 
 .btn {
+    width: 100%;
+    min-height: 48px;
     font-family: var(--font-sans);
     background-color: var(--color-gold);
     color: #FFFFFF;
     border: none;
-    padding: 14px 32px;
+    padding: 0 32px;
     border-radius: 6px;
     font-size: 0.95rem;
     cursor: pointer;
@@ -39,16 +50,13 @@
     margin-top: 16px;
 }
 
-.btn:hover {
-    background-color: #B8973E;
-}
-
+/* ── Invitado con cuenta existente ── */
 .loginPrompt {
     margin-top: 1.5rem;
     background: var(--color-bg, #faf8f4);
     border: 0.5px solid #e0e0dc;
     border-radius: 10px;
-    padding: 1.25rem 1.5rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -60,23 +68,61 @@
     color: #6B6B6B;
     line-height: 1.5;
     margin: 0;
+    overflow-wrap: anywhere; /* mails largos */
 }
 
 .loginLink {
-    display: inline-block;
-    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    min-height: var(--tap-min);
     font-family: var(--font-sans);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    color: var(--color-gold);
+    color: #8a7233; /* dorado más oscuro: mejor contraste como texto */
     text-decoration: none;
-    padding: 10px 20px;
+    padding: 0 20px;
     border: 1px solid var(--color-gold);
     border-radius: 6px;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease;
 }
 
-.loginLink:hover {
-    background-color: var(--color-gold);
-    color: #fff;
+@media (hover: hover) {
+    .btn:hover {
+        background-color: #B8973E;
+    }
+
+    .loginLink:hover {
+        background-color: rgba(201, 168, 76, 0.25);
+    }
+}
+
+/* ===== Tablet y desktop ===== */
+@media (min-width: 768px) {
+    .page {
+        padding-top: 2rem;
+        padding-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2.25rem;
+        margin-bottom: 16px;
+    }
+
+    .btn {
+        width: auto;
+        min-height: 0;
+        padding: 14px 32px;
+    }
+
+    .loginPrompt {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .loginLink {
+        align-self: flex-start;
+        min-height: 0;
+        padding: 10px 20px;
+    }
 }

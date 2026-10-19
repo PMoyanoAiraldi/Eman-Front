@@ -5,8 +5,8 @@ import Stepper from '../../components/Stepper/Stepper'
 import OrderDetailCard from '../../components/OrderDetailCard/OrderDetailCard'
 import RegisterFromOrderCard from '../../components/RegisterFromOrderCard/RegisterFromOrderCard'
 import { Link } from 'react-router-dom'
-import axios from 'axios'
 import styles from './OrderConfirm.module.css'
+import axiosInstance from '../../api/axiosInstance'
 
 
 const OrderConfirm = () => {
@@ -21,7 +21,7 @@ const OrderConfirm = () => {
     useEffect(() => {
         if (!orderId) return 
 
-        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:3010'}/order/${orderId}/summary`)
+        axiosInstance.get(`/order/${orderId}/summary`)
             .then(({ data }) => setOrder(data))
             .catch(() => setError('No pudimos encontrar los datos de tu orden'))
             .finally(() => setLoading(false))

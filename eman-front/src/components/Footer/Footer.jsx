@@ -28,7 +28,7 @@ const Footer = () => {
         <div className={styles.main}>
 
             <nav className={styles.links}>
-                <Link to="/nosotros">Nosotros</Link>
+                <Link to="/about">Nosotros</Link>
                 <Link to="/contact">Contacto</Link>
                 <Link to="/shipping">Envíos</Link>
                 <Link to="/returns">Devoluciones</Link>
