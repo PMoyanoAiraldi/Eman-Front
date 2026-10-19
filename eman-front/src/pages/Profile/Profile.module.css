@@ -1,5 +1,6 @@
+/* ===== Base: mobile ===== */
 .page {
-    padding: 2rem 1.5rem 4rem;
+    padding: 1.25rem var(--space-page) 3rem;
     max-width: 640px;
     margin: 0 auto;
 }
@@ -22,7 +23,7 @@
 .subtitle {
     font-family: var(--font-sans);
     font-size: 0.875rem;
-    color: #888;
+    color: #6B6B6B;
     margin-bottom: 0;
     line-height: 1.5;
 }
@@ -33,7 +34,7 @@
     gap: 1.25rem;
     background: #f5f3ef;
     border: 1px solid #d9d4c7;
-    padding: 2rem;
+    padding: 1.25rem;
     border-radius: 4px;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
 }
@@ -42,31 +43,48 @@
     font-family: var(--font-sans);
     font-size: 0.7rem;
     letter-spacing: 0.1em;
-    color: var(--color-gold);
+    color: #8a7233; /* dorado más oscuro: mejor contraste sobre el beige */
     text-transform: uppercase;
     margin-bottom: -0.25rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #e5e0d8;
 }
 
 .field {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
-    flex: 1;
+    min-width: 0; /* sin esto, un input dentro de un grid ensancha la columna */
 }
 
+/* Filas: una columna en celular */
 .row {
     display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+.row > * {
+    min-width: 0;
+}
+
+/* Calle ancha, número angosto */
+.rowStreet {
+    grid-template-columns: 2fr 1fr;
+    gap: 0.75rem;
+}
+
+/* Piso y depto: dos campos cortos, entran lado a lado */
+.rowPair {
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 0.75rem;
 }
 
 .label {
     font-family: var(--font-sans);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
-    color: #888;
+    color: #6B6B6B;
 }
 
 .inputWrapper {
@@ -77,93 +95,106 @@
 
 .input {
     font-family: var(--font-sans);
-    font-size: 0.95rem;
+    font-size: 16px; /* menos de 16px = zoom automático en iOS */
     color: #1a1a1a;
     border: 1px solid #d0d0d0;
     border-radius: 2px;
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    height: var(--tap-min);
+    padding: 0 1rem;
     outline: none;
     transition: border-color 0.2s;
     background: transparent;
     width: 100%;
-    box-sizing: border-box;
+    min-width: 0;
+    text-overflow: ellipsis; /* provincias con nombre largo en el select */
+}
+
+.inputWrapper .input {
+    padding-right: var(--tap-min); /* lugar para el botón del ojo */
 }
 
 .input::placeholder {
-    color: #bbb;
+    color: #999;
 }
 
 .input:focus {
     border-color: var(--color-gold);
 }
 
+/* va después de .input:focus para que el error se vea aunque el campo tenga el foco */
+.inputError {
+    border-color: #c0392b;
+}
+
 .inputReadonly {
     background: #fafafa;
-    color: #aaa;
+    color: #757575;
     cursor: not-allowed;
-    border-color: #eee;
+    border-color: #e5e5e5;
 }
 
 .inputReadonly:focus {
-    border-color: #eee;
+    border-color: #e5e5e5;
 }
 
 .readonlyHint {
     font-family: var(--font-sans);
-    font-size: 0.7rem;
-    color: #bbb;
+    font-size: 0.75rem;
+    color: #757575;
     margin-top: -0.1rem;
 }
 
 .eyeBtn {
     position: absolute;
-    right: 0.75rem;
+    top: 0;
+    right: 0;
+    width: var(--tap-min);
+    height: var(--tap-min);
     background: none;
     border: none;
     cursor: pointer;
-    color: #aaa;
+    color: #757575;
     display: flex;
     align-items: center;
-    padding: 0;
+    justify-content: center;
     transition: color 0.2s;
 }
 
-.eyeBtn:hover {
-    color: #555;
-}
-
-/* Checklist contraseña */
+/* Checklist de contraseña (solo se usa si dejás la versión local del JSX) */
 .checklist {
     list-style: none;
     margin: 0.4rem 0 0;
     padding: 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem 0.75rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.4rem 0.75rem;
 }
 
 .checkItem {
     font-family: var(--font-sans);
-    font-size: 0.72rem;
-    color: #bbb;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    color: #6B6B6B;
     display: flex;
-    align-items: center;
-    gap: 0.3rem;
+    align-items: flex-start;
+    gap: 0.4rem;
+    min-width: 0;
     transition: color 0.2s;
 }
 
 .checkOk {
-    color: #27ae60;
+    color: #1e8449;
 }
 
 .checkIcon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
     border-radius: 50%;
-    border: 1px solid #ddd;
+    border: 1px solid #bbb;
     flex-shrink: 0;
     transition: background 0.2s, border-color 0.2s;
 }
@@ -178,34 +209,34 @@
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: #ccc;
+    background: #999;
 }
 
 .matchOk {
     font-family: var(--font-sans);
-    font-size: 0.72rem;
-    color: #27ae60;
+    font-size: 0.8rem;
+    color: #2e7d46;
     margin: 0.2rem 0 0;
 }
 
 .matchError {
     font-family: var(--font-sans);
-    font-size: 0.72rem;
+    font-size: 0.8rem;
     color: #c0392b;
     margin: 0.2rem 0 0;
 }
 
 .error {
     font-family: var(--font-sans);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: #c0392b;
     margin: 0;
 }
 
 .success {
     font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: #27ae60;
+    font-size: 0.85rem;
+    color: #2e7d46;
     margin: 0;
 }
 
@@ -216,14 +247,11 @@
     color: #fff;
     background: #1a1a1a;
     border: none;
-    padding: 0.9rem;
+    min-height: 48px;
+    padding: 0 0.9rem;
     cursor: pointer;
     transition: background 0.2s;
     width: 100%;
-}
-
-.button:hover:not(:disabled) {
-    background: #333;
 }
 
 .button:disabled {
@@ -231,8 +259,33 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 480px) {
+@media (hover: hover) {
+    .eyeBtn:hover {
+        color: #555;
+    }
+
+    .button:hover:not(:disabled) {
+        background: #333;
+    }
+}
+
+/* ===== Tablet y desktop: dos columnas ===== */
+@media (min-width: 768px) {
+    .page {
+        padding-top: 2rem;
+        padding-bottom: 4rem;
+    }
+
+    .form {
+        padding: 2rem;
+    }
+
     .row {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .rowStreet {
+        grid-template-columns: 3fr 1fr;
     }
 }

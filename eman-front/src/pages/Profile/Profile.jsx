@@ -216,8 +216,8 @@ const ProfilePage = () => {
                         {profileErrors.name && <span className={styles.error}>{profileErrors.name}</span>}
                     </div>
 
-                    <div className={styles.row}>
-                        <div className={styles.field} style={{ flex: 3 }}>
+                    <div className={`${styles.row} ${styles.rowStreet}`}>
+                        <div className={styles.field} >
                             <label className={styles.label}>CALLE</label>
                             <input
                                 className={`${styles.input} ${profileErrors.streetName ? styles.inputError : ''}`}
@@ -232,7 +232,7 @@ const ProfilePage = () => {
                             {profileErrors.streetName && <span className={styles.error}>{profileErrors.streetName}</span>}
                         </div>
 
-                        <div className={styles.field} style={{ flex: 1 }}>
+                        <div className={styles.field} >
                             <label className={styles.label}>NÚMERO</label>
                             <input
                                 className={`${styles.input} ${profileErrors.streetNumber ? styles.inputError : ''}`}
@@ -248,7 +248,7 @@ const ProfilePage = () => {
                         </div>
                     </div>
 
-                    <div className={styles.row}>
+                    <div className={`${styles.row} ${styles.rowPair}`}>
                         <div className={styles.field}>
                             <label className={styles.label}>PISO (opcional)</label>
                             <input
@@ -344,7 +344,12 @@ const ProfilePage = () => {
                                 onChange={handlePasswordChange}
                                 required
                             />
-                            <button type="button" className={styles.eyeBtn} onClick={() => setShowOld(p => !p)} tabIndex={-1}>
+                            <button 
+                                type="button" 
+                                className={styles.eyeBtn} 
+                                onClick={() => setShowOld(p => !p)}
+                                aria-label={showOld ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                            >
                                 {showOld ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                             </button>
                         </div>
@@ -365,7 +370,12 @@ const ProfilePage = () => {
                                     onBlur={() => setPasswordFocused(false)}
                                     required
                                 />
-                                <button type="button" className={styles.eyeBtn} onClick={() => setShowNew(p => !p)} tabIndex={-1}>
+                                <button 
+                                    type="button" 
+                                    className={styles.eyeBtn} 
+                                    onClick={() => setShowNew(p => !p)} 
+                                    aria-label={showNew ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                    >
                                     {showNew ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                 </button>
                             </div>
@@ -398,7 +408,12 @@ const ProfilePage = () => {
                                     onChange={handlePasswordChange}
                                     required
                                 />
-                                <button type="button" className={styles.eyeBtn} onClick={() => setShowConfirm(p => !p)} tabIndex={-1}>
+                                <button 
+                                    type="button" 
+                                    className={styles.eyeBtn} 
+                                    onClick={() => setShowConfirm(p => !p)}
+                                    aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'} 
+                                >
                                     {showConfirm ? <EyeOff size={16} strokeWidth={1.5} /> : <Eye size={16} strokeWidth={1.5} />}
                                 </button>
                             </div>
