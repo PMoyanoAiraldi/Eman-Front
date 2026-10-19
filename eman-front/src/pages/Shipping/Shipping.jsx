@@ -1,6 +1,6 @@
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import { MapPin } from "lucide-react";
-import styles from "./Shipping.module.css";
+import styles from "../../styles/InfoPage.module.css";
 
 const Shipping = () => {
     return (

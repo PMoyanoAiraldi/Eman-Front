@@ -36,6 +36,7 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 import { registerLocale, setDefaultLocale } from 'react-datepicker'
 import { es } from 'date-fns/locale/es'
+import AboutUs from './pages/AboutUs/AboutUs';
 
 registerLocale('es', es)
 setDefaultLocale('es')
@@ -92,6 +93,7 @@ function App() {
       <Routes>
       <Route element={<Layout/>}>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/shipping" element={<Shipping/>}/>
         <Route path="/returns" element={<Returns/>}/>

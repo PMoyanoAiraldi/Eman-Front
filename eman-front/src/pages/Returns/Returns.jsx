@@ -1,15 +1,14 @@
-import { Link } from "react-router-dom";
-import styles from "./Returns.module.css";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import styles from "../../styles/InfoPage.module.css";
 
 const Returns = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <nav className={styles.breadcrumb}>
-                    <Link to="/">Inicio</Link>
-                    <span> / </span>
-                    <span>Devoluciones</span>
-                </nav>
+                <Breadcrumb items={[
+                    { label: 'Inicio', path: '/' }, 
+                    { label: 'Devoluciones' }]} 
+                />
 
                 <h1 className={styles.title}>Devoluciones y cambios</h1>
 
@@ -39,7 +38,7 @@ const Returns = () => {
                         <p>
                             Escribinos por{" "}
                             <a
-                                href="https://wa.me/5493404535333"
+                                href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={styles.link}

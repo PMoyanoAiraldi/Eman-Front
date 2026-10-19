@@ -1,15 +1,14 @@
-import { Link } from "react-router-dom";
-import styles from "./Privacy.module.css";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import styles from "../../styles/InfoPage.module.css";
 
 const Privacy = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <nav className={styles.breadcrumb}>
-                    <Link to="/">Inicio</Link>
-                    <span> / </span>
-                    <span>Privacidad</span>
-                </nav>
+                <Breadcrumb items={[
+                    { label: 'Inicio', path: '/' }, 
+                    { label: 'Privacidad' }]} 
+                />
 
                 <h1 className={styles.title}>Política de privacidad</h1>
 
@@ -38,7 +37,7 @@ const Privacy = () => {
                         <h2 className={styles.subtitle}>Tus datos</h2>
                         <p>No compartimos tu información personal con terceros salvo los necesarios para procesar tu pedido (Correo Argentino). Podés solicitar la eliminación de tus datos escribiéndonos por{" "}
                             <a
-                                href="https://wa.me/5493404535333"
+                                href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={styles.link}

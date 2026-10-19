@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
-import styles from "./Terms.module.css";
+import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
+import styles from "../../styles/InfoPage.module.css";
+
 
 const Terms = () => {
     return (
         <div className={styles.container}>
             <div className={styles.content}>
-                <nav className={styles.breadcrumb}>
-                    <Link to="/">Inicio</Link>
-                    <span> / </span>
-                    <span>Términos y condiciones</span>
-                </nav>
+                <Breadcrumb items={[
+                    { label: 'Inicio', path: '/' }, 
+                    { label: 'Terminos y condiciones' }]} 
+                />
 
                 <h1 className={styles.title}>Términos y condiciones</h1>
 
@@ -31,7 +31,7 @@ const Terms = () => {
 
                     <section className={styles.section}>
                         <h2 className={styles.subtitle}>Derecho a arrepentimiento</h2>
-                        <p>De acuerdo a la Ley 24.240, tenés 10 días hábiles desde la recepción del producto para ejercer el derecho a arrepentimiento sin costo ni necesidad de justificación.</p>
+                        <p>De acuerdo a la Ley 24.240, tenés 10 días corridos desde la recepción del producto para ejercer el derecho a arrepentimiento sin costo ni necesidad de justificación.</p>
                     </section>
 
                     <section className={styles.section}>
