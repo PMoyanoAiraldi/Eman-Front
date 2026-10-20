@@ -114,6 +114,10 @@ const EditProductForm = ({ product }) => {
 
         if (!isFormValid(validationErrors)) {
             showToast('Completá todos los campos obligatorios', 'error')
+
+            // Llevar al usuario al primer campo con error
+            const firstErrorField = REQUIRED_PRODUCT_FIELDS.find(f => validationErrors[f])
+            document.querySelector(`[name="${firstErrorField}"]`)?.focus()
             return
         }
 
@@ -193,9 +197,6 @@ const EditProductForm = ({ product }) => {
         }
     }
 
-    const formErrors = validateProductForm(form)
-    const formIsValid = isFormValid(formErrors)
-
     return (
         <div className={styles.page}>
             <div className={styles.topBar}>
@@ -217,27 +218,27 @@ const EditProductForm = ({ product }) => {
 
                     <div className={styles.field}>
                         <label className={styles.label}>NOMBRE</label>
-                        <input className={styles.input} name="name" value={form.name} onChange={handleChange} onBlur={handleBlur}/>
+                        <input className={`${styles.input} ${touched.name && errors.name ? styles.inputError : ''}`} name="name" value={form.name} onChange={handleChange} onBlur={handleBlur}/>
                         {touched.name && errors.name && <span className={styles.fieldError}>{errors.name}</span>}
                     </div>
 
                     <div className={styles.field}>
                         <label className={styles.label}>DESCRIPCIÓN</label>
-                        <textarea className={styles.textarea} name="description" value={form.description} onChange={handleChange} onBlur={handleBlur} rows={3} />
+                        <textarea className={`${styles.textarea} ${touched.description && errors.description ? styles.inputError : ''}`} name="description" value={form.description} onChange={handleChange} onBlur={handleBlur} rows={3} />
                     {touched.description && errors.description && <span className={styles.fieldError}>{errors.description}</span>}
                     </div>
 
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>PRECIO</label>
-                            <input className={styles.input} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
+                            <input className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
                         {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
                         </div>
 
                         <div className={styles.field}>
                             <label className={styles.label}>PESO (g)</label>
                             <input
-                                className={styles.input}
+                                className={`${styles.input} ${touched.weightGrams && errors.weightGrams ? styles.inputError : ''}`}
                                 name="weightGrams"
                                 type="number"
                                 min="1"
@@ -350,7 +351,7 @@ const EditProductForm = ({ product }) => {
                         </div>
                     </div>
 
-                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData || !formIsValid}>
+                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData}>
                         {savingData ? 'Guardando...' : 'Guardar cambios'}
                     </button>
                 </section>
