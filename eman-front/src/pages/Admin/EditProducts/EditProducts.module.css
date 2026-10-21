@@ -364,6 +364,10 @@
         gap: 1rem;
     }
 
+    .rowThree {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
     .imagesGrid {
         grid-template-columns: repeat(4, 1fr);
     }
@@ -386,6 +390,10 @@
 
     .imagesGrid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rowThree {
+        grid-template-columns: 1fr 1fr;
     }
 }
 

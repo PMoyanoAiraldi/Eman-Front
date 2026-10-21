@@ -228,7 +228,7 @@ const EditProductForm = ({ product }) => {
                     {touched.description && errors.description && <span className={styles.fieldError}>{errors.description}</span>}
                     </div>
 
-                    <div className={styles.row}>
+                    <div className={`${styles.row} ${styles.rowThree}`}>
                         <div className={styles.field}>
                             <label className={styles.label}>PRECIO</label>
                             <input className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
@@ -257,7 +257,7 @@ const EditProductForm = ({ product }) => {
                                     value={form.gender}
                                     onChange={handleChange}
                                     onBlur={handleBlur}>
-                                <option value="">Sin especificar</option>
+                                <option value="">Seleccioná</option>
                                 {GENDER_OPTIONS.map(opt => (
                                     <option key={opt.value} value={opt.value}>{opt.label}</option>
                                 ))}
