@@ -2,12 +2,15 @@
     display: flex;
     min-height: 100vh;
     background: #f6f3ec;
+    --toast-top: 1.5rem;
 }
 
 /* ── Sidebar ── */
 .sidebar {
     width: 240px;
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh; /* altura real visible en mobile */
+    overflow-y: auto;
     background: #1a1a1a;
     display: flex;
     flex-direction: column;
@@ -126,6 +129,7 @@
 .main {
     margin-left: 240px;
     flex: 1;
+    min-width: 0; /* permite que el contenido (tablas) scrollee adentro en vez de ensanchar la página */
     display: flex;
     flex-direction: column;
     min-height: 100vh;

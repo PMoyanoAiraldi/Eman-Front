@@ -1,7 +1,7 @@
 /* ===== Base: mobile ===== */
 .toast {
     position: fixed;
-    top: 4.5rem; /* justo debajo del Navbar de celular */
+    top: var(--toast-top, 4.5rem); /* justo debajo del Navbar de celular */
     left: var(--space-page);
     right: var(--space-page);
     margin-left: auto; /* con max-width, queda pegado a la derecha en pantallas medianas */
@@ -109,7 +109,7 @@
 /* ===== Tablet y desktop: esquina superior derecha ===== */
 @media (min-width: 768px) {
     .toast {
-        top: 7rem; /* el Navbar de desktop es más alto */
+        top: var(--toast-top, 7rem); /* el Navbar de desktop es más alto */
         left: auto;
         right: 2rem;
         margin-left: 0;
