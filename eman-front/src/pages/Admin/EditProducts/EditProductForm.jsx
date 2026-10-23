@@ -110,13 +110,17 @@ const EditProductForm = ({ product }) => {
     const handleSaveData = async () => {
         const validationErrors = validateProductForm(form)
         setErrors(validationErrors)
-        setTouched(REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}))
+        setTouched(prev => ({
+        ...prev,
+        ...REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}),
+        ...Object.keys(validationErrors).reduce((acc, f) => ({ ...acc, [f]: true }), {}),
+    }))
 
         if (!isFormValid(validationErrors)) {
-            showToast('Completá todos los campos obligatorios', 'error')
+            showToast('Hay campos con errores. Revisalos para continuar', 'error')
 
             // Llevar al usuario al primer campo con error
-            const firstErrorField = REQUIRED_PRODUCT_FIELDS.find(f => validationErrors[f])
+            const firstErrorField = Object.keys(validationErrors)[0]
             document.querySelector(`[name="${firstErrorField}"]`)?.focus()
             return
         }
