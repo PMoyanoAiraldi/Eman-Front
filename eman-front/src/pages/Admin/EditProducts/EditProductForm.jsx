@@ -369,15 +369,15 @@ const EditProductForm = ({ product }) => {
 
                                 <div className={styles.imageActions}>
                                     {!img.isPrimary && (
-                                        <button className={styles.imageBtn} onClick={() => handleSetPrimary(img.id)} title="Marcar como principal">
+                                        <button className={styles.imageBtn} onClick={() => handleSetPrimary(img.id)} aria-label="Marcar como principal">
                                             <Star size={14} strokeWidth={1.5} />
                                         </button>
                                     )}
-                                    <label className={styles.imageBtn} title="Reemplazar imagen">
+                                    <label className={styles.imageBtn} aria-label="Reemplazar imagen">
                                         <Upload size={14} strokeWidth={1.5} />
                                         <input type="file" accept="image/*" className={styles.fileInputHidden} onChange={e => handleReplaceImage(img.id, e)} />
                                     </label>
-                                    <button className={`${styles.imageBtn} ${styles.imageBtnDelete}`} onClick={() => setConfirmDelete(img.id)} title="Eliminar imagen">
+                                    <button className={`${styles.imageBtn} ${styles.imageBtnDelete}`} onClick={() => setConfirmDelete(img.id)} aria-label="Eliminar imagen">
                                         <Trash2 size={14} strokeWidth={1.5} />
                                     </button>
                                 </div>
