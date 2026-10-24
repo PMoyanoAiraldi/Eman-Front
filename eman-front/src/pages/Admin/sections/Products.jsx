@@ -16,8 +16,6 @@ const Products = ()=> {
     const navigate = useNavigate()
     const { products, loading, error } = useSelector(state => state.adminProducts)
 
-    console.log("products", products)
-
     const [search, setSearch] = useState('')
     const [categoryFilter, setCategoryFilter] = useState('')
     const [genderFilter, setGenderFilter] = useState('')
@@ -107,8 +105,7 @@ const Products = ()=> {
                     dispatch(updateVariantStock({ id, stock: Number(stock) })).unwrap() // unwrap hace que si alguno falla, caiga en el catch.
                 )
             )
-            setStockEdits({})
-            setVariantProduct(null) // cierra el modal
+            closeVariantModal()
             dispatch(fetchAllProducts()) // refresca la tabla
             showToast('Stock actualizado correctamente') // toast de éxito
         } catch {
@@ -199,6 +196,13 @@ const handleDeleteVariant = async () => {
         }
     }
 
+
+    const closeVariantModal = () => {
+        setVariantProduct(null)
+        setStockEdits({})
+        setShowAddVariant(false)
+        setVariantForm({ colorId: '', sizeId: '', stock: '' })
+    }
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -300,18 +304,18 @@ const handleDeleteVariant = async () => {
                                             </div>
                                         </td>
 
-                                    <td className={styles.cell}>{product.subcategory?.name || '—'}</td>
-                                    <td className={styles.cell}>{GENDER_LABELS[product.gender] || '—'}</td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Categoría">{product.subcategory?.name || '—'}</td>
+                                    <td className={styles.cell} data-label="Género">{GENDER_LABELS[product.gender] || '—'}</td>
+                                    <td className={styles.cell} data-label="Precio">
                                         ${Number(product.price).toLocaleString('es-AR')}
                                     </td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Stock">
                                         <button className={styles.stockBtn}
                                                 onClick={() => setVariantProduct(product)}>
                                             {product.variants?.reduce((acc, v) => acc + v.stock, 0) ?? 0}
                                         </button>
                                     </td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Destacado">
                                         <button
                                             className={`${styles.iconBtn} ${product.isFeatured ? styles.featuredActive : ''}`}
                                             onClick={() => handleToggleFeatured(product)}
@@ -322,7 +326,7 @@ const handleDeleteVariant = async () => {
                                     </td>
 
                                     {/* Estado */}
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Estado">
                                         {product.isDraft ? (
                                             <span className={`${styles.badge} ${styles.badgeDraft}`}>Borrador</span>
                                         ) : (
@@ -333,7 +337,7 @@ const handleDeleteVariant = async () => {
                                     </td>
 
                                 {/* Acciones */}
-                                <td className={styles.cell}>
+                                <td className={styles.cell} data-label="Acciones">
                                     <div className={styles.actions}>
                                         <button
                                             className={styles.iconBtn}
@@ -384,11 +388,11 @@ const handleDeleteVariant = async () => {
             )}
 
             {variantProduct && (
-        <div className={styles.modalOverlay} onClick={() => { setVariantProduct(null); setStockEdits({}) ; setShowAddVariant(false); setVariantForm({ colorId: '', sizeId: '', stock: '' }) }}>
+        <div className={styles.modalOverlay} onClick={(closeVariantModal)}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
                     <h2 className={styles.modalTitle}>{variantProduct.name}</h2>
-                    <button className={styles.closeBtn} onClick={() => { setVariantProduct(null); setStockEdits({}) }}>✕</button>
+                    <button className={styles.closeBtn} onClick={closeVariantModal}>✕</button>
                 </div>
                 <p className={styles.modalSub}>Stock por variante</p>
                 <table className={styles.variantTable}>
