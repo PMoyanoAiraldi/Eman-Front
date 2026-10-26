@@ -44,7 +44,8 @@ const ColumnFilter = ({ options, selected, onChange }) => {
     const toggleOpen = () => {
         if (!open && btnRef.current) {
             const rect = btnRef.current.getBoundingClientRect()
-            setPosition({ top: rect.bottom + 4, left: rect.left })
+            const left = Math.max(8, Math.min(rect.left, window.innerWidth - 220))
+            setPosition({ top: rect.bottom + 4, left })
         }
         setOpen(o => !o)
     }
@@ -110,7 +111,8 @@ const DateRangeFilter = ({ dateFrom, dateTo, onChange }) => {
     const toggleOpen = () => {
         if (!open && btnRef.current) {
             const rect = btnRef.current.getBoundingClientRect()
-            setPosition({ top: rect.bottom + 4, left: rect.left })
+            const left = Math.max(8, Math.min(rect.left, window.innerWidth - 220))
+            setPosition({ top: rect.bottom + 4, left })
         }
         setOpen(o => !o)
     }
@@ -386,6 +388,33 @@ const Orders = () => {
             {error && <p className={styles.error}>{error}</p>}
             {labelError && <p className={styles.error}>{labelError}</p>}
 
+            <div className={styles.mobileFilters}>
+                    <div className={styles.mobileFilterItem}>
+                        <span>Fecha</span>
+                        <DateRangeFilter
+                            dateFrom={filters.dateFrom}
+                            dateTo={filters.dateTo}
+                            onChange={({ dateFrom, dateTo }) => setFilters(prev => ({ ...prev, dateFrom, dateTo }))}
+                        />
+                    </div>
+                    <div className={styles.mobileFilterItem}>
+                        <span>Envío</span>
+                        <ColumnFilter options={SHIPPING_OPTIONS} selected={filters.shippingTypes} onChange={v => updateFilter('shippingTypes', v)} />
+                    </div>
+                    <div className={styles.mobileFilterItem}>
+                        <span>Etiqueta</span>
+                        <ColumnFilter options={LABEL_STATUS_OPTIONS} selected={filters.labelStatuses} onChange={v => updateFilter('labelStatuses', v)} />
+                    </div>
+                    <div className={styles.mobileFilterItem}>
+                        <span>Estado</span>
+                        <ColumnFilter
+                            options={STATE_OPTIONS.map(s => ({ value: s, label: STATE_LABELS[s].label }))}
+                            selected={filters.states}
+                            onChange={v => updateFilter('states', v)}
+                        />
+                    </div>
+                </div>
+
             {!loading && (
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
@@ -413,7 +442,6 @@ const Orders = () => {
                                         onChange={v => updateFilter('labelStatuses', v)}
                                     />
                                 </th>
-                                <th>Factura</th>
                                 <th>Total</th>
                                 <th>Estado
                                 <ColumnFilter
@@ -438,15 +466,15 @@ const Orders = () => {
                                             <p className={styles.clientName}>{order.guestName}</p>
                                             <p className={styles.clientEmail}>{order.guestEmail}</p>
                                         </td>
-                                        <td className={styles.cell}>
+                                        <td className={styles.cell} data-label="Fecha">
                                             {new Date(order.createdAt).toLocaleDateString('es-AR')}
                                         </td>
-                                        <td className={styles.cell}>
+                                        <td className={styles.cell} data-label="Envío">
                                             {order.shippingType === 'correo_argentino' ? 'Correo Arg.' :
                                             order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro'}
                                         </td>
 
-                                        <td className={styles.cell}>
+                                        <td className={styles.cell} data-label="Etiqueta">
                                             {isCorreoArgentino && order.state !== 'cancelado' ? (
                                                 isGenerated ? (
                                                     <span className={styles.labelYes} title="Etiqueta generada en MiCorreo">
@@ -462,10 +490,10 @@ const Orders = () => {
                                             )}
                                         </td>
 
-                                        <td className={styles.cell}>
+                                        <td className={styles.cell} data-label="Total">
                                             ${Number(order.total).toLocaleString('es-AR')}
                                         </td>
-                                        <td className={styles.cell}>
+                                        <td className={styles.cell} data-label="Estado">
                                             <select
                                                 className={`${styles.stateSelect} ${styles[stateInfo.cls]}`}
                                                 value={order.state}
@@ -478,7 +506,8 @@ const Orders = () => {
                                                 ))}
                                             </select>
                                         </td>
-                                        <td className={`${styles.cell} ${styles.actionsCell}`}>
+                                        <td className={styles.cell} data-label="Acciones">
+                                        <div className={styles.actions}>
                                             <button
                                                 className={styles.iconBtn}
                                                 onClick={() => handleViewOrder(order)}
@@ -517,6 +546,7 @@ const Orders = () => {
                                             sending={sendingInvoiceId === order.id}
                                         />
                                     )} 
+                                        </div>
                                         </td>
                                     </tr>
                                 )
