@@ -63,19 +63,19 @@ const Users = () => {
                                         <p className={styles.userName}>{user.name}</p>
                                         <p className={styles.userEmail}>{user.email}</p>
                                     </td>
-                                    <td className={styles.cell}>{user.phone || '—'}</td>
-                                    <td className={styles.cell}>{user.city || '—'}</td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Teléfono">{user.phone || '—'}</td>
+                                    <td className={styles.cell} data-label="Ciudad">{user.city || '—'}</td>
+                                    <td className={styles.cell} data-label="Rol">
                                         <span className={`${styles.roleBadge} ${user.rol === 'admin' ? styles.roleAdmin : styles.roleCliente}`}>
                                             {user.rol}
                                         </span>
                                     </td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Estado">
                                         <span className={`${styles.badge} ${user.state ? styles.badgeActive : styles.badgeInactive}`}>
                                             {user.state ? 'Activo' : 'Suspendido'}
                                         </span>
                                     </td>
-                                    <td className={styles.cell}>
+                                    <td className={styles.cell} data-label="Acción">
                                         <button
                                             className={`${styles.toggleBtn} ${user.state ? styles.toggleDeactivate : styles.toggleActivate}`}
                                             onClick={() => handleToggleState(user.id, user.state)}
