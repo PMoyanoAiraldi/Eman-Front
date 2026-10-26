@@ -516,16 +516,6 @@ const Orders = () => {
                                                 <Eye size={17} strokeWidth={1.5} />
                                             </button>
 
-                                            {!(isCorreoArgentino && !isGenerated) && (
-                                                <InvoicePopover
-                                                    order={order}
-                                                    onUpload={handleInvoiceUpload}
-                                                    onRequestSend={setConfirmResendInvoice}
-                                                    uploading={uploadingInvoiceId === order.id}
-                                                    sending={sendingInvoiceId === order.id}
-                                                />
-                                            )}
-
                                             {isCorreoArgentino && !isGenerated && (
                                             <button
                                                 className={styles.iconBtn}
@@ -537,7 +527,6 @@ const Orders = () => {
                                             </button>
                                         )}
 
-                                        {isCorreoArgentino && !isGenerated && (
                                         <InvoicePopover
                                             order={order}
                                             onUpload={handleInvoiceUpload}
@@ -545,7 +534,7 @@ const Orders = () => {
                                             uploading={uploadingInvoiceId === order.id}
                                             sending={sendingInvoiceId === order.id}
                                         />
-                                    )} 
+                                    
                                         </div>
                                         </td>
                                     </tr>

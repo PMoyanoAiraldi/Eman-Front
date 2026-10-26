@@ -9,7 +9,7 @@ const INVOICE_LABELS = {
 }
 
 const POPOVER_WIDTH = 220  // tiene que coincidir con el width de .invoicePopover en el CSS
-const POPOVER_HEIGHT = 160 // estimado: solo sirve para decidir si abre hacia arriba
+const POPOVER_HEIGHT = 200 // estimado: solo sirve para decidir si abre hacia arriba
 const MARGIN = 8
 
 const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) => {
@@ -68,7 +68,9 @@ const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) 
 
             {open && (
                 <>
-                    <div className={styles.filterBackdrop} onClick={() => setOpen(false)} />
+                    <div className={styles.filterBackdrop} 
+                        onClick={() => {setOpen(false)}} 
+                    />
                     <div
                         className={styles.invoicePopover}
                         style={{ 
@@ -115,6 +117,7 @@ const InvoicePopover = ({ order, onUpload, onRequestSend, uploading, sending }) 
                                     className={styles.sendInvoiceBtnSmall}
                                     disabled={sending}
                                     onClick={() => {
+                                        setOpen(false)
                                         onRequestSend(order.id)
                                     }}
                                 >
