@@ -18,7 +18,7 @@ import axiosInstance from '../../../api/axiosInstance'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
 import { GENDER_OPTIONS } from '../../../constants/gender'; 
 import { validateProductField, validateProductForm, isFormValid, REQUIRED_PRODUCT_FIELDS } from '../../../utils/productValidators'
-import styles from '../NewProducts/NewProducts.module.css'
+import styles from '../NewProducts/NewProductsForm.module.css'
 
 
 const STEPS = ['Datos del producto', 'Variantes', 'Imágenes', 'Confirmación']
@@ -272,6 +272,10 @@ const NewProductsForm = () => {
     }
 }, [dispatch, allProducts.length])
 
+useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+}, [currentStep])
+
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
         const newValue = type === 'checkbox' ? checked : value
@@ -331,10 +335,16 @@ const NewProductsForm = () => {
     const handleCreateProduct = async () => {
         const validationErrors = validateProductForm(form)
         setErrors(validationErrors)
-        setTouched(REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}))
+        setTouched(prev => ({
+            ...prev,
+            ...REQUIRED_PRODUCT_FIELDS.reduce((acc, f) => ({ ...acc, [f]: true }), {}),
+            ...Object.keys(validationErrors).reduce((acc, f) => ({ ...acc, [f]: true }), {}),
+        }))
 
         if (!isFormValid(validationErrors)) {
-            showToast('Completá todos los campos obligatorios', 'error')
+            showToast('Hay campos con errores. Revisalos para continuar', 'error')
+            const firstErrorField = Object.keys(validationErrors)[0]
+            document.querySelector(`[name="${firstErrorField}"]`)?.focus()
             return
         }
         setCreatingProduct(true)
@@ -531,10 +541,6 @@ const NewProductsForm = () => {
 }
 
 
-
-    const formErrors = validateProductForm(form)
-    const formIsValid = isFormValid(formErrors)
-
     return (
         <div className={styles.page}>
             <div className={styles.formWrapper}>
@@ -583,7 +589,7 @@ const NewProductsForm = () => {
                     {touched.description && errors.description && <span className={styles.fieldError}>{errors.description}</span>}
                     </div>
 
-                    <div className={styles.row}>
+                    <div className={`${styles.row} ${styles.rowThree}`}>
                     <div className={styles.field}>
                         <label className={styles.label}>PRECIO</label>
                         <input className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} 
@@ -592,6 +598,7 @@ const NewProductsForm = () => {
                         value={form.price} 
                         onChange={handleChange}
                         onBlur={handleBlur}
+                        onWheel={e => e.currentTarget.blur()}
                         />
                     {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
                     </div>
@@ -607,6 +614,7 @@ const NewProductsForm = () => {
                             value={form.weightGrams}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            onWheel={e => e.currentTarget.blur()}
                         />
                         {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
                     </div>
@@ -721,7 +729,7 @@ const NewProductsForm = () => {
                         </span>
                     </div>
                     
-                    <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct || !formIsValid}>
+                    <button className={styles.saveBtn} onClick={handleCreateProduct} disabled={creatingProduct}>
                         {creatingProduct ? 'Creando...' : 'Siguiente'}
                     </button>
                 </section>
@@ -799,7 +807,7 @@ const NewProductsForm = () => {
 
                         <div className={`${styles.field} ${styles.stockFieldSpacing}`}>
                             <label className={styles.label}>STOCK</label>
-                            <input className={styles.input} name="stock" type="text" value={variantForm.stock} onChange={handleVariantChange} />
+                            <input className={styles.input} name="stock" type="text" inputMode="numeric" value={variantForm.stock} onChange={handleVariantChange} />
                         </div>
 
                         <button className={styles.addVariantBtn} onClick={handleAddVariant} disabled={addingVariant}>

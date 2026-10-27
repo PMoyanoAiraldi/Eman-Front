@@ -1,3 +1,6 @@
+/* ═══════════════════════════════════════════
+   LAYOUT / CABECERA
+═══════════════════════════════════════════ */
 .page {
     background: #f6f3ec;
     min-height: 100vh;
@@ -47,20 +50,19 @@
     color: #999;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    align-items: start;
+.stepContent {
+    margin-top: 1.5rem;
 }
 
-/* Card */
+/* ═══════════════════════════════════════════
+   CARD Y CAMPOS
+═══════════════════════════════════════════ */
 .card {
     background: #fff;
     border: 1px solid #e8e8e8;
     border-radius: 4px;
     padding: 1.25rem 1.5rem;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
@@ -89,10 +91,27 @@
     gap: 0.75rem;
 }
 
-.featuredRow {
+/* Fila de 3 campos (precio / peso / género) */
+.rowThree {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.fieldRow {
+    display: flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.fieldRow .input {
+    flex: 1;
+    min-width: 0;
+}
+
+.fieldLabelRow {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.5rem;
+    margin-bottom: 0.3rem;
 }
 
 .label {
@@ -102,7 +121,8 @@
     color: #999;
 }
 
-.input, .textarea {
+.input,
+.textarea {
     font-family: var(--font-sans);
     font-size: 0.78rem;
     color: #1a1a1a;
@@ -116,8 +136,32 @@
     box-sizing: border-box;
 }
 
-.input:focus, .textarea:focus { border-color: var(--color-gold); }
-.textarea { resize: vertical; }
+.input:focus,
+.textarea:focus {
+    border-color: var(--color-gold);
+}
+
+.textarea {
+    resize: vertical;
+}
+
+.inputError {
+    border-color: #e74c3c;
+}
+
+.fieldError {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+.hintText {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    color: #b0834f;
+    margin-top: 0.3rem;
+}
 
 .checkboxLabel {
     display: flex;
@@ -137,9 +181,6 @@
     cursor: pointer;
 }
 
-.checkOk { color: #16a34a; }
-.checkMissing { color: #dc2626; }
-
 .featuredCount {
     display: block;
     font-family: var(--font-sans);
@@ -148,6 +189,7 @@
     margin-top: 0.4rem;
 }
 
+/* Botones principales */
 .saveBtn {
     font-family: var(--font-sans);
     font-size: 0.78rem;
@@ -163,7 +205,6 @@
 
 .saveBtn:hover:not(:disabled) { background: #333; }
 .saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-
 
 .addVariantBtn {
     align-self: flex-start;
@@ -194,106 +235,14 @@
     border-top: 1px solid #f0f0f0;
     margin: 1.5rem 0 1rem;
 }
-/* Imágenes */
-.imagesGrid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
-}
 
-.imageCard {
-    position: relative;
-    border: 1px solid #e8e8e8;
-    border-radius: 4px;
-    overflow: hidden;
-    aspect-ratio: 1;
-    background: #fafafa;
-}
+/* Checklist de confirmación */
+.checkOk      { color: #16a34a; }
+.checkMissing { color: #dc2626; }
 
-.imageCardPrimary {
-    border-color: var(--color-gold);
-    border-width: 2px;
-}
-
-.image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.primaryBadge {
-    position: absolute;
-    top: 0.4rem;
-    left: 0.4rem;
-    background: var(--color-gold);
-    color: #fff;
-    font-family: var(--font-sans);
-    font-size: 0.62rem;
-    letter-spacing: 0.05em;
-    padding: 0.2rem 0.5rem;
-    border-radius: 20px;
-}
-
-.imageActions {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,0.55);
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.imageCard:hover .imageActions { opacity: 1; }
-
-.imageBtn {
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
-    border-radius: 4px;
-    cursor: pointer;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.35rem;
-    transition: background 0.2s;
-}
-
-.imageBtn:hover { background: rgba(255,255,255,0.3); }
-
-.imageBtnDelete:hover {
-    background: rgba(192, 57, 43, 0.7);
-    border-color: transparent;
-}
-
-.fileInputHidden {
-    display: none;
-}
-
-.stepContent {
-    margin-top: 1.5rem;
-}
-
-.fieldRow {
-    display: flex;
-    gap: 0.4rem;
-    align-items: center;
-}
-
-.fieldRow .input {
-    flex: 1;
-}
-
-.inlineAddWrapper {
-    position: relative;
-}
-
-
+/* ═══════════════════════════════════════════
+   BOTÓN "+" JUNTO A LOS SELECTS
+═══════════════════════════════════════════ */
 .inlineAddBtn {
     display: flex;
     align-items: center;
@@ -319,59 +268,17 @@
     cursor: not-allowed;
 }
 
-.inlineAddPopover {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    z-index: 10;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    padding: 0.75rem;
-    width: 220px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.inlineAddActions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.inlineAddSave {
-    flex: 1;
-    background: #1a1a1a;
-    color: #fff;
-    border: none;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 2px;
-}
-
-.inlineAddSave:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.inlineAddCancel {
-    background: transparent;
-    border: 1px solid #d0d0d0;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    padding: 0.5rem;
-    cursor: pointer;
-    border-radius: 2px;
-    color: #666;
-}
-
+/* ═══════════════════════════════════════════
+   MODAL DE GESTIÓN (marcas, tipos, colores...)
+═══════════════════════════════════════════ */
 .manageModalOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 1rem;
     z-index: 300;
 }
 
@@ -379,11 +286,13 @@
     background: #fff;
     border-radius: 4px;
     padding: 1.5rem;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     max-height: 70vh;
+    max-height: 70dvh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
 .manageModalHeader {
@@ -454,7 +363,6 @@
     padding-top: 0.6rem;
 }
 
-
 .manageItem {
     display: flex;
     align-items: center;
@@ -472,6 +380,20 @@
 .manageItemInactive {
     color: #bbb;
     text-decoration: line-through;
+}
+
+.manageItemColorRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.manageItemSwatch {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    flex-shrink: 0;
 }
 
 .manageToggleBtn {
@@ -503,67 +425,26 @@
     padding: 1rem 0;
 }
 
-.hintText {
-    font-family: var(--font-sans);
-    font-size: 0.68rem;
-    color: #b0834f;
-    margin-top: 0.3rem;
-}
-
-.variantList {
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: #444;
-    margin-top: 0.75rem;
-    padding-left: 1.1rem;
-}
-
-/* Agregar imagen */
-.addImageCard {
+.colorInputRow {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     gap: 0.5rem;
-    border: 1px dashed #d0d0d0;
+    align-items: center;
+}
+
+.colorPicker {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #d0d0d0;
+    border-radius: 2px;
+    padding: 2px;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    aspect-ratio: 1;
+    flex-shrink: 0;
+    background: transparent;
 }
 
-.addImageCard:hover {
-    border-color: var(--color-gold);
-    background: #fdf8ec;
-}
-
-.addImageText {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: #aaa;
-}
-
-.uploadingText {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: #aaa;
-}
-
-.loading {
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    color: #999;
-    padding: 2rem;
-    text-align: center;
-}
-
-.featuredCount {
-    display: block;
-    font-family: var(--font-sans);
-    font-size: 0.72rem;
-    color: #999;
-    margin-top: 0.4rem;
-}
-
+/* ═══════════════════════════════════════════
+   VARIANTES (colores, talles, lista)
+═══════════════════════════════════════════ */
 .colorSwatches {
     display: flex;
     flex-wrap: wrap;
@@ -596,44 +477,6 @@
     font-size: 0.72rem;
     color: #666;
     margin-top: 0.3rem;
-}
-
-.colorInputRow {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.colorPicker {
-    width: 38px;
-    height: 38px;
-    border: 1px solid #d0d0d0;
-    border-radius: 2px;
-    padding: 2px;
-    cursor: pointer;
-    flex-shrink: 0;
-    background: transparent;
-}
-
-.manageItemColorRow {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.manageItemSwatch {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 1px solid #ddd;
-    flex-shrink: 0;
-}
-
-.fieldLabelRow {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.3rem;
 }
 
 .sizeChips {
@@ -670,17 +513,6 @@
     margin-top: 0.5rem;
 }
 
-.inputError {
-    border-color: #e74c3c;
-}
-
-.fieldError {
-    color: #e74c3c;
-    font-size: 12px;
-    margin-top: 4px;
-    display: block;
-}
-
 .variantSummary {
     display: flex;
     align-items: center;
@@ -691,12 +523,14 @@
     border-radius: 6px;
     margin-top: 4px;
 }
+
 .variantSummaryLabel {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: #9a8c6a;
 }
+
 .variantSummaryValue {
     font-size: 14px;
     font-weight: 600;
@@ -706,6 +540,7 @@
 .variantListWrapper {
     margin-top: 16px;
 }
+
 .variantListCount {
     font-size: 12px;
     text-transform: uppercase;
@@ -721,6 +556,9 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: #444;
 }
 
 .variantItem {
@@ -745,17 +583,238 @@
     padding: 4px;
     border-radius: 4px;
 }
+
 .variantRemoveBtn:hover {
     background: #fbeaea;
 }
+
 .variantRemoveBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-@media (max-width: 900px) {
-    .grid {
-        grid-template-columns: 1fr;
+/* ═══════════════════════════════════════════
+   IMÁGENES
+═══════════════════════════════════════════ */
+.imagesGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+}
+
+.imageCard {
+    position: relative;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    background: #fafafa;
+}
+
+.imageCardPrimary {
+    border-color: var(--color-gold);
+    border-width: 2px;
+}
+
+.image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.primaryBadge {
+    position: absolute;
+    top: 0.4rem;
+    left: 0.4rem;
+    background: var(--color-gold);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 20px;
+}
+
+.imageActions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* Sin botones (imagen principal): no mostrar la barra vacía */
+.imageActions:empty {
+    display: none;
+}
+
+.imageBtn {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem;
+    transition: background 0.2s;
+}
+
+.imageBtn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.fileInputHidden {
+    display: none;
+}
+
+.addImageCard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px dashed #d0d0d0;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    aspect-ratio: 1;
+}
+
+.addImageCard:hover {
+    border-color: var(--color-gold);
+    background: #fdf8ec;
+}
+
+.addImageText,
+.uploadingText {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+.checklist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+}
+
+/* Mouse: la barra de acciones aparece al pasar el cursor */
+@media (hover: hover) {
+    .imageCard:hover .imageActions {
+        opacity: 1;
+    }
+}
+
+/* Pantallas táctiles: no existe hover, la barra queda siempre visible */
+@media (hover: none) {
+    .imageActions {
+        opacity: 1;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+    /* AdminLayout ya aporta padding y fondo */
+    .page {
+        padding: 0;
+        min-height: 0;
+        background: transparent;
+    }
+
+    .rowThree {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* 16px evita el zoom automático de iOS al enfocar */
+    .input,
+    .textarea {
+        font-size: 16px;
+    }
+
+    .input {
+        min-height: 44px;
+    }
+
+    /* Zonas táctiles de ~44px */
+    .backBtn {
+        min-height: 44px;
+    }
+
+    .inlineAddBtn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .colorSwatches {
+        gap: 0.6rem;
+    }
+
+    .colorSwatch {
+        width: 36px;
+        height: 36px;
+    }
+
+    .sizeChip {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .checkboxLabel {
+        min-height: 40px;
+    }
+
+    .checkbox {
+        width: 20px;
+        height: 20px;
+    }
+
+    .saveBtn,
+    .addVariantBtn {
+        min-height: 46px;
+        font-size: 0.85rem;
+    }
+
+    .addVariantBtn {
+        align-self: stretch;
+    }
+
+    .variantItem {
+        gap: 0.5rem;
+        overflow-wrap: anywhere;
+    }
+
+    .variantRemoveBtn,
+    .manageToggleBtn {
+        padding: 0.6rem;
+    }
+
+    .closeBtn {
+        padding: 0.5rem;
+    }
+
+    .manageModalAddBtn {
+        min-height: 44px;
+    }
+
+    .imageBtn {
+        padding: 0.55rem;
     }
 }
 
@@ -764,16 +823,12 @@
         padding: 1rem;
     }
 
-    .inlineAddPopover {
-        width: 170px;
-        right: auto;
-        left: 0;
-    }
-    .row {
+    .row,
+    .rowThree {
         grid-template-columns: 1fr;
     }
 
-    .imagesGrid {
-        grid-template-columns: repeat(2, 1fr);
+    .variantSummary {
+        flex-wrap: wrap;
     }
 }
