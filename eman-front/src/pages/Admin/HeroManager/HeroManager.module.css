@@ -1,3 +1,6 @@
+/* ═══════════════════════════════════════════
+   LAYOUT / CABECERA
+═══════════════════════════════════════════ */
 .page {
     background: #f6f3ec;
     min-height: 100vh;
@@ -22,8 +25,6 @@
     transition: color 0.2s;
 }
 
-.backBtn:hover { color: #1a1a1a; }
-
 .header {
     margin-bottom: 2rem;
 }
@@ -42,15 +43,9 @@
     color: #999;
 }
 
-.loading {
-    font-family: var(--font-sans);
-    font-size: 0.85rem;
-    color: #999;
-    padding: 2rem;
-    text-align: center;
-}
-
-/* ---------- Grid de slides existentes ---------- */
+/* ═══════════════════════════════════════════
+   GRID DE SLIDES EXISTENTES
+═══════════════════════════════════════════ */
 .slidesGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -63,7 +58,7 @@
     border: 1px solid #e8e8e8;
     border-radius: 4px;
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
     transition: opacity 0.2s;
@@ -73,7 +68,7 @@
     opacity: 0.55;
 }
 
-/* ---------- Preview con click-to-set foco ---------- */
+/* Preview con click-to-set del punto de foco */
 .imagePreview {
     position: relative;
     width: 100%;
@@ -94,7 +89,7 @@
 .imageOverlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.45);
     color: #fff;
     display: flex;
     align-items: center;
@@ -107,7 +102,7 @@
     position: absolute;
     top: 0.5rem;
     left: 0.5rem;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.6);
     color: #fff;
     font-family: var(--font-sans);
     font-size: 0.62rem;
@@ -120,7 +115,7 @@
     pointer-events: none;
 }
 
-/* ---------- Acciones sobre la imagen (reemplazar / activar / borrar) ---------- */
+/* Acciones sobre la imagen (reemplazar / activar / borrar) */
 .imageActions {
     display: flex;
     justify-content: center;
@@ -143,28 +138,17 @@
     transition: border-color 0.2s, color 0.2s;
 }
 
-.imageBtn:hover { border-color: var(--color-gold); color: var(--color-gold); }
-
-.imageBtnDelete:hover {
-    border-color: #c0392b;
-    color: #c0392b;
-}
-
 .fileInputHidden {
     display: none;
 }
 
-/* ---------- Info de texto (vista) ---------- */
+/* Info de texto (vista) */
 .slideInfo {
     padding: 1rem 1.1rem;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
-}
-
-.slideInfo:hover {
-    background: #fdfaf3;
 }
 
 .slideTag {
@@ -192,9 +176,10 @@
     font-size: 0.68rem;
     color: #aaa;
     margin-top: 0.2rem;
+    overflow-wrap: anywhere;
 }
 
-/* ---------- Form de edición inline ---------- */
+/* Form de edición inline */
 .editForm {
     padding: 1rem 1.1rem;
     display: flex;
@@ -215,15 +200,15 @@
     flex: 1;
 }
 
-.cancelBtn:hover { border-color: #999; color: #333; }
-
-/* ---------- Card genérica (form nuevo slide) ---------- */
+/* ═══════════════════════════════════════════
+   CARD GENÉRICA (form de nuevo slide)
+═══════════════════════════════════════════ */
 .card {
     background: #fff;
     border: 1px solid #e8e8e8;
     border-radius: 4px;
     padding: 1.75rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
     gap: 1.1rem;
@@ -274,7 +259,9 @@
     box-sizing: border-box;
 }
 
-.input:focus { border-color: var(--color-gold); }
+.input:focus {
+    border-color: var(--color-gold);
+}
 
 .saveBtn {
     font-family: var(--font-sans);
@@ -293,10 +280,12 @@
     flex: 1;
 }
 
-.saveBtn:hover:not(:disabled) { background: #333; }
-.saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.saveBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-/* ---------- Área de upload (nuevo slide) ---------- */
+/* Área de upload (nuevo slide) */
 .uploadArea {
     display: flex;
     flex-direction: column;
@@ -315,20 +304,89 @@
     background: #fafafa;
 }
 
-.uploadArea:hover {
-    border-color: var(--color-gold);
-    background: #fdf8ec;
-}
-
 .uploadPreview {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+/* ═══════════════════════════════════════════
+   HOVER (solo mouse; en táctil queda "pegado")
+═══════════════════════════════════════════ */
+@media (hover: hover) {
+    .backBtn:hover { color: #1a1a1a; }
+
+    .imageBtn:hover {
+        border-color: var(--color-gold);
+        color: var(--color-gold);
+    }
+
+    .imageBtnDelete:hover {
+        border-color: #c0392b;
+        color: #c0392b;
+    }
+
+    .slideInfo:hover { background: #fdfaf3; }
+
+    .cancelBtn:hover {
+        border-color: #999;
+        color: #333;
+    }
+
+    .saveBtn:hover:not(:disabled) { background: #333; }
+
+    .uploadArea:hover {
+        border-color: var(--color-gold);
+        background: #fdf8ec;
+    }
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
 @media (max-width: 900px) {
     .slidesGrid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    /* AdminLayout ya aporta padding y fondo */
+    .page {
+        padding: 0;
+        min-height: 0;
+        background: transparent;
+    }
+
+    .slidesGrid {
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .backBtn {
+        min-height: 44px;
+    }
+
+    /* 16px evita el zoom automático de iOS al enfocar */
+    .input {
+        font-size: 16px;
+        min-height: 44px;
+    }
+
+    /* Zonas táctiles de ~44px */
+    .imageActions {
+        gap: 0.75rem;
+    }
+
+    .imageBtn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    .saveBtn,
+    .cancelBtn {
+        min-height: 46px;
+        font-size: 0.85rem;
     }
 }
 

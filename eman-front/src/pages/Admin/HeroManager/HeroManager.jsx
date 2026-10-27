@@ -297,7 +297,7 @@ const HeroManager = () => {
                         </div>
                             <div className={styles.field}>
                                 <label className={styles.label}>ORDEN (posición en el carrusel, empieza en 0)</label>
-                                <input className={styles.input} name="order" type="number" placeholder="Orden" value={editForm.order} onChange={handleEditFormChange} />
+                                <input className={styles.input} name="order" type="number" placeholder="Orden" value={editForm.order} onChange={handleEditFormChange} onWheel={e => e.currentTarget.blur()} />
                             </div>
 
                             <div className={styles.field}>
@@ -374,7 +374,7 @@ const HeroManager = () => {
                 </div>
                 <div className={styles.field}>
                     <label className={styles.label}>ORDEN</label>
-                    <input className={styles.input} name="order" type="number" value={newForm.order} onChange={handleNewFormChange} />
+                    <input className={styles.input} name="order" type="number" value={newForm.order} onChange={handleNewFormChange} onWheel={e => e.currentTarget.blur()}/>
                 </div>
 
                 <button className={styles.saveBtn} onClick={handleCreate} disabled={creating}>
