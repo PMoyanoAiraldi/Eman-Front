@@ -235,7 +235,15 @@ const EditProductForm = ({ product }) => {
                     <div className={`${styles.row} ${styles.rowThree}`}>
                         <div className={styles.field}>
                             <label className={styles.label}>PRECIO</label>
-                            <input className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} name="price" type="number" value={form.price} onChange={handleChange} onBlur={handleBlur} />
+                            <input 
+                            className={`${styles.input} ${touched.price && errors.price ? styles.inputError : ''}`} 
+                                name="price" 
+                                type="number" 
+                                value={form.price} 
+                                onChange={handleChange} 
+                                onBlur={handleBlur} 
+                                onWheel={e => e.currentTarget.blur()}   
+                            />
                         {touched.price && errors.price && <span className={styles.fieldError}>{errors.price}</span>}
                         </div>
 
@@ -250,6 +258,7 @@ const EditProductForm = ({ product }) => {
                                 value={form.weightGrams}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onWheel={e => e.currentTarget.blur()}
                             />
                             {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
                         </div>
