@@ -66,6 +66,13 @@ const paymentCustomization = {
     },
 }
 
+const STORAGE_KEY = 'eman_checkout'
+
+const loadSaved = () => {
+    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) } catch { return null }
+}
+const clearSaved = () => sessionStorage.removeItem(STORAGE_KEY)
+
 const Checkout = () => {
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -74,8 +81,9 @@ const Checkout = () => {
     const user     = useSelector(state => state.auth.user) 
     const isAuthenticated = !!user
 
+    const [saved] = useState(loadSaved)
 
-    const [orderId, setOrderId] = useState(null)
+    const [orderId, setOrderId] = useState(saved?.orderId ?? null)
     const [preferenceId, setPreferenceId] = useState(null)
 
     const [errors, setErrors] = useState({})
@@ -101,7 +109,7 @@ const Checkout = () => {
 
     const hideToast = () => setToast(null)
 
-    const [step, setStep] = useState(1)
+    const [step, setStep] = useState(saved?.orderId ? 4 : (saved?.step ?? 1))
 
     const [form, setForm] = useState({
         // Paso 1
@@ -123,6 +131,8 @@ const Checkout = () => {
         agencyName: '',
         agencyAddress: '',
         agencyCity: '',
+
+        ...(saved?.form ?? {}),
     })
 
     const agenciesRequestId = useRef(0)
@@ -399,6 +409,9 @@ const handleBack = async () => {
     setStep(s => s - 1)
 }
 
+useEffect(() => {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ form, step, orderId }))
+}, [form, step, orderId])
 
 useEffect(() => {
   // Solo cotizamos si eligieron Correo Argentino y el CP tiene 4 dígitos (formato AR)
@@ -446,6 +459,33 @@ useEffect(() => {
     return () => clearTimeout(timer) // cancela la cotización anterior si el usuario sigue tipeando
 }, [form.zipCode, form.shippingType, form.deliveryType])
 
+
+useEffect(() => {
+    if (!saved?.orderId) return
+
+    const restore = async () => {
+        try {
+            const { data: order } = await axiosInstance.get(`/order/${saved.orderId}/status`)
+
+            if (order.state !== 'pendiente') {
+                // ya se pagó o se canceló: no hay nada que retomar
+                clearSaved()
+                setOrderId(null)
+                setStep(1)
+                return
+            }
+
+            setOrderTotal(Number(order.total))
+            const prefRes = await axiosInstance.post('/payments/create-preference', { orderId: order.id })
+            setPreferenceId(prefRes.data.preferenceId)
+        } catch (err) {
+            console.error('No se pudo recuperar la orden', err)
+            setOrderId(null)
+            setStep(3) // que reintente desde el resumen
+        }
+    }
+    restore()
+}, [])
 
 const normalize = (str) => str
     .normalize('NFD')
@@ -897,7 +937,7 @@ return (
         {/* ── Paso 4: Pago ── */}
             {step === 4 && (
                 <div className={styles.form}>
-                
+                {!preferenceId && <p>Recuperando tu pedido...</p>}
                     {preferenceId && (
                         <Payment
                             initialization={paymentInitialization}
@@ -910,9 +950,11 @@ return (
                                     )
 
                                     if (data.status === 'approved') {
+                                        clearSaved()
                                         dispatch(clearCart())
                                         navigate(`/order-confirm?orderId=${orderId}`)
                                     } else if (data.status === 'in_process') {
+                                        clearSaved()
                                         navigate(`/order-pending?orderId=${orderId}`)
                                     } else {
                                         setToast({
