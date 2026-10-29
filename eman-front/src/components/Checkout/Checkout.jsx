@@ -471,6 +471,12 @@ useEffect(() => {
                 // ya se pagó o se canceló: no hay nada que retomar
                 clearSaved()
                 setOrderId(null)
+                setPreferenceId(null)
+                setOrderTotal(null)
+                setToast({
+                    type: 'error',
+                    message: 'Tu pedido anterior venció y liberamos el stock. Revisá tu carrito y confirmá de nuevo.',
+                })
                 setStep(1)
                 return
             }
@@ -480,8 +486,11 @@ useEffect(() => {
             setPreferenceId(prefRes.data.preferenceId)
         } catch (err) {
             console.error('No se pudo recuperar la orden', err)
+            clearSaved()
             setOrderId(null)
-            setStep(3) // que reintente desde el resumen
+            setPreferenceId(null)
+            setOrderTotal(null)
+            setStep(err.response?.status === 404 ? 1 : 3) //reintenta desde el resumen
         }
     }
     restore()
@@ -959,14 +968,25 @@ return (
                                     } else {
                                         setToast({
                                             type: 'error',
-                                            message: 'El pago fue rechazado. Probá con otro medio de pago.',
+                                            message: 'El pago fue rechazado. Revisá los datos o probá con otro medio de pago.',
                                         })
+                                        // el backend ya canceló la orden y devolvió el stock
+                                        setOrderId(null)
+                                        setPreferenceId(null)
+                                        setOrderTotal(null)
+                                        setStep(3)
                                     }
                                 } catch (err) {
                                     setToast({
                                         type: 'error',
                                         message: err.response?.data?.message || 'Error al procesar el pago. Intentá de nuevo.',
                                     })
+                                    if (err.response?.status === 400) {
+                                        setOrderId(null)
+                                        setPreferenceId(null)
+                                        setOrderTotal(null)
+                                        setStep(3)
+                                    }
                                 }
                             }}
                             onError={(error) => {
