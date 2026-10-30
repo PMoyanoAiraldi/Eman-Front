@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo  } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { clearCart, updateItemStock, removeItem } from '../../redux/slices/cartReducer'
+import { clearCart, updateItemStock, removeItem, increaseQuantity, decreaseQuantity } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
 import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
@@ -420,13 +420,30 @@ const handleBack = async () => {
     setStep(s => s - 1)
 }
 
-const handleRemoveItem = (item) => {
-    setShippingQuote(null)
-    setShippingQuoteError(null)
-    dispatch(removeItem({ id: item.id, size: item.size, color: item.color }))
-}
 
 const itemsKey = items.map(i => `${i.variantId}:${i.quantity}`).join(',')
+
+const invalidateQuote = () => {
+    setShippingQuote(null)
+    setShippingQuoteError(null)
+}
+
+const itemPayload = (item) => ({ id: item.id, size: item.size, color: item.color })
+
+const handleRemoveItem = (item) => {
+    invalidateQuote()
+    dispatch(removeItem(itemPayload(item)))
+}
+
+const handleDecrease = (item) => {
+    invalidateQuote()
+    dispatch(decreaseQuantity(itemPayload(item)))
+}
+
+const handleIncrease = (item) => {
+    invalidateQuote()
+    dispatch(increaseQuantity(itemPayload(item)))
+}
 
 useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ form, step, orderId, savedAt: Date.now()  }))
@@ -928,11 +945,26 @@ return (
                     alt={item.name}
                     className={styles.summaryItemImage}
                 />
-                <div className={styles.summaryItemInfo}>
+            <div className={styles.summaryItemInfo}>
                 <span className={styles.summaryItemName}>{item.name}</span>
                 <span className={styles.summaryItemDetails}>
-                    {item.color.name} · Talle {item.size} · x{item.quantity}
+                    {item.color.name} · Talle {item.size}
                 </span>
+                <div className={styles.qty}>
+                    <button
+                        type="button"
+                        aria-label="Restar una unidad"
+                        onClick={() => handleDecrease(item)}
+                        disabled={loading}
+                    >−</button>
+                    <span>{item.quantity}</span>
+                    <button
+                        type="button"
+                        aria-label="Sumar una unidad"
+                        onClick={() => handleIncrease(item)}
+                        disabled={loading || item.quantity >= item.stock}
+                    >+</button>
+                </div>
             </div>
             <span className={styles.summaryItemPrice}>
                 ${(item.price * item.quantity).toLocaleString('es-AR')}
@@ -946,7 +978,7 @@ return (
             >
                 <Trash2 size={15} />
             </button>
-        </div>
+            </div>
             ))}    
         </div>
         <div className={styles.summaryRow}>
