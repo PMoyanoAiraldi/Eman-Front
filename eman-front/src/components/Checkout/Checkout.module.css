@@ -420,6 +420,21 @@
     transition: background 0.15s;
 }
 
+.removeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #bbb;
+    width: 40px;
+    height: 40px;
+    margin: -8px -10px 0 0; /* área táctil de 40px sin correr el ícono del borde */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
 /* Hover solo con mouse */
 @media (hover: hover) {
     .nextBtn:hover:not(:disabled),

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useMemo  } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { clearCart, updateItemStock } from '../../redux/slices/cartReducer'
+import { clearCart, updateItemStock, removeItem } from '../../redux/slices/cartReducer'
 import { selectCartTotal } from '../../redux/slices/cartReducer'
 import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
 import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../utils/provinces'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Trash2 } from 'lucide-react'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
 import Stepper from '../Stepper/Stepper'
@@ -401,6 +401,7 @@ const handleAgencySelect = (e) => {
     })
 }
 
+
 const handleBack = async () => {
     // Si ya existe una orden creada (llegamos al paso 4), hay que cancelarla
     // antes de volver — si no, queda con stock reservado sin que nadie la resuelva
@@ -419,9 +420,18 @@ const handleBack = async () => {
     setStep(s => s - 1)
 }
 
+const handleRemoveItem = (item) => {
+    setShippingQuote(null)
+    setShippingQuoteError(null)
+    dispatch(removeItem({ id: item.id, size: item.size, color: item.color }))
+}
+
+const itemsKey = items.map(i => `${i.variantId}:${i.quantity}`).join(',')
+
 useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ form, step, orderId, savedAt: Date.now()  }))
 }, [form, step, orderId])
+
 
 useEffect(() => {
   // Solo cotizamos si eligieron Correo Argentino y el CP tiene 4 dígitos (formato AR)
@@ -467,7 +477,7 @@ useEffect(() => {
     }, 600) // debounce: espera 600ms sin cambios en el CP antes de cotizar
 
     return () => clearTimeout(timer) // cancela la cotización anterior si el usuario sigue tipeando
-}, [form.zipCode, form.shippingType, form.deliveryType])
+}, [form.zipCode, form.shippingType, form.deliveryType, itemsKey])
 
 
 useEffect(() => {
@@ -927,6 +937,15 @@ return (
             <span className={styles.summaryItemPrice}>
                 ${(item.price * item.quantity).toLocaleString('es-AR')}
             </span>
+            <button
+                type="button"
+                className={styles.removeBtn}
+                onClick={() => handleRemoveItem(item)}
+                disabled={loading}
+                aria-label={`Quitar ${item.name}`}
+            >
+                <Trash2 size={15} />
+            </button>
         </div>
             ))}    
         </div>
@@ -945,7 +964,7 @@ return (
 
         <div className={styles.btnRow}>
             <button className={styles.backBtn} onClick={handleBack}>Volver</button>
-            <button className={styles.nextBtn} onClick={handleNext} disabled={loading}>
+            <button className={styles.nextBtn} onClick={handleNext} disabled={loading || quotingShipping || (form.shippingType === 'correo_argentino' && !shippingQuote)}>
                 {loading ? 'Procesando...' : 'Confirmar y pagar'}
             </button>
         </div>
