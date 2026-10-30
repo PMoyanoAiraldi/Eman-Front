@@ -67,11 +67,21 @@ const paymentCustomization = {
 }
 
 const STORAGE_KEY = 'eman_checkout'
+const MAX_AGE = 60 * 60 * 1000 // 60 min, igual que el cron
 
 const loadSaved = () => {
-    try { return JSON.parse(sessionStorage.getItem(STORAGE_KEY)) } catch { return null }
+    try {
+        const data = JSON.parse(localStorage.getItem(STORAGE_KEY))
+        if (!data) return null
+        if (Date.now() - data.savedAt > MAX_AGE) {
+            localStorage.removeItem(STORAGE_KEY)
+            return null
+        }
+        return data
+    } catch { return null }
 }
-const clearSaved = () => sessionStorage.removeItem(STORAGE_KEY)
+
+const clearSaved = () => localStorage.removeItem(STORAGE_KEY)
 
 const Checkout = () => {
     const dispatch = useDispatch()
@@ -410,7 +420,7 @@ const handleBack = async () => {
 }
 
 useEffect(() => {
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify({ form, step, orderId }))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ form, step, orderId, savedAt: Date.now()  }))
 }, [form, step, orderId])
 
 useEffect(() => {
