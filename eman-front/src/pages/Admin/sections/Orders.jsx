@@ -19,6 +19,14 @@ const STATE_LABELS = {
     cancelado:  { label: 'Cancelado',  cls: 'cancelled' },
 }
 
+const CANCEL_REASON_LABELS = {
+    abandonada:            'No pagó a tiempo',
+    rechazada:             'Pago rechazado',
+    cancelada_por_cliente: 'Canceló el cliente',
+    vencida_en_revision:   'Venció en revisión de MP',
+    cancelada_por_admin:   'Cancelada desde el panel',
+}
+
 const SHIPPING_OPTIONS = [
     { value: 'correo_argentino', label: 'Correo Arg.' },
     { value: 'coordinado',       label: 'Coordinado' },
@@ -569,6 +577,9 @@ const Orders = () => {
                             {' · '}
                             <span className={styles[`state_${STATE_LABELS[selectedOrder.state]?.cls || 'pending'}`]}>
                                 {STATE_LABELS[selectedOrder.state]?.label || selectedOrder.state}
+                                {selectedOrder.state === 'cancelado' && (
+                                    <> · {CANCEL_REASON_LABELS[selectedOrder.cancelReason] || 'Motivo no registrado'}</>
+                                )}
                             </span>
                         </p>
 
