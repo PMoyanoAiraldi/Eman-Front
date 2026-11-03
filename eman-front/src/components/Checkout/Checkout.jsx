@@ -6,6 +6,7 @@ import { selectCartTotal } from '../../redux/slices/cartReducer'
 import { sanitizeName, sanitizePhone, sanitizeZipCode, validateName, validateEmail, validatePhone, validateCity, validateZipCode, validateLocality, validateStep1, validateStep2 } from '../../utils/checkoutValidation'
 import { sanitizeStreetName, sanitizeStreetNumber, validateStreetName, validateStreetNumber } from '../../utils/addressValidation'
 import { PROVINCIAS_ARGENTINAS, validateProvince } from '../../utils/provinces'
+import { isLocalZip } from '../../utils/localZips'
 import { ChevronDown, Trash2 } from 'lucide-react'
 import Toast from '../../components/Toast/Toast'
 import Breadcrumb from '../Breadcrumb/Breadcrumb'
@@ -276,6 +277,10 @@ const handleNext = async () => {
         return
     }
     if (form.shippingType === 'correo_argentino') {
+        if (zipBlocked) {
+            setToast({ type: 'error', message: LOCAL_ZIP_MESSAGE })
+            return
+        }
         if (quotingShipping) {
             setToast({ type: 'error', message: 'Aguardá un instante a que se calcule el costo de envío.' })
             return
@@ -390,6 +395,9 @@ const handleAgencySelect = (e) => {
     const fullPostalCode = agency.location.address.postalCode // ej: "S2151IPD"
     const numericZip = fullPostalCode.match(/\d{4}/)?.[0] ?? '' // extrae "2151"
 
+    setShippingQuote(null)
+    setShippingQuoteError(null)
+
     setForm({
         ...form,
         agencyCode: agency.code,
@@ -454,7 +462,7 @@ useEffect(() => {
   // Solo cotizamos si eligieron Correo Argentino y el CP tiene 4 dígitos (formato AR)
     const isValidZip = form.shippingType === 'correo_argentino' && /^\d{4}$/.test(form.zipCode)
 
-    if (!isValidZip) {
+    if (!isValidZip || isLocalZip(form.zipCode)) {
         return // no reseteamos nada acá — eso ya lo hacen los handlers
     }
 
@@ -542,6 +550,11 @@ const filteredAgencies = agencies.filter(a =>
     normalize(a.location.address.city).includes(normalize(agencyFilter)) ||
     normalize(a.name).includes(normalize(agencyFilter))
 )
+
+const LOCAL_ZIP_MESSAGE = 'Para tu zona no hacemos envíos por Correo Argentino. Elegí "Coordinado" o "Retiro en local".'
+
+const zipBlocked = form.shippingType === 'correo_argentino' && isLocalZip(form.zipCode)
+const zipError = zipBlocked ? LOCAL_ZIP_MESSAGE : shippingQuoteError
 
 
 const shippingCost = form.shippingType === 'correo_argentino'
@@ -772,6 +785,7 @@ return (
                 <ChevronDown size={14} strokeWidth={1.5} className={styles.selectIcon} />
             </div>
             {errors.agencyCode && <span className={styles.error}>{errors.agencyCode}</span>}
+            {zipError && <span className={styles.error}>{zipError}</span>}
             {shippingQuote && !quotingShipping && (
                 <p className={styles.shippingDesc}>
                     Llega en {shippingQuote.deliveryTimeMin} a {shippingQuote.deliveryTimeMax} días hábiles
@@ -848,7 +862,7 @@ return (
                             Llega en {shippingQuote.deliveryTimeMin} a {shippingQuote.deliveryTimeMax} días hábiles
                         </span>
                     )}
-                    {shippingQuoteError && <span className={styles.error}>{shippingQuoteError}</span>}
+                    {zipError && <span className={styles.error}>{zipError}</span>}
                 </div>
             </div>
             </>
