@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import Breadcrumb from "../../components/Breadcrumb/Breadcrumb";
 import styles from "../../styles/InfoPage.module.css";
 
@@ -16,7 +17,7 @@ const Terms = () => {
                 <div className={styles.card}>
                     <section className={styles.section}>
                         <h2 className={styles.subtitle}>Datos del vendedor</h2>
-                        <p>Razón social: Eman. CUIT: 27-34970222-9. Domicilio: Entre Ríos 1529, López, Santa Fe.</p>
+                        <p>Titular: Andrea Soledad Mélica. Nombre comercial: Eman. CUIT: 27-34970222-9. Domicilio: Entre Ríos 1529, López, Santa Fe.</p>
                     </section>
 
                     <section className={styles.section}>
@@ -30,13 +31,27 @@ const Terms = () => {
                     </section>
 
                     <section className={styles.section}>
-                        <h2 className={styles.subtitle}>Derecho a arrepentimiento</h2>
-                        <p>De acuerdo a la Ley 24.240, tenés 10 días corridos desde la recepción del producto para ejercer el derecho a arrepentimiento sin costo ni necesidad de justificación.</p>
+                        <h2 className={styles.subtitle}>Derecho de arrepentimiento</h2>
+                        <p>
+                            De acuerdo a la Ley 24.240, tenés 10 días corridos desde la recepción del producto para ejercer el derecho de arrepentimiento, sin costo y sin necesidad de justificación, mediante el{" "}
+                            <Link to="/arrepentimiento" className={styles.link}>botón de arrepentimiento</Link>.
+                            Más información en{" "}
+                            <Link to="/devoluciones" className={styles.link}>Devoluciones y cambios</Link>.
+                        </p>
                     </section>
 
                     <section className={styles.section}>
                         <h2 className={styles.subtitle}>Comprobante fiscal</h2>
                         <p>Por cada compra se emite el comprobante fiscal correspondiente, que será enviado al email registrado en el pedido.</p>
+                    </section>
+
+                    <section className={styles.section}>
+                        <h2 className={styles.subtitle}>Atención al consumidor</h2>
+                        <p>
+                            Podés comunicarte por{" "}
+                            <a href={`https://wa.me/${import.meta.env.VITE_WHATSAPP_NUMBER}`} target="_blank" rel="noopener noreferrer" className={styles.link}>WhatsApp</a>
+                            {" "}o desde el formulario de contacto. Horario de atención: Lunes a Sábado de 10 a 12 hs y de 17 a 20 hs. Las consultas recibidas fuera de ese horario se responden el siguiente día hábil.
+                        </p>
                     </section>
 
                     <section className={styles.section}>
