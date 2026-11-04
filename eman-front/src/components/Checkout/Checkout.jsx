@@ -107,7 +107,12 @@ const Checkout = () => {
     const [shippingQuoteError, setShippingQuoteError] = useState(null)
 
     const [agencies, setAgencies] = useState([])
-    const [loadingAgencies, setLoadingAgencies] = useState(false)
+
+    const [loadingAgencies, setLoadingAgencies] = useState(
+        () => saved?.form?.shippingType === 'correo_argentino'
+        && saved?.form?.deliveryType === 'sucursal'
+        && !!saved?.form?.provinceCode
+    )
 
     const [agencyFilter, setAgencyFilter] = useState('')
 
@@ -148,19 +153,57 @@ const Checkout = () => {
 
     const agenciesRequestId = useRef(0)
 
-    const fetchAgencies = async (provinceCode) => {
-        const requestId = ++agenciesRequestId.current
-        setLoadingAgencies(true)
+    // const fetchAgencies = async (provinceCode) => {
+    //     const requestId = ++agenciesRequestId.current
+    //     setLoadingAgencies(true)
 
-        try {
-            const { data } = await axiosInstance.get('/shipping/agencies', { params: { provinceCode } })
-            if (requestId === agenciesRequestId.current) setAgencies(data)
-        } catch {
-            if (requestId === agenciesRequestId.current) setAgencies([])
-        } finally {
-            if (requestId === agenciesRequestId.current) setLoadingAgencies(false)
-        }
+    //     try {
+    //         const { data } = await axiosInstance.get('/shipping/agencies', { params: { provinceCode } })
+    //         if (requestId === agenciesRequestId.current) setAgencies(data)
+    //     } catch {
+    //         if (requestId === agenciesRequestId.current) setAgencies([])
+    //     } finally {
+    //         if (requestId === agenciesRequestId.current) setLoadingAgencies(false)
+    //     }
+    // }
+
+    // Solo hace el fetch: los setState quedan después del await, no son sincrónicos
+const loadAgencies = async (provinceCode) => {
+    const requestId = ++agenciesRequestId.current
+
+    try {
+        const { data } = await axiosInstance.get('/shipping/agencies', { params: { provinceCode } })
+        if (requestId === agenciesRequestId.current) setAgencies(data)
+    } catch {
+        if (requestId === agenciesRequestId.current) setAgencies([])
+    } finally {
+        if (requestId === agenciesRequestId.current) setLoadingAgencies(false)
     }
+}
+
+// Para los handlers (eventos): prende el loading y después carga
+const fetchAgencies = (provinceCode) => {
+    setLoadingAgencies(true)
+    return loadAgencies(provinceCode)
+}
+
+    // Al restaurar el form guardado, recargamos las sucursales de la provincia elegida
+useEffect(() => {
+    if (form.shippingType !== 'correo_argentino' || form.deliveryType !== 'sucursal' || !form.provinceCode) return
+
+    const requestId = ++agenciesRequestId.current
+
+    axiosInstance.get('/shipping/agencies', { params: { provinceCode: form.provinceCode } })
+        .then(({ data }) => {
+            if (requestId === agenciesRequestId.current) setAgencies(data)
+        })
+        .catch(() => {
+            if (requestId === agenciesRequestId.current) setAgencies([])
+        })
+        .finally(() => {
+            if (requestId === agenciesRequestId.current) setLoadingAgencies(false)
+        })
+}, [])
 
 const handleChange = (e) => {
     const { name, value } = e.target
@@ -546,9 +589,14 @@ const normalize = (str) => str
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
 
-const filteredAgencies = agencies.filter(a =>
-    normalize(a.location.address.city).includes(normalize(agencyFilter)) ||
-    normalize(a.name).includes(normalize(agencyFilter))
+const filteredAgencies = agencies.filter(a =>{
+    const q = normalize(agencyFilter)
+    return (
+        normalize(a.location.address.locality ?? '').includes(q) ||
+        normalize(a.location.address.city ?? '').includes(q) ||
+        normalize(a.name ?? '').includes(q)
+    )
+}
 )
 
 const LOCAL_ZIP_MESSAGE = 'Para tu zona no hacemos envíos por Correo Argentino. Elegí "Coordinado" o "Retiro en local".'
@@ -556,6 +604,9 @@ const LOCAL_ZIP_MESSAGE = 'Para tu zona no hacemos envíos por Correo Argentino.
 const zipBlocked = form.shippingType === 'correo_argentino' && isLocalZip(form.zipCode)
 const zipError = zipBlocked ? LOCAL_ZIP_MESSAGE : shippingQuoteError
 
+const zipReady = form.shippingType === 'correo_argentino' && /^\d{4}$/.test(form.zipCode)
+const quotePending = zipReady && !zipBlocked && !shippingQuote && !shippingQuoteError
+const isQuoting = quotingShipping || quotePending
 
 const shippingCost = form.shippingType === 'correo_argentino'
     ? (shippingQuote?.price ?? 0)
@@ -676,13 +727,13 @@ return (
                     <p className={styles.shippingDesc}>Todo el país</p>
                     </div>
                 <span className={styles.shippingPrice}>
-                    {form.shippingType === 'correo_argentino' && form.zipCode.length === 4
-                        ? quotingShipping
+                    {isQuoting
                         ? 'Calculando...'
                         : shippingQuote
                             ? `$${shippingQuote.price.toLocaleString('es-AR')}`
-                            : 'No disponible'
-                        : 'A calcular'}
+                            : zipBlocked || shippingQuoteError
+                                ? 'No disponible'
+                                : 'A calcular'}
                     </span>
             </label>
 
