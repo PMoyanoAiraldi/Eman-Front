@@ -76,6 +76,12 @@
     transition: color 0.2s;
 }
 
+.withdrawal {
+    border: 1px solid currentColor;
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
 @media (hover: hover) {
     .links a:hover,
     .instagram:hover,

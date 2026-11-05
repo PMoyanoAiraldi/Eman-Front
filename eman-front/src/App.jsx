@@ -33,6 +33,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage/ResetPasswordPage';
 import HeroManager from './pages/Admin/HeroManager/HeroManager';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
+import Withdrawal from './pages/Withdrawal/Withdrawal';
 import { fetchMaintenanceStatus } from './redux/slices/siteSettingsReducer';
 import { registerLocale, setDefaultLocale } from 'react-datepicker'
 import { es } from 'date-fns/locale/es'
@@ -99,6 +100,7 @@ function App() {
         <Route path="/returns" element={<Returns/>}/>
         <Route path="/privacy" element={<Privacy/>}/>
         <Route path="/terms" element={<Terms/>}/>
+        <Route path="/arrepentimiento" element={<Withdrawal />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/order-pending" element={<OrderPending />} />

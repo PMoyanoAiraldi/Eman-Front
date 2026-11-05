@@ -36,7 +36,7 @@ const Terms = () => {
                             De acuerdo a la Ley 24.240, tenés 10 días corridos desde la recepción del producto para ejercer el derecho de arrepentimiento, sin costo y sin necesidad de justificación, mediante el{" "}
                             <Link to="/arrepentimiento" className={styles.link}>botón de arrepentimiento</Link>.
                             Más información en{" "}
-                            <Link to="/devoluciones" className={styles.link}>Devoluciones y cambios</Link>.
+                            <Link to="/returns" className={styles.link}>Devoluciones y cambios</Link>.
                         </p>
                     </section>
 

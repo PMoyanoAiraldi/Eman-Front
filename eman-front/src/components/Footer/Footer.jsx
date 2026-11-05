@@ -50,6 +50,7 @@ const Footer = () => {
             <div className={styles.legal}>
                 <Link to="/privacy">Privacidad</Link>
                 <Link to="/terms">Términos</Link>
+                <Link to="/arrepentimiento" className={styles.withdrawal}>Botón de arrepentimiento</Link>
             </div>
         </div>
         </footer>
