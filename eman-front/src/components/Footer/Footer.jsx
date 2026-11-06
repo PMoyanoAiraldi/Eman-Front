@@ -32,6 +32,9 @@ const Footer = () => {
                 <Link to="/contact">Contacto</Link>
                 <Link to="/shipping">Envíos</Link>
                 <Link to="/returns">Devoluciones</Link>
+                <Link to="/arrepentimiento" className={styles.withdrawal}>
+                    Botón de arrepentimiento
+                </Link>
             </nav>
 
             <a  
@@ -50,7 +53,6 @@ const Footer = () => {
             <div className={styles.legal}>
                 <Link to="/privacy">Privacidad</Link>
                 <Link to="/terms">Términos</Link>
-                <Link to="/arrepentimiento" className={styles.withdrawal}>Botón de arrepentimiento</Link>
             </div>
         </div>
         </footer>

@@ -76,10 +76,47 @@
     transition: color 0.2s;
 }
 
+.withdrawalWrap {
+    display: flex;
+    justify-content: center;
+    padding: 4px 16px 16px;
+}
+
 .withdrawal {
-    border: 1px solid currentColor;
-    padding: 4px 10px;
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid var(--color-gold);
     border-radius: 4px;
+    color: var(--color-gold);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.withdrawal:hover,
+.withdrawal:focus-visible {
+    background: var(--color-gold);
+    color: #1a1a1a;
+}
+
+.links a.withdrawal {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border: 1px solid var(--color-gold);
+    border-radius: 4px;
+    color: var(--color-gold);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.links a.withdrawal:hover,
+.links a.withdrawal:focus-visible {
+    background: var(--color-gold);
+    color: #1a1a1a;
 }
 
 @media (hover: hover) {
