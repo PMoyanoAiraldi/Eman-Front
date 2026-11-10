@@ -151,6 +151,8 @@ const Checkout = () => {
         ...(saved?.form ?? {}),
     })
 
+    const [quoteRetry, setQuoteRetry] = useState(0)
+
     const agenciesRequestId = useRef(0)
 
     // const fetchAgencies = async (provinceCode) => {
@@ -514,14 +516,25 @@ useEffect(() => {
         setShippingQuoteError(null)
 
         try {
-        const { data } = await axiosInstance.post('/shipping/quote', {
-            postalCodeDestination: form.zipCode,
-            deliveredType: form.deliveryType === 'sucursal' ? 'S' : 'D',
-            items: items.map(item => ({
-                productId: item.id,
-                quantity:  item.quantity,
-            })),
-        })
+            let data;
+            for(let attempt = 0; attempt < 3; attempt++){
+                try{
+                    const res = await axiosInstance.post('/shipping/quote', {
+                    postalCodeDestination: form.zipCode,
+                    deliveredType: form.deliveryType === 'sucursal' ? 'S' : 'D',
+                    items: items.map(item => ({
+                        productId: item.id,
+                        quantity:  item.quantity,
+                    })),
+                })
+                data = res.data
+                break
+                } catch (err) {
+            const status = err.response?.status
+            if (attempt === 2 || (status && status < 500)) throw err
+            await new Promise(r => setTimeout(r, 800))
+        }
+    }
 
         const domicilio = data.find(r => r.deliveredType === (form.deliveryType === 'sucursal' ? 'S' : 'D'))
 
@@ -536,7 +549,7 @@ useEffect(() => {
             setShippingQuoteError('No pudimos cotizar el envío para ese código postal.')
         }
         } catch (err) {
-        console.error('Error cotizando envío:', err)
+        console.error('Error cotizando envío:', err.response?.status, err.response?.data || err.message)
         setShippingQuote(null)
         setShippingQuoteError('No pudimos cotizar el envío. Probá de nuevo.')
         } finally {
@@ -545,7 +558,7 @@ useEffect(() => {
     }, 600) // debounce: espera 600ms sin cambios en el CP antes de cotizar
 
     return () => clearTimeout(timer) // cancela la cotización anterior si el usuario sigue tipeando
-}, [form.zipCode, form.shippingType, form.deliveryType, itemsKey])
+}, [form.zipCode, form.shippingType, form.deliveryType, itemsKey, quoteRetry])
 
 
 useEffect(() => {
@@ -837,6 +850,11 @@ return (
             </div>
             {errors.agencyCode && <span className={styles.error}>{errors.agencyCode}</span>}
             {zipError && <span className={styles.error}>{zipError}</span>}
+            {shippingQuoteError && !zipBlocked && (
+                <button type="button" onClick={() => { setShippingQuoteError(null); setQuoteRetry(n => n + 1) }}>
+                    Reintentar
+                </button>
+            )}
             {shippingQuote && !quotingShipping && (
                 <p className={styles.shippingDesc}>
                     Llega en {shippingQuote.deliveryTimeMin} a {shippingQuote.deliveryTimeMax} días hábiles
@@ -914,6 +932,11 @@ return (
                         </span>
                     )}
                     {zipError && <span className={styles.error}>{zipError}</span>}
+                    {shippingQuoteError && !zipBlocked && (
+                <button type="button" onClick={() => { setShippingQuoteError(null); setQuoteRetry(n => n + 1) }}>
+                    Reintentar
+                </button>
+            )}
                 </div>
             </div>
             </>
