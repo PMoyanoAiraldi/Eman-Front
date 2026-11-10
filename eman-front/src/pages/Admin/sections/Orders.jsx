@@ -2,7 +2,7 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Eye, Package, Check, Clock, Filter, Upload } from 'lucide-react'
+import { Eye, Package, Check, Clock, Filter, Upload, Undo2 } from 'lucide-react'
 import { fetchAllOrders, updateOrderState, uploadInvoice, sendInvoiceManually } from '../../../redux/admin/adminOrdersReducer'
 import InvoicePopover from '../../../components/InvoicePopover/InvoicePopover'
 import axiosInstance from '../../../api/axiosInstance'
@@ -232,6 +232,7 @@ const Orders = () => {
         dateFrom: '',
         dateTo: '',
         search: '',
+        withdrawal: false,
     })
 
     const [invoiceWarning, setInvoiceWarning] = useState(null) // { orderId, pendingState }
@@ -348,9 +349,13 @@ const Orders = () => {
 
     const REVENUE_STATES = ['confirmado', 'enviado', 'entregado']
 
-    const ordersForTotal = filters.states.length > 0
+    const baseOrders = filters.states.length > 0
         ? orders.filter(o => filters.states.includes(o.state))
         : orders.filter(o => REVENUE_STATES.includes(o.state))
+
+    const ordersForTotal = filters.withdrawal
+        ? baseOrders
+        : baseOrders.filter(o => !o.withdrawalRequestedAt)
 
     const totalSum = ordersForTotal.reduce((sum, o) => sum + Number(o.total), 0)
 
@@ -372,16 +377,30 @@ const Orders = () => {
         o => o.invoiceStatus !== 'enviada' && o.state !== 'cancelado'
     ).length
 
+    const withdrawalCount = orders.filter(o => o.withdrawalRequestedAt).length
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Órdenes</h1>
                     <p className={styles.subtitle}>{orders.length} órdenes en total
+                    {withdrawalCount > 0 && (
+                        <span className={styles.withdrawalAlert}> · {withdrawalCount} con arrepentimiento</span>
+                    )}
                     {pendingInvoicesCount > 0 && (
                         <span className={styles.invoiceAlert}> · {pendingInvoicesCount} facturas pendientes de enviar</span>
                     )}
                     </p>
+
+                    <label className={styles.withdrawalToggle}>
+                        <input
+                            type="checkbox"
+                            checked={filters.withdrawal}
+                            onChange={e => updateFilter('withdrawal', e.target.checked)}
+                        />
+                        Solo arrepentimientos
+                    </label>
                 </div>
                 <input
                     type="text"
@@ -420,6 +439,7 @@ const Orders = () => {
                             selected={filters.states}
                             onChange={v => updateFilter('states', v)}
                         />
+                        
                     </div>
                 </div>
 
@@ -513,6 +533,14 @@ const Orders = () => {
                                                     </option>
                                                 ))}
                                             </select>
+                                            {order.withdrawalRequestedAt && (
+                                                <span
+                                                    className={`${styles.withdrawalBadge} ${order.withdrawalOutOfTerm ? styles.withdrawalLate : ''}`}
+                                                    title={`Código ${order.withdrawalCode} · ${new Date(order.withdrawalRequestedAt).toLocaleDateString('es-AR')}${order.withdrawalOutOfTerm ? ' · Fuera de plazo' : ''}`}
+                                                >
+                                                    <Undo2 size={12} strokeWidth={2} /> Arrepentimiento
+                                                </span>
+                                            )}
                                         </td>
                                         <td className={styles.cell} data-label="Acciones">
                                         <div className={styles.actions}>
@@ -673,6 +701,22 @@ const Orders = () => {
                     </button>
                 )}
                 </div>
+
+                {selectedOrder.withdrawalRequestedAt && (
+    <div className={styles.modalSection}>
+        <p className={styles.modalLabel}>Arrepentimiento</p>
+        <p className={styles.modalValue}>{selectedOrder.withdrawalCode}</p>
+        <p className={styles.modalSub}>
+            Solicitado el {new Date(selectedOrder.withdrawalRequestedAt).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })}
+        </p>
+        {selectedOrder.withdrawalOutOfTerm && (
+            <p className={styles.modalSub}>⚠ Fuera del plazo de 10 días</p>
+        )}
+        {selectedOrder.withdrawalNote && (
+            <p className={styles.modalSub}>Nota del cliente: {selectedOrder.withdrawalNote}</p>
+        )}
+    </div>
+)}
 
                         <div className={styles.modalTotal}>
                             <span>Total</span>

@@ -12,6 +12,7 @@ export const fetchAllOrders = createAsyncThunk(
             if (filters.dateFrom) params.dateFrom = filters.dateFrom
             if (filters.dateTo) params.dateTo = filters.dateTo
             if (filters.search) params.search = filters.search
+            if (filters.withdrawal) params.withdrawal = 'true'
 
             const res = await axiosInstance.get('/order', { params })
             return res.data
