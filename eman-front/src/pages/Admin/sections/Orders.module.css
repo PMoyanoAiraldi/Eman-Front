@@ -606,6 +606,17 @@
 .withdrawalRefunded { background: #dcfce7; color: #15803d; }  /* resuelto: verde */
 .withdrawalRejected { background: #e5e7eb; color: #4b5563; }  /* rechazado: gris */
 
+.rejectionInput {
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 10px;
+    border: 1px solid #d6d3d1;
+    border-radius: 6px;
+    font: inherit;
+    font-size: 13px;
+    resize: vertical;
+}
+
 /* RESPONSIVE (mobile) */
 @media (max-width: 768px) {
     .header {

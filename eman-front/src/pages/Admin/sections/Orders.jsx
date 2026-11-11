@@ -244,6 +244,7 @@ const Orders = () => {
     const [sendingInvoiceId, setSendingInvoiceId] = useState(null)
     const [confirmResendInvoice, setConfirmResendInvoice] = useState(null)
     const [withdrawalConfirm, setWithdrawalConfirm] = useState(null) // { order, status }
+    const [rejectionNote, setRejectionNote] = useState('')
 
     // Debounce: espera 500ms sin tipear antes de disparar la búsqueda
     useEffect(() => {
@@ -342,32 +343,25 @@ const Orders = () => {
         }
     }
 
-    // const handleWithdrawalStatus = async (orderId, status) => {
-    //     try {
-    //         const result = await dispatch(updateWithdrawalStatus({ id: orderId, status })).unwrap()
-    //         if (selectedOrder?.id === orderId) setSelectedOrder(result)
-    //     } catch (err) {
-    //         setLabelError(err)
-    //     }
-    // }
-
     // Decide si hace falta confirmar o se aplica directo
 const requestWithdrawalChange = (order, status) => {
     if (status === 'solicitado') {
         applyWithdrawalChange(order.id, status)
         return
-        }
+    }
+        setRejectionNote('')
         setWithdrawalConfirm({ order, status })
     }
 
-    const applyWithdrawalChange = async (orderId, status) => {
+    const applyWithdrawalChange = async (orderId, status, note) => {
         try {
-            const result = await dispatch(updateWithdrawalStatus({ id: orderId, status })).unwrap()
+            const result = await dispatch(updateWithdrawalStatus({ id: orderId, status, note })).unwrap()
             if (selectedOrder?.id === orderId) setSelectedOrder(result)
         } catch (err) {
             setLabelError(err)
         } finally {
             setWithdrawalConfirm(null)
+            setRejectionNote('')
         }
     }
 
@@ -780,6 +774,10 @@ const requestWithdrawalChange = (order, status) => {
                                 Resuelto el {new Date(selectedOrder.withdrawalResolvedAt).toLocaleDateString('es-AR')}
                             </p>
                         )}
+
+                        {selectedOrder.withdrawalStatus === 'rechazado' && selectedOrder.withdrawalRejectionNote && (
+                                <p className={styles.modalSub}>Motivo del rechazo: {selectedOrder.withdrawalRejectionNote}</p>
+                            )}
                     </div>
                 )}
 
@@ -855,12 +853,30 @@ const requestWithdrawalChange = (order, status) => {
                 message={
                     withdrawalConfirm?.status === 'reembolsado'
                         ? `¿Confirmás que ya le devolviste el dinero a ${withdrawalConfirm?.order.guestName}? La orden va a dejar de contar en el total de ventas.`
-                        : `¿Confirmás que el arrepentimiento de ${withdrawalConfirm?.order.guestName} no corresponde? Se va a cerrar el caso sin reembolso.`
+                        : (
+                            <>
+                                <p>¿Confirmás que el arrepentimiento de {withdrawalConfirm?.order.guestName} no corresponde? Se va a cerrar el caso sin reembolso. Dejá el motivo para tener registro:</p>
+                                <textarea
+                                    className={styles.rejectionInput}
+                                    rows={3}
+                                    maxLength={500}
+                                    placeholder="Ej: el producto volvió usado / pasó el plazo de 10 días"
+                                    value={rejectionNote}
+                                    onChange={e => setRejectionNote(e.target.value)}
+                                    autoFocus
+                                />
+                            </>
+                        )
                 }
-                onConfirm={() => applyWithdrawalChange(withdrawalConfirm.order.id, withdrawalConfirm.status)}
-                onCancel={() => setWithdrawalConfirm(null)}
+                onConfirm={() => applyWithdrawalChange(
+                    withdrawalConfirm.order.id,
+                    withdrawalConfirm.status,
+                    withdrawalConfirm.status === 'rechazado' ? rejectionNote.trim() : undefined,
+                )}
+                onCancel={() => { setWithdrawalConfirm(null); setRejectionNote('') }}
                 confirmLabel={withdrawalConfirm?.status === 'reembolsado' ? 'Sí, ya reembolsé' : 'Sí, rechazar'}
                 cancelLabel="Volver"
+                confirmDisabled={withdrawalConfirm?.status === 'rechazado' && !rejectionNote.trim()}
                 danger={withdrawalConfirm?.status === 'rechazado'}
             />
 

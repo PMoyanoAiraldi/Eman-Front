@@ -64,9 +64,9 @@ export const sendInvoiceManually = createAsyncThunk(
 
 export const updateWithdrawalStatus = createAsyncThunk(
     'adminOrders/updateWithdrawalStatus',
-    async ({ id, status }, { rejectWithValue }) => {
+    async ({ id, status, note }, { rejectWithValue }) => {
         try {
-            const res = await axiosInstance.patch(`/order/${id}/withdrawal`, { status })
+            const res = await axiosInstance.patch(`/order/${id}/withdrawal`, { status, note })
             return res.data
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || 'Error al actualizar el arrepentimiento')
