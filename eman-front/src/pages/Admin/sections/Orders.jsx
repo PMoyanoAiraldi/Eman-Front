@@ -2,8 +2,8 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Eye, Package, Check, Clock, Filter, Upload, Undo2 } from 'lucide-react'
-import { fetchAllOrders, updateOrderState, uploadInvoice, sendInvoiceManually } from '../../../redux/admin/adminOrdersReducer'
+import { Eye, Package, Check, Clock, Filter, Upload, } from 'lucide-react'
+import { fetchAllOrders, updateOrderState, uploadInvoice, sendInvoiceManually, updateWithdrawalStatus } from '../../../redux/admin/adminOrdersReducer'
 import InvoicePopover from '../../../components/InvoicePopover/InvoicePopover'
 import axiosInstance from '../../../api/axiosInstance'
 import ConfirmModal from '../../../components/ConfirmModal/ConfirmModal'
@@ -39,7 +39,11 @@ const LABEL_STATUS_OPTIONS = [
     { value: 'na',        label: 'No aplica' },
 ]
 
-
+const WITHDRAWAL_LABELS = {
+    solicitado:  'Pendiente de resolver',
+    reembolsado: 'Reembolsado',
+    rechazado:   'Rechazado',
+}
 
 const EMAN_ADDRESS = 'Entre Ríos 1529, López'
 
@@ -239,6 +243,7 @@ const Orders = () => {
     const [uploadingInvoiceId, setUploadingInvoiceId] = useState(null)
     const [sendingInvoiceId, setSendingInvoiceId] = useState(null)
     const [confirmResendInvoice, setConfirmResendInvoice] = useState(null)
+    const [withdrawalConfirm, setWithdrawalConfirm] = useState(null) // { order, status }
 
     // Debounce: espera 500ms sin tipear antes de disparar la búsqueda
     useEffect(() => {
@@ -337,6 +342,35 @@ const Orders = () => {
         }
     }
 
+    // const handleWithdrawalStatus = async (orderId, status) => {
+    //     try {
+    //         const result = await dispatch(updateWithdrawalStatus({ id: orderId, status })).unwrap()
+    //         if (selectedOrder?.id === orderId) setSelectedOrder(result)
+    //     } catch (err) {
+    //         setLabelError(err)
+    //     }
+    // }
+
+    // Decide si hace falta confirmar o se aplica directo
+const requestWithdrawalChange = (order, status) => {
+    if (status === 'solicitado') {
+        applyWithdrawalChange(order.id, status)
+        return
+        }
+        setWithdrawalConfirm({ order, status })
+    }
+
+    const applyWithdrawalChange = async (orderId, status) => {
+        try {
+            const result = await dispatch(updateWithdrawalStatus({ id: orderId, status })).unwrap()
+            if (selectedOrder?.id === orderId) setSelectedOrder(result)
+        } catch (err) {
+            setLabelError(err)
+        } finally {
+            setWithdrawalConfirm(null)
+        }
+    }
+
     const addressLine = (order) => {
         if (order.shippingType === 'retiro_en_local') {
             return EMAN_ADDRESS
@@ -353,9 +387,10 @@ const Orders = () => {
         ? orders.filter(o => filters.states.includes(o.state))
         : orders.filter(o => REVENUE_STATES.includes(o.state))
 
+    // el total descuenta solo lo reembolsado (una solicitud pendiente todavía no devolvió plata)
     const ordersForTotal = filters.withdrawal
         ? baseOrders
-        : baseOrders.filter(o => !o.withdrawalRequestedAt)
+        : baseOrders.filter(o => o.withdrawalStatus !== 'reembolsado')
 
     const totalSum = ordersForTotal.reduce((sum, o) => sum + Number(o.total), 0)
 
@@ -377,7 +412,9 @@ const Orders = () => {
         o => o.invoiceStatus !== 'enviada' && o.state !== 'cancelado'
     ).length
 
-    const withdrawalCount = orders.filter(o => o.withdrawalRequestedAt).length
+    const withdrawalCount = orders.filter(
+        o => o.withdrawalRequestedAt && (!o.withdrawalStatus || o.withdrawalStatus === 'solicitado')
+    ).length
 
     return (
         <div className={styles.page}>
@@ -386,7 +423,11 @@ const Orders = () => {
                     <h1 className={styles.title}>Órdenes</h1>
                     <p className={styles.subtitle}>{orders.length} órdenes en total
                     {withdrawalCount > 0 && (
-                        <span className={styles.withdrawalAlert}> · {withdrawalCount} con arrepentimiento</span>
+                        <button
+                            type="button"
+                            className={styles.withdrawalAlert}
+                            onClick={() => updateFilter('withdrawal', true)}
+                        > · {withdrawalCount} con arrepentimiento pendiente</button>
                     )}
                     {pendingInvoicesCount > 0 && (
                         <span className={styles.invoiceAlert}> · {pendingInvoicesCount} facturas pendientes de enviar</span>
@@ -487,6 +528,7 @@ const Orders = () => {
                                 const isCorreoArgentino = order.shippingType === 'correo_argentino'
                                 const isGenerated = !!order.shippingImportedAt
                                 const isGenerating = generatingLabelId === order.id
+                                const wStatus = order.withdrawalStatus || 'solicitado'
 
                                 return (
                                     <tr key={order.id}>
@@ -534,12 +576,20 @@ const Orders = () => {
                                                 ))}
                                             </select>
                                             {order.withdrawalRequestedAt && (
-                                                <span
-                                                    className={`${styles.withdrawalBadge} ${order.withdrawalOutOfTerm ? styles.withdrawalLate : ''}`}
-                                                    title={`Código ${order.withdrawalCode} · ${new Date(order.withdrawalRequestedAt).toLocaleDateString('es-AR')}${order.withdrawalOutOfTerm ? ' · Fuera de plazo' : ''}`}
+                                                <select
+                                                    className={`${styles.withdrawalSelect} ${
+                                                        wStatus !== 'solicitado'
+                                                            ? (wStatus === 'reembolsado' ? styles.withdrawalRefunded : styles.withdrawalRejected)
+                                                            : (order.withdrawalOutOfTerm ? styles.withdrawalLate : '')
+                                                    }`}
+                                                    value={wStatus}
+                                                    title={`Código ${order.withdrawalCode}${order.withdrawalOutOfTerm ? ' · Fuera de plazo' : ''}`}
+                                                    onChange={e => requestWithdrawalChange(order, e.target.value)}
                                                 >
-                                                    <Undo2 size={12} strokeWidth={2} /> Arrepentimiento
-                                                </span>
+                                                    <option value="solicitado">Arrepentimiento: pendiente</option>
+                                                    <option value="reembolsado">Arrepentimiento: reembolsado</option>
+                                                    <option value="rechazado">Arrepentimiento: rechazado</option>
+                                                </select>
                                             )}
                                         </td>
                                         <td className={styles.cell} data-label="Acciones">
@@ -703,20 +753,35 @@ const Orders = () => {
                 </div>
 
                 {selectedOrder.withdrawalRequestedAt && (
-    <div className={styles.modalSection}>
-        <p className={styles.modalLabel}>Arrepentimiento</p>
-        <p className={styles.modalValue}>{selectedOrder.withdrawalCode}</p>
-        <p className={styles.modalSub}>
-            Solicitado el {new Date(selectedOrder.withdrawalRequestedAt).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })}
-        </p>
-        {selectedOrder.withdrawalOutOfTerm && (
-            <p className={styles.modalSub}>⚠ Fuera del plazo de 10 días</p>
-        )}
-        {selectedOrder.withdrawalNote && (
-            <p className={styles.modalSub}>Nota del cliente: {selectedOrder.withdrawalNote}</p>
-        )}
-    </div>
-)}
+                    <div className={styles.modalSection}>
+                        <p className={styles.modalLabel}>Arrepentimiento</p>
+                        <p className={styles.modalValue}>{selectedOrder.withdrawalCode}</p>
+                        <p className={styles.modalSub}>
+                            Solicitado el {new Date(selectedOrder.withdrawalRequestedAt).toLocaleDateString('es-AR', { day: '2-digit', month: 'long', year: 'numeric' })}
+                        </p>
+                        {selectedOrder.withdrawalOutOfTerm && (
+                            <p className={styles.modalSub}>⚠ Fuera del plazo de 10 días</p>
+                        )}
+                        {selectedOrder.withdrawalNote && (
+                            <p className={styles.modalSub}>Nota del cliente: {selectedOrder.withdrawalNote}</p>
+                        )}
+
+                        <select
+                            className={styles.stateSelect}
+                            value={selectedOrder.withdrawalStatus || 'solicitado'}
+                            onChange={e => requestWithdrawalChange(selectedOrder.id, e.target.value)}
+                        >
+                            {Object.entries(WITHDRAWAL_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
+                        </select>
+                        {selectedOrder.withdrawalResolvedAt && (
+                            <p className={styles.modalSub}>
+                                Resuelto el {new Date(selectedOrder.withdrawalResolvedAt).toLocaleDateString('es-AR')}
+                            </p>
+                        )}
+                    </div>
+                )}
 
                         <div className={styles.modalTotal}>
                             <span>Total</span>
@@ -782,6 +847,21 @@ const Orders = () => {
                 onCancel={() => setConfirmResendInvoice(null)}
                 confirmLabel="Enviar"
                 cancelLabel="Cancelar"
+            />
+
+            <ConfirmModal
+                isOpen={!!withdrawalConfirm}
+                title={withdrawalConfirm?.status === 'reembolsado' ? 'Confirmar reembolso' : 'Rechazar arrepentimiento'}
+                message={
+                    withdrawalConfirm?.status === 'reembolsado'
+                        ? `¿Confirmás que ya le devolviste el dinero a ${withdrawalConfirm?.order.guestName}? La orden va a dejar de contar en el total de ventas.`
+                        : `¿Confirmás que el arrepentimiento de ${withdrawalConfirm?.order.guestName} no corresponde? Se va a cerrar el caso sin reembolso.`
+                }
+                onConfirm={() => applyWithdrawalChange(withdrawalConfirm.order.id, withdrawalConfirm.status)}
+                onCancel={() => setWithdrawalConfirm(null)}
+                confirmLabel={withdrawalConfirm?.status === 'reembolsado' ? 'Sí, ya reembolsé' : 'Sí, rechazar'}
+                cancelLabel="Volver"
+                danger={withdrawalConfirm?.status === 'rechazado'}
             />
 
 

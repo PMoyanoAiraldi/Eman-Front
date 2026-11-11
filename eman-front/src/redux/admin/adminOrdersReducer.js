@@ -62,6 +62,18 @@ export const sendInvoiceManually = createAsyncThunk(
     }
 )
 
+export const updateWithdrawalStatus = createAsyncThunk(
+    'adminOrders/updateWithdrawalStatus',
+    async ({ id, status }, { rejectWithValue }) => {
+        try {
+            const res = await axiosInstance.patch(`/order/${id}/withdrawal`, { status })
+            return res.data
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || 'Error al actualizar el arrepentimiento')
+        }
+    }
+)
+
 const initialState = {
     orders: [],
     loading: false,
@@ -89,6 +101,11 @@ const adminOrdersSlice = createSlice({
         })
 
         .addCase(sendInvoiceManually.fulfilled, (state, action) => {
+            const index = state.orders.findIndex(o => o.id === action.payload.id)
+            if (index !== -1) state.orders[index] = action.payload
+        })
+
+        .addCase(updateWithdrawalStatus.fulfilled, (state, action) => {
             const index = state.orders.findIndex(o => o.id === action.payload.id)
             if (index !== -1) state.orders[index] = action.payload
         })
