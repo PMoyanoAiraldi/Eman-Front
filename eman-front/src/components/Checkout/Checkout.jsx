@@ -507,7 +507,7 @@ useEffect(() => {
   // Solo cotizamos si eligieron Correo Argentino y el CP tiene 4 dígitos (formato AR)
     const isValidZip = form.shippingType === 'correo_argentino' && /^\d{4}$/.test(form.zipCode)
 
-    if (!isValidZip || isLocalZip(form.zipCode)) {
+    if (items.length === 0 || !isValidZip || isLocalZip(form.zipCode)) {
         return // no reseteamos nada acá — eso ya lo hacen los handlers
     }
 
