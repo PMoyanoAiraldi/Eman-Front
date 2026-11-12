@@ -572,17 +572,18 @@ const requestWithdrawalChange = (order, status) => {
                                             {order.withdrawalRequestedAt && (
                                                 <select
                                                     className={`${styles.withdrawalSelect} ${
-                                                        wStatus !== 'solicitado'
-                                                            ? (wStatus === 'reembolsado' ? styles.withdrawalRefunded : styles.withdrawalRejected)
-                                                            : (order.withdrawalOutOfTerm ? styles.withdrawalLate : '')
+                                                        wStatus === 'reembolsado' ? styles.withdrawalRefunded
+                                                        : wStatus === 'rechazado' ? styles.withdrawalRejected
+                                                        : order.withdrawalOutOfTerm ? styles.withdrawalLate
+                                                        : ''
                                                     }`}
                                                     value={wStatus}
                                                     title={`Código ${order.withdrawalCode}${order.withdrawalOutOfTerm ? ' · Fuera de plazo' : ''}`}
                                                     onChange={e => requestWithdrawalChange(order, e.target.value)}
                                                 >
-                                                    <option value="solicitado">Arrepentimiento: pendiente</option>
-                                                    <option value="reembolsado">Arrepentimiento: reembolsado</option>
-                                                    <option value="rechazado">Arrepentimiento: rechazado</option>
+                                                    <option value="solicitado">Devolución pendiente</option>
+                                                    <option value="reembolsado">Reembolsado</option>
+                                                    <option value="rechazado">Rechazado</option>
                                                 </select>
                                             )}
                                         </td>

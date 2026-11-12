@@ -583,7 +583,28 @@
     background: #ede9fe; color: #6d28d9;
 }
 
-.withdrawalAlert { color: #6d28d9; font-weight: 600; }
+.withdrawalAlert {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;          /* hereda tamaño y tipografía del subtítulo */
+    color: #6d28d9;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline dotted;
+    text-underline-offset: 3px;
+}
+
+.withdrawalAlert:hover {
+    text-decoration: underline solid;
+}
+
+.withdrawalAlert:focus-visible {
+    outline: 2px solid #6d28d9;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
 .withdrawalToggle { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
 
 .withdrawalSelect {
