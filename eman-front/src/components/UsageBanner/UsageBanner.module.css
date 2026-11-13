@@ -1,0 +1,11 @@
+.banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+.warning { background: #fff8e1; color: #8a6d00; border: 1px solid #f0d98c; }
+.danger  { background: #fdecea; color: #a12622; border: 1px solid #f1b0ac; }

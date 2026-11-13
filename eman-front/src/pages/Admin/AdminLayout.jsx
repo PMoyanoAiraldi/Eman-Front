@@ -6,6 +6,7 @@ import { logoutUser } from '../../redux/slices/authReducer'
 import { authService } from '../../api/authService'
 import { ExternalLink } from 'lucide-react'
 import MaintenanceToggle from '../../components/MaintenanceToggle/MaintenanceToggle'
+import UsageBanner from '../../components/UsageBanner/UsageBanner'
 import styles from './AdminLayout.module.css'
 
 const baseNavItems = [
@@ -109,6 +110,7 @@ const AdminLayout = () => {
                 </header>
 
                 <div className={styles.content}>
+                    <UsageBanner />
                     <Outlet />
                 </div>
             </div>
