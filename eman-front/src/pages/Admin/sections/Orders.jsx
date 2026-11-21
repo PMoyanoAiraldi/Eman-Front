@@ -246,10 +246,12 @@ const Orders = () => {
     const [withdrawalConfirm, setWithdrawalConfirm] = useState(null) // { order, status }
     const [rejectionNote, setRejectionNote] = useState('')
 
+    const [copied, setCopied] = useState(false);
+
     // Debounce: espera 500ms sin tipear antes de disparar la búsqueda
     useEffect(() => {
         const timer = setTimeout(() => {
-            setFilters(prev => ({ ...prev, search: searchInput.trim() }))
+            setFilters(prev => ({ ...prev, search: searchInput.trim().replace(/^#/, '') }))
         }, 500)
         return () => clearTimeout(timer)
     }, [searchInput])
@@ -410,6 +412,16 @@ const requestWithdrawalChange = (order, status) => {
         o => o.withdrawalRequestedAt && (!o.withdrawalStatus || o.withdrawalStatus === 'solicitado')
     ).length
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(selectedOrder.id);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (err) {
+            console.error('No se pudo copiar', err);
+        }
+    };
+
     return (
         <div className={styles.page}>
             <div className={styles.header}>
@@ -440,7 +452,7 @@ const requestWithdrawalChange = (order, status) => {
                 <input
                     type="text"
                     className={styles.searchInput}
-                    placeholder="Buscar por nombre o email..."
+                    placeholder="Buscar por nombre, email o N° de orden..."
                     value={searchInput}
                     onChange={e => setSearchInput(e.target.value)}
                 />
@@ -529,11 +541,13 @@ const requestWithdrawalChange = (order, status) => {
                                         <td>
                                             <p className={styles.clientName}>{order.guestName}</p>
                                             <p className={styles.clientEmail}>{order.guestEmail}</p>
+                                            <p className={styles.orderRef}>#{order.id.slice(0, 8).toUpperCase()}</p>
                                         </td>
                                         <td className={styles.cell} data-label="Fecha">
                                             {new Date(order.createdAt).toLocaleDateString('es-AR')}
                                         </td>
                                         <td className={styles.cell} data-label="Envío">
+                                
                                             {order.shippingType === 'correo_argentino' ? 'Correo Arg.' :
                                             order.shippingType === 'coordinado' ? 'Coordinado' : 'Retiro'}
                                         </td>
@@ -642,7 +656,17 @@ const requestWithdrawalChange = (order, status) => {
                 <div className={styles.modalOverlay} onClick={() => setSelectedOrder(null)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                        <h2 className={styles.modalTitle}>Detalle de orden</h2>
+                        <h2 className={styles.modalTitle}>
+                            <h2 className={styles.modalTitle}>Detalle de orden</h2>
+                                <button
+                                    type="button"
+                                    className={styles.orderNumber}
+                                    title="Click para copiar el ID completo"
+                                    onClick={handleCopy}
+                                >
+                                    {copied ? 'Copiado' : `#${selectedOrder.id.slice(0, 8).toUpperCase()}`}
+                                </button>
+                        </h2>
                             <button className={styles.closeBtn} onClick={() => setSelectedOrder(null)}>✕</button>
                         </div>
                         <p className={styles.modalOrderMeta}>

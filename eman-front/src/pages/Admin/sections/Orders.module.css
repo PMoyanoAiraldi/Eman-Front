@@ -38,7 +38,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     padding: 0.5rem 0.75rem;
-    width: 260px;
+    width: 300px;
     outline: none;
 }
 
@@ -127,7 +127,7 @@
 .clientEmail {
     font-size: 0.75rem;
     color: #999;
-    padding: 0 1rem 0.85rem;
+    padding: 0 1rem 0;
 }
 
 .actions {
@@ -212,7 +212,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   FILTROS DE COLUMNA
+    FILTROS DE COLUMNA
 ═══════════════════════════════════════════ */
 .filterWrapper {
     position: relative;
@@ -360,7 +360,7 @@
 }
 
 /* ═══════════════════════════════════════════
-   MODAL DE DETALLE
+    MODAL DE DETALLE
 ═══════════════════════════════════════════ */
 .modalOverlay {
     position: fixed;
@@ -636,6 +636,34 @@
     font: inherit;
     font-size: 13px;
     resize: vertical;
+}
+
+.orderNumber {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 10px;
+    font-family: 'SF Mono', Consolas, 'Courier New', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: #b8964e;
+    background: rgba(184, 150, 78, 0.1);
+    border: 1px solid rgba(184, 150, 78, 0.3);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.orderNumber:hover {
+    background: rgba(184, 150, 78, 0.2);
+}
+
+.orderRef {
+    margin: 2px 0 0;
+    padding: 0.2rem 1rem 0.85rem;
+    font-family: Consolas, 'Courier New', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    color: #b8964e;
 }
 
 /* RESPONSIVE (mobile) */
