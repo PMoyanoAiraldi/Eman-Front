@@ -32,9 +32,7 @@ const Footer = () => {
                 <Link to="/contact">Contacto</Link>
                 <Link to="/shipping">Envíos</Link>
                 <Link to="/returns">Devoluciones</Link>
-                <Link to="/arrepentimiento" className={styles.withdrawal}>
-                    Botón de arrepentimiento
-                </Link>
+                
             </nav>
 
             <a  
@@ -49,11 +47,13 @@ const Footer = () => {
             </div>
 
         <div className={styles.bottom}>
-            <span>© {currentYear} Eman. Todos los derechos reservados.</span>
+            
             <div className={styles.legal}>
                 <Link to="/privacy">Privacidad</Link>
                 <Link to="/terms">Términos</Link>
+                <Link to="/arrepentimiento">Botón de arrepentimiento</Link>
             </div>
+            <span>© {currentYear} Eman. Todos los derechos reservados.</span>
         </div>
         </footer>
     )
