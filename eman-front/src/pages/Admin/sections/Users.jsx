@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchAllUsers, toggleUserState } from '../../../redux/admin/adminUsersReducer'
 import styles from './Users.module.css'
 
+const PROTECTED_ROLES = ['developer', 'admin'];
+
 const Users = () => {
     const dispatch = useDispatch()
     const { users, loading, error } = useSelector(state => state.adminUsers)
@@ -66,7 +68,7 @@ const Users = () => {
                                     <td className={styles.cell} data-label="Teléfono">{user.phone || '—'}</td>
                                     <td className={styles.cell} data-label="Ciudad">{user.city || '—'}</td>
                                     <td className={styles.cell} data-label="Rol">
-                                        <span className={`${styles.roleBadge} ${user.rol === 'admin' ? styles.roleAdmin : styles.roleCliente}`}>
+                                        <span className={`${styles.roleBadge} ${PROTECTED_ROLES.includes(user.rol) ? styles.roleAdmin : styles.roleCliente}`}>
                                             {user.rol}
                                         </span>
                                     </td>
@@ -76,12 +78,14 @@ const Users = () => {
                                         </span>
                                     </td>
                                     <td className={styles.cell} data-label="Acción">
-                                        <button
-                                            className={`${styles.toggleBtn} ${user.state ? styles.toggleDeactivate : styles.toggleActivate}`}
-                                            onClick={() => handleToggleState(user.id, user.state)}
-                                        >
-                                            {user.state ? 'Suspender' : 'Activar'}
-                                        </button>
+                                        {!PROTECTED_ROLES.includes(user.rol) && (
+                                            <button
+                                                className={`${styles.toggleBtn} ${user.state ? styles.toggleDeactivate : styles.toggleActivate}`}
+                                                onClick={() => handleToggleState(user.id, user.state)}
+                                            >
+                                                {user.state ? 'Suspender' : 'Activar'}
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
