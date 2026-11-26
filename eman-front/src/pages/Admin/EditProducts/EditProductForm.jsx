@@ -18,6 +18,16 @@ import { fetchAllProducts } from '../../../redux/admin/adminProductsReducer'
 import { GENDER_OPTIONS } from '../../../constants/gender'; 
 import styles from './EditProducts.module.css'
 
+
+const BOX_FIELDS = ['heightCm', 'widthCm', 'lengthCm']
+
+const boxFieldError = (value) => {
+    if (value === '' || value == null) return 'Obligatorio para calzado'
+    const n = Number(value)
+    if (!Number.isInteger(n) || n < 1 || n > 150) return 'Entero entre 1 y 150'
+    return ''
+}
+
 // Este componente recibe el producto garantizado como prop
 // No tiene que lidiar con loading ni con producto null
 const EditProductForm = ({ product }) => {
@@ -41,6 +51,9 @@ const EditProductForm = ({ product }) => {
         price: product.price || '',
         gender: product.gender || '',
         weightGrams: product.weightGrams || '', 
+        heightCm: product.heightCm ?? '',
+        widthCm: product.widthCm ?? '',
+        lengthCm: product.lengthCm ?? '',
         isFeatured: product.isFeatured || false,
         brandId: product.brand?.id || '',
         categoryId: product.category?.id || '',
@@ -58,6 +71,14 @@ const EditProductForm = ({ product }) => {
     const [confirmDelete, setConfirmDelete] = useState(null) // guarda el imageId a eliminar
     const [errors, setErrors] = useState({})
     const [touched, setTouched] = useState({})
+
+    const selectedCategory = categories.find(c => c.id === form.categoryId)
+    const isBox = selectedCategory?.packaging === 'CAJA'
+
+    const fieldError = (name, value) =>
+    BOX_FIELDS.includes(name)
+        ? (isBox ? boxFieldError(value) : '')
+        : validateProductField(name, value)
 
     // Cargar selects — estos sí van en useEffect porque son datos externos
     useEffect(() => {
@@ -90,25 +111,39 @@ const EditProductForm = ({ product }) => {
         setForm(prev => ({ ...prev, [name]: newValue }))
 
         if (touched[name]) {
-            setErrors(prev => ({ ...prev, [name]: validateProductField(name, newValue) }))
+            setErrors(prev => ({ ...prev, [name]: fieldError(name, newValue) }))
         }
     }
 
     const handleBlur = (e) => {
         const { name, value } = e.target
         setTouched(prev => ({ ...prev, [name]: true }))
-        setErrors(prev => ({ ...prev, [name]: validateProductField(name, value) }))
+        setErrors(prev => ({ ...prev, [name]: fieldError(name, value) }))
     }
 
     const handleCategoryChange = (e) => {
         const value = e.target.value
         setForm(prev => ({ ...prev, categoryId: value, subcategoryId: '' }))
         setTouched(prev => ({ ...prev, categoryId: true }))
-        setErrors(prev => ({ ...prev, categoryId: validateProductField('categoryId', value) }))
+        setErrors(prev => ({ 
+            ...prev, 
+            categoryId: validateProductField('categoryId', value),
+            heightCm: '',
+            widthCm: '',
+            lengthCm: '',
+        }))
     }
 
     const handleSaveData = async () => {
-        const validationErrors = validateProductForm(form)
+        const boxErrors = isBox
+        ? Object.fromEntries(
+            BOX_FIELDS
+                .map(k => [k, boxFieldError(form[k])])
+                .filter(([, err]) => err)
+        )
+        : {}
+        const validationErrors = { ...validateProductForm(form), ...boxErrors }
+
         setErrors(validationErrors)
         setTouched(prev => ({
         ...prev,
@@ -130,7 +165,10 @@ const EditProductForm = ({ product }) => {
             const payload = {
             ...form,
             price: Number(form.price),
-            weightGrams: form.weightGrams ? Number(form.weightGrams) : undefined,
+            weightGrams: Number(form.weightGrams),
+            heightCm: isBox ? Number(form.heightCm) : null,
+            widthCm:  isBox ? Number(form.widthCm)  : null,
+            lengthCm: isBox ? Number(form.lengthCm) : null,
             brandId: form.brandId || null,
             productTypeId: form.productTypeId || null,
         }
@@ -261,6 +299,9 @@ const EditProductForm = ({ product }) => {
                                 onWheel={e => e.currentTarget.blur()}
                             />
                             {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
+                        <span className={styles.hintText}>
+                            {isBox ? 'Peso del par con su caja' : 'Peso de la prenda, sin bolsa'}
+                        </span>
                         </div>
 
                         <div className={styles.field}>
@@ -316,6 +357,36 @@ const EditProductForm = ({ product }) => {
                         </div>
                     </div>
 
+                    {isBox && (
+                        <div className={`${styles.row} ${styles.rowThree}`}>
+                            {[
+                                ['heightCm', 'ALTO (cm)'],
+                                ['widthCm', 'ANCHO (cm)'],
+                                ['lengthCm', 'LARGO (cm)'],
+                            ].map(([name, label]) => (
+                                <div className={styles.field} key={name}>
+                                    <label className={styles.label}>{label}</label>
+                                    <input
+                                        className={`${styles.input} ${touched[name] && errors[name] ? styles.inputError : ''}`}
+                                        name={name}
+                                        type="number"
+                                        min="1"
+                                        max="150"
+                                        value={form[name]}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        onWheel={e => e.currentTarget.blur()}
+                                    />
+                                    {touched[name] && errors[name] && <span className={styles.fieldError}>{errors[name]}</span>}
+                                </div>
+                            ))}
+                            <span className={styles.hintText}>Medidas de la caja con la que se envía.</span>
+                        </div>
+                    )}
+
+
+
+
                     <div className={styles.row}>
                         <div className={styles.field}>
                             <label className={styles.label}>MARCA</label>
@@ -364,7 +435,7 @@ const EditProductForm = ({ product }) => {
                         </div>
                     </div>
 
-                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData}>
+                    <button className={styles.saveBtn} onClick={handleSaveData} disabled={savingData || categories.length === 0}>
                         {savingData ? 'Guardando...' : 'Guardar cambios'}
                     </button>
                 </section>

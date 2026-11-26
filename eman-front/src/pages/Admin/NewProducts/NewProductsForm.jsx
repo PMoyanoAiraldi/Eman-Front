@@ -211,6 +211,14 @@ const InlineManageColorModal = ({ items = [], onCreate, onToggleState }) => {
             )
 }
 
+const BOX_FIELDS = ['heightCm', 'widthCm', 'lengthCm']
+
+const boxFieldError = (value) => {
+    if (value === '' || value == null) return 'Obligatorio para calzado'
+    const n = Number(value)
+    if (!Number.isInteger(n) || n < 1 || n > 150) return 'Entero entre 1 y 150'
+    return ''
+}
 
 const NewProductsForm = () => {
     const dispatch = useDispatch()
@@ -225,6 +233,9 @@ const NewProductsForm = () => {
         price: '',
         gender: '',
         weightGrams: '',
+        heightCm: '',
+        widthCm: '',
+        lengthCm: '',
         isFeatured: false,
         brandId: '',
         categoryId: '',
@@ -257,6 +268,14 @@ const NewProductsForm = () => {
     const [images, setImages] = useState([])
     const [uploadingImage, setUploadingImage] = useState(false)
 
+    const selectedCategory = categories.find(c => c.id === form.categoryId)
+    const isBox = selectedCategory?.packaging === 'CAJA'
+
+    const fieldError = (name, value) =>
+    BOX_FIELDS.includes(name)
+        ? (isBox ? boxFieldError(value) : '')
+        : validateProductField(name, value)
+
     useEffect(() => {
         axiosInstance.get('/categories').then(r => setCategories(r.data)).catch(() => {})
         axiosInstance.get('/sub_categories/all').then(r => setSubCategories(r.data)).catch(() => {})
@@ -270,11 +289,11 @@ const NewProductsForm = () => {
     if (allProducts.length === 0) {
         dispatch(fetchAllProducts())
     }
-}, [dispatch, allProducts.length])
+    }, [dispatch, allProducts.length])
 
-useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-}, [currentStep])
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, [currentStep])
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target
@@ -282,14 +301,14 @@ useEffect(() => {
         setForm(prev => ({ ...prev, [name]: newValue}))
 
         if (touched[name]) {
-        setErrors(prev => ({ ...prev, [name]: validateProductField(name, newValue) }))
+        setErrors(prev => ({ ...prev, [name]: fieldError(name, newValue) }))
     }
     }
 
     const handleBlur = (e) => {
     const { name, value } = e.target
     setTouched(prev => ({ ...prev, [name]: true }))
-    setErrors(prev => ({ ...prev, [name]: validateProductField(name, value) }))
+    setErrors(prev => ({ ...prev, [name]: fieldError(name, value) }))
 }
 
     const handleCreateBrand = async (name) => {
@@ -333,7 +352,15 @@ useEffect(() => {
     }
 
     const handleCreateProduct = async () => {
-        const validationErrors = validateProductForm(form)
+        const boxErrors = isBox
+            ? Object.fromEntries(
+                BOX_FIELDS
+                    .map(k => [k, boxFieldError(form[k])])
+                    .filter(([, err]) => err)
+            )
+            : {}
+        const validationErrors = { ...validateProductForm(form), ...boxErrors }
+    
         setErrors(validationErrors)
         setTouched(prev => ({
             ...prev,
@@ -352,7 +379,10 @@ useEffect(() => {
             const result = await dispatch(createProduct({
                 ...form,
                 price: Number(form.price),
-                weightGrams: form.weightGrams ? Number(form.weightGrams) : undefined,
+                weightGrams: Number(form.weightGrams),
+                heightCm: isBox ? Number(form.heightCm) : undefined,
+                widthCm:  isBox ? Number(form.widthCm)  : undefined,
+                lengthCm: isBox ? Number(form.lengthCm) : undefined,
                 brandId: form.brandId || undefined,
                 productTypeId: form.productTypeId || undefined,
             })).unwrap()
@@ -526,7 +556,13 @@ useEffect(() => {
         const value = e.target.value
         setForm(prev => ({ ...prev, categoryId: value, subcategoryId: '' }))
         setTouched(prev => ({ ...prev, categoryId: true }))
-        setErrors(prev => ({ ...prev, categoryId: validateProductField('categoryId', value) }))
+        setErrors(prev => ({ 
+            ...prev, 
+            categoryId: validateProductField('categoryId', value),
+            heightCm: '',
+            widthCm: '',
+            lengthCm: '', 
+        }))
     }
 
     const handleFeaturedChange = (e) => {
@@ -610,13 +646,15 @@ useEffect(() => {
                             type="number"
                             min="1"
                             max="25000"
-                            placeholder="200"
                             value={form.weightGrams}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             onWheel={e => e.currentTarget.blur()}
                         />
                         {touched.weightGrams && errors.weightGrams && <span className={styles.fieldError}>{errors.weightGrams}</span>}
+                        <span className={styles.hintText}>
+                            {isBox ? 'Peso del par con su caja' : 'Peso de la prenda, sin bolsa'}
+                        </span>
                     </div>
                     <div className={styles.field}>
                         <label className={styles.label}>GÉNERO</label>
@@ -676,6 +714,35 @@ useEffect(() => {
                         {touched.subcategoryId && errors.subcategoryId && <span className={styles.fieldError}>{errors.subcategoryId}</span>}
                     </div>
                 </div>
+
+                {isBox && (
+                    <div className={`${styles.row} ${styles.rowThree}`}>
+                        {[
+                            ['heightCm', 'ALTO (cm)'],
+                            ['widthCm', 'ANCHO (cm)'],
+                            ['lengthCm', 'LARGO (cm)'],
+                        ].map(([name, label]) => (
+                            <div className={styles.field} key={name}>
+                                <label className={styles.label}>{label}</label>
+                                <input
+                                    className={`${styles.input} ${touched[name] && errors[name] ? styles.inputError : ''}`}
+                                    name={name}
+                                    type="number"
+                                    min="1"
+                                    max="150"
+                                    value={form[name]}
+                                    onChange={handleChange}
+                                    onBlur={handleBlur}
+                                    onWheel={e => e.currentTarget.blur()}
+                                />
+                                {touched[name] && errors[name] && <span className={styles.fieldError}>{errors[name]}</span>}
+                            </div>
+                        ))}
+                        <span className={styles.hintText}>Medidas de la caja con la que se envía.</span>
+                    </div>
+                )}
+
+
 
                     <div className={styles.row}>
                         <div className={styles.field}>
@@ -780,7 +847,9 @@ useEffect(() => {
                                 />
                             </div>
                             <div className={styles.sizeChips}>
-                            {sizes.filter(s => s.state).map(s => (
+                            {sizes
+                                .filter(s => s.state && (isBox ? /^\d+$/.test(s.name) : !/^\d+$/.test(s.name)))
+                                .map(s => (
                             <button
                                 key={s.id}
                                 type="button"

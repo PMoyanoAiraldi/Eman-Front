@@ -20,9 +20,11 @@ export const validateProductField = (name, value) => {
         }
 
         case 'weightGrams': {
-            if (value === '' || value === null || value === undefined) return '' // opcional, cae al default 200
+            if (value === '' || value === null || value === undefined) return 'El peso es obligatorio' 
             const num = Number(value)
-            if (isNaN(num) || num < 1 || num > 25000) return 'El peso debe ser entre 1 y 25000 gramos'
+            if (!Number.isInteger(num) || num < 1 || num > 25000) {
+                return 'El peso debe ser un número entero entre 1 y 25000 gramos'
+            }
             return ''
         }
 
@@ -44,7 +46,7 @@ export const validateProductField = (name, value) => {
 }
 
 // Campos obligatorios del paso 1 (marca y tipo de producto quedan opcionales)
-export const REQUIRED_PRODUCT_FIELDS = ['name', 'description', 'price', 'gender', 'categoryId', 'subcategoryId']
+export const REQUIRED_PRODUCT_FIELDS = ['name', 'description', 'price', 'weightGrams', 'gender', 'categoryId', 'subcategoryId']
 
 // Orden en que se validan (coincide con el orden visual del formulario)
 const VALIDATED_FIELDS = ['name', 'description', 'price', 'weightGrams', 'gender', 'categoryId', 'subcategoryId']

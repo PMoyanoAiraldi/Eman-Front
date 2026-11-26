@@ -108,6 +108,7 @@ const Navbar = () => {
                 <li><Link to="/mujer">Mujer</Link></li>
                 <li><Link to="/hombre">Hombre</Link></li>
                 <li><Link to="/deportivo">Deportivo</Link></li>
+                <li><Link to="/calzado">Calzado</Link></li>
                 <li><Link to="/tienda">Tienda</Link></li>
             </ul>
 
